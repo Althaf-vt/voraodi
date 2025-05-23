@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        /* Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        nav .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        nav .nav-buttons button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #e8ecef;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Featured Collections Section */
+        .featured-collections {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px 20px;
+            background-color: #fff;
+        }
+
+        .collection-card {
+            text-align: center;
+            max-width: 300px;
+        }
+
+        .collection-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .collection-card h3 {
+            margin: 15px 0;
+            font-size: 18px;
+        }
+
+        .collection-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .collection-card button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        /* Category Section */
+        .category-section {
+            padding: 20px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .category-section h2 {
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+
+        .category-section .view-all {
+            text-decoration: none;
+            color: #333;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .product-card {
+            text-align: center;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .product-card h3 {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .product-card p {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-card button {
+            padding: 6px 12px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .product-card .wishlist {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 16px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* Footer Section */
+        footer {
+            background-color: #fff;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        footer .footer-column {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        footer .footer-column h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        footer .footer-column p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        footer .footer-column ul {
+            list-style: none;
+        }
+
+        footer .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        footer .footer-column ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+
+        footer .footer-column .contact-info {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        footer .footer-column .social-icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        footer .footer-column .social-icons a {
+            font-size: 20px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        footer .shipping-methods {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        footer .shipping-methods img {
+            height: 30px;
+            filter: grayscale(100%);
+        }
+
+        footer .copyright {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .featured-collections {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .collection-card {
+                max-width: 100%;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            footer .shipping-methods {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+        <%-include('../../views/partials/user/header') %>
+
+
+
+    <!-- Header Section -->
+    <div class="header">
+        <h1>Explore Collections</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Fugiat voluptatem cumque veritatis eos voluptates cum iste architecto hic molestias.</p>
+    </div>
+
+    <!-- Featured Collections Section -->
+    <div class="featured-collections">
+        <div class="collection-card">
+            <img src="https://via.placeholder.com/300x200" alt="Old Money Pants">
+            <h3>Old Money Pants</h3>
+            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
+            <button>Explore</button>
+        </div>
+        <div class="collection-card">
+            <img src="https://via.placeholder.com/300x200" alt="Old Money Shirts">
+            <h3>Old Money Shirts</h3>
+            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
+            <button>Explore</button>
+        </div>
+        <div class="collection-card">
+            <img src="https://via.placeholder.com/300x200" alt="Old Money Polos">
+            <h3>Old Money Polos</h3>
+            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
+            <button>Explore</button>
+        </div>
+    </div>
+
+    <!-- Category Section: Linen Pants -->
+    <div class="category-section">
+        <div class="category-header">
+            <h2>Linen Pants</h2>
+            <a href="#" class="view-all">View All Products</a>
+        </div>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="wishlist">♡</div>
+                <img src="https://via.placeholder.com/200x200?text=Linen+Pants+1" alt="Dark Florish Onepiece">
+                <h3>Dark Florish Onepiece</h3>
+                <p>$95.00</p>
+                <button>Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <div class="wishlist">♡</div>
+                <img src="https://via.placeholder.com/200x200?text=Linen+Pants+2" alt="Dark Florish Onepiece">
+                <h3>Dark Florish Onepiece</h3>
+                <p>$95.00</p>
+                <button>Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <div class="wishlist">♡</div>
+                <img src="https://via.placeholder.com/200x200?text=Linen+Pants+3" alt="Dark Florish Onepiece">
+                <h3>Dark Florish Onepiece</h3>
+                <p>$95.00</p>
+                <button>Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <div class="wishlist">♡</div>
+                <img src="https://via.placeholder.com/200x200?text=Linen+Pants+4" alt="Dark Florian Onepiece">
+                <h3>Dark Florian Onepiece</h3>
+                <p>$95.00</p>
+                <button>Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Section: Polo Shirts -->
+    <div class="category-section">
+        <div class="category-header">
+            <h2>Polo Shirts</h2>
+            <a href="#" class="view-all">View All Products</a>
+        </div>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="wishlist">♡</div>
+                <img src="https://via.placeholder.com/200x200?text=Dark+Green+Polo" alt="Dark Green Polo Shirt">
+                <h3>Dark Green Polo Shirt</h3>
+                <p>$45.00</p>
+                <button>Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <div class="wishlist">♡</div>
+                <img src="https://via.placeholder.com/200x200?text=Navy+Blue+Polo" alt="Navy Blue Polo Shirt">
+                <h3>Navy Blue Polo Shirt</h3>
+                <p>$45.00</p>
+                <button>Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <div class="wishlist">♡</div>
+                <img src="https://via.placeholder.com/200x200?text=White+Polo" alt="White Polo Shirt">
+                <h3>White Polo Shirt</h3>
+                <p>$45.00</p>
+                <button>Add to Cart</button>
+            </div>
+            <div class="product-card">
+                <div class="wishlist">♡</div>
+                <img src="https://via.placeholder.com/200x200?text=Red+Polo" alt="Red Polo Shirt">
+                <h3>Red Polo Shirt</h3>
+                <p>$45.00</p>
+                <button>Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <%-include('../../views/partials/user/footer') %>
+
+   
+</body>
+</html>
