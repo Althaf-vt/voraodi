@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <link rel="stylesheet" href="/user/userHomeStyle.css">
+  <!-- Add SweetAlert2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <%- include('../../views/partials/user/header') %>
+  <section class="auth-section">
+    <div class="auth-container">
+      <h2>Verify OTP</h2>
+      <p class="otp-instruction">Enter the 6-digit OTP sent to your email.</p>
+      <form action="/otp-verification" method="POST" onsubmit="return validateOTPForm()">
+        <input type="hidden" name="email" value="email">
+        <label for="otp">OTP</label>
+        <input type="text" id="otp" name="otp" class="otp-input" maxlength="6" pattern="\d{6}">
+        <button type="submit">Verify OTP</button>
+      </form>
+      <div class="otp-timer">Resend available in <span id="timer">60</span> seconds</div>
+      <p class="resend-otp">
+        <a href="#" id="resend-link" class="disabled" onclick="resendOTP()">Resend OTP</a>
+      </p>
+    </div>
+  </section>
+  <%- include('../../views/partials/user/footer') %>
+
+  <script>
+    // Define timerInterval globally
+    let timerInterval;
+
+    // Timer logic
+    function startTimer(duration) {
+      let time = duration;
+      const timerDisplay = document.getElementById('timer');
+      const resendLink = document.getElementById('resend-link');
+
+      // Clear any existing interval
+      clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        timerDisplay.textContent = time;
+        time--;
+
+        if (time < 0) {
+          clearInterval(timerInterval);
+          timerDisplay.textContent = '0';
+          resendLink.classList.remove('disabled');
+          resendLink.style.pointerEvents = 'auto'; // Enable clicking
+        }
+      }, 1000);
+    }
+
+    // Start the timer when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      startTimer(60); // Start with 60 seconds
+    });
+
+    function validateOTPForm() {
+      const otpInput = document.getElementById('otp').value;
+
+      $.ajax({
+        type: 'POST',
+        url: '/otp-verification', // Ensure the URL matches your backend route
+        data: { otp: otpInput },
+        success: function (response) {
+          if (response.success) {
+            Swal.fire({
+              icon: "success",
+              title: "OTP Verified Successfully",
+              showConfirmButton: false,
+              timer: 1500,
+            }).then(() => {
+              window.location.href = response.redirectUrl;
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: response.message,
+            });
+          }
+        },
+        error: function () {
+          Swal.fire({
+            icon: "error",
+            title: "Invalid OTP",
+            text: "Please try again",
+          });
+        }
+      });
+      return false; // Prevent default form submission
+    }
+
+    // Resend OTP
+    function resendOTP() {
+      const email = document.querySelector('input[name="email"]').value;
+      const resendLink = document.getElementById('resend-link');
+      const timerDisplay = document.getElementById('timer');
+      const otpInput = document.getElementById('otp');
+
+      // Disable resend link during request
+      resendLink.classList.add('disabled');
+      resendLink.style.pointerEvents = 'none';
+
+      $.ajax({
+        type: 'POST',
+        url: '/resend-otp',
+        data: { email },
+        success: function (response) {
+          console.log('Resend OTP Response:', response); // Debug
+          if (response.success) {
+            // Reset timer and OTP input on success
+            clearInterval(timerInterval);
+            timerDisplay.textContent = '60';
+            timerDisplay.classList.remove('expired');
+            otpInput.disabled = false;
+            otpInput.value = ''; // Clear OTP input
+            startTimer(60);
+            Swal.fire({
+              icon: 'success',
+              title: 'OTP Resent Successfully',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: response.message || "An error occurred while resending OTP. Please try again",
+            });
+            // Re-enable resend link on failure
+            resendLink.classList.remove('disabled');
+            resendLink.style.pointerEvents = 'auto';
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error('Resend OTP Error:', xhr.status, error, xhr.responseText); // Debug
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "An error occurred while resending OTP. Please try again",
+          });
+          // Re-enable resend link on failure
+          resendLink.classList.remove('disabled');
+          resendLink.style.pointerEvents = 'auto';
+        }
+      });
+      return false;
+    }
+  </script>
+</body>
+</html>

@@ -3,425 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-commerce UI</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f5f5f5;
-        }
-
-        /* Navigation Bar */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        nav .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-
-        nav ul li {
-            margin: 0 15px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 16px;
-            text-transform: uppercase;
-        }
-
-        nav .nav-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        nav .nav-buttons button {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #333;
-        }
-
-        /* Header Section */
-        .header {
-            text-align: center;
-            padding: 50px 20px;
-            background-color: #e8ecef;
-        }
-
-        .header h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-
-        .header p {
-            font-size: 16px;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Featured Collections Section */
-        .featured-collections {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 40px 20px;
-            background-color: #fff;
-        }
-
-        .collection-card {
-            text-align: center;
-            max-width: 300px;
-        }
-
-        .collection-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .collection-card h3 {
-            margin: 15px 0;
-            font-size: 18px;
-        }
-
-        .collection-card p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .collection-card button {
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        /* Category Section */
-        .category-section {
-            padding: 20px;
-        }
-
-        .category-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .category-section h2 {
-            font-size: 24px;
-            text-transform: uppercase;
-        }
-
-        .category-section .view-all {
-            text-decoration: none;
-            color: #333;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        /* Product Grid */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .product-card {
-            text-align: center;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .product-card h3 {
-            font-size: 14px;
-            margin: 5px 0;
-        }
-
-        .product-card p {
-            font-size: 12px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .product-card button {
-            padding: 6px 12px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .product-card .wishlist {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 16px;
-            color: #666;
-            cursor: pointer;
-        }
-
-        /* Footer Section */
-        footer {
-            background-color: #fff;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
-            border-top: 1px solid #ddd;
-        }
-
-        footer .footer-column {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        footer .footer-column h3 {
-            font-size: 16px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        footer .footer-column p {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        footer .footer-column ul {
-            list-style: none;
-        }
-
-        footer .footer-column ul li {
-            margin-bottom: 10px;
-        }
-
-        footer .footer-column ul li a {
-            text-decoration: none;
-            color: #333;
-            font-size: 14px;
-        }
-
-        footer .footer-column .contact-info {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        footer .footer-column .social-icons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        footer .footer-column .social-icons a {
-            font-size: 20px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        footer .shipping-methods {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        footer .shipping-methods img {
-            height: 30px;
-            filter: grayscale(100%);
-        }
-
-        footer .copyright {
-            width: 100%;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .featured-collections {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .collection-card {
-                max-width: 100%;
-            }
-
-            .product-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            footer {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-
-            footer .shipping-methods {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .product-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>VOGUE - Old Money Menswear</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <link rel="stylesheet" href="/user/userHomeStyle.css">
 </head>
 <body>
+    <%- include('../../views/partials/user/header') %>
 
-        <%-include('../../views/partials/user/header') %>
-
-
-
-    <!-- Header Section -->
-    <div class="header">
-        <h1>Explore Collections</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Fugiat voluptatem cumque veritatis eos voluptates cum iste architecto hic molestias.</p>
+    <!-- Hero Section -->
+    <div class="hero">
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="https://player.vimeo.com/external/488678763.hd.mp4?s=ae0f0a1e7c9e4a58e37e7b7e7c7f7b7e7c7f7b7e&profile_id=174" type="video/mp4">
+        </video>
+        <div class="text-container">
+            <h1 id="typewriter">Forge Your Legacy</h1>
+            <div class="subtitle">Timeless Elegance for the Modern Gentleman</div>
+            <p>Power in Every Thread</p>
+            <button class="cta-button" aria-label="Shop Now">Conquer the Elite</button>
+        </div>
     </div>
 
     <!-- Featured Collections Section -->
     <div class="featured-collections">
-        <div class="collection-card">
-            <img src="https://via.placeholder.com/300x200" alt="Old Money Pants">
-            <h3>Old Money Pants</h3>
-            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
-            <button>Explore</button>
-        </div>
-        <div class="collection-card">
-            <img src="https://via.placeholder.com/300x200" alt="Old Money Shirts">
-            <h3>Old Money Shirts</h3>
-            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
-            <button>Explore</button>
-        </div>
-        <div class="collection-card">
-            <img src="https://via.placeholder.com/300x200" alt="Old Money Polos">
-            <h3>Old Money Polos</h3>
-            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
-            <button>Explore</button>
+        <h2>Signature Collections</h2>
+        <div class="collections-grid">
+            <div class="collection-card">
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Imperial Tailored Blazers">
+                <div class="overlay">
+                    <h3>Imperial Tailored Blazers</h3>
+                    <p>Rule with Authority</p>
+                </div>
+            </div>
+            <div class="collection-card">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Warrior Leather Coats">
+                <div class="overlay">
+                    <h3>Warrior Leather Coats</h3>
+                    <p>Defy the Elements</p>
+                </div>
+            </div>
+            <div class="collection-card">
+                <img src="https://images.unsplash.com/photo-1534030347209-467a5b0ad3e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Centurion Polos">
+                <div class="overlay">
+                    <h3>Centurion Polos</h3>
+                    <p>Lead with Valor</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Category Section: Linen Pants -->
+    <!-- Tailor's Note Section -->
+    <div class="tailors-note">
+        <h2>Tailor's Note</h2>
+        <div class="note">
+            <p>"Pair the Imperial Tailored Blazer with our Legion Linen Trousers for a commanding presence at any gala. Let the deep navy tones reflect your unwavering resolve."</p>
+            <div class="signature">— Master Tailor, VOGUE</div>
+        </div>
+    </div>
+
+    <!-- Legacy Collection Section -->
+    <div class="legacy-collection">
+        <h2>Legacy Collection</h2>
+        <p>Limited Edition - A Tribute to Timeless Valor</p>
+        <div class="countdown" id="countdown">Launching in 5d 12h 30m</div>
+        <div class="legacy-card">
+            <img src="https://images.unsplash.com/photo-1617137968427-8593c4b91a56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Legacy Monarch Suit">
+            <div class="details">
+                <h3>Legacy Monarch Suit</h3>
+                <p>Only 50 pieces available. Crafted for the true elite.</p>
+                <button aria-label="Reserve Legacy Monarch Suit">Reserve Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Section: Linen Trousers -->
     <div class="category-section">
-        <div class="category-header">
-            <h2>Linen Pants</h2>
-            <a href="#" class="view-all">View All Products</a>
-        </div>
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="wishlist">♡</div>
-                <img src="https://via.placeholder.com/200x200?text=Linen+Pants+1" alt="Dark Florish Onepiece">
-                <h3>Dark Florish Onepiece</h3>
-                <p>$95.00</p>
-                <button>Add to Cart</button>
+        <h2>Warrior Linen Trousers</h2>
+        <div class="product-carousel" id="linen-carousel">
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                    <div class="image-container">
+                        <img class="primary-img" src="https://images.unsplash.com/photo-1594633312681-863f110ec2d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Legion Linen Trousers">
+                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Legion Linen Trousers Detail">
+                    </div>
+                    <div class="details">
+                        <h3>Legion Linen Trousers</h3>
+                        <p>$195.00</p>
+                        <button aria-label="Add Legion Linen Trousers to Cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                    <div class="image-container">
+                        <img class="primary-img" src="https://images.unsplash.com/photo-1594633312681-863f110ec2d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Gladiator Linen Trousers">
+                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Gladiator Linen Trousers Detail">
+                    </div>
+                    <div class="details">
+                        <h3>Gladiator Linen Trousers</h3>
+                        <p>$195.00</p>
+                        <button aria-label="Add Gladiator Linen Trousers to Cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                    <div class="image-container">
+                        <img class="primary-img" src="https://images.unsplash.com/photo-1594633312681-863f110ec2d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Vanguard Linen Trousers">
+                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Vanguard Linen Trousers Detail">
+                    </div>
+                    <div class="details">
+                        <h3>Vanguard Linen Trousers</h3>
+                        <p>$195.00</p>
+                        <button aria-label="Add Vanguard Linen Trousers to Cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                    <div class="image-container">
+                        <img class="primary-img" src="https://images.unsplash.com/photo-1594633312681-863f110ec2d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Spartan Linen Trousers">
+                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Spartan Linen Trousers Detail">
+                    </div>
+                    <div class="details">
+                        <h3>Spartan Linen Trousers</h3>
+                        <p>$195.00</p>
+                        <button aria-label="Add Spartan Linen Trousers to Cart">Add to Cart</button>
+                    </div>
+                </div>
             </div>
-            <div class="product-card">
-                <div class="wishlist">♡</div>
-                <img src="https://via.placeholder.com/200x200?text=Linen+Pants+2" alt="Dark Florish Onepiece">
-                <h3>Dark Florish Onepiece</h3>
-                <p>$95.00</p>
-                <button>Add to Cart</button>
-            </div>
-            <div class="product-card">
-                <div class="wishlist">♡</div>
-                <img src="https://via.placeholder.com/200x200?text=Linen+Pants+3" alt="Dark Florish Onepiece">
-                <h3>Dark Florish Onepiece</h3>
-                <p>$95.00</p>
-                <button>Add to Cart</button>
-            </div>
-            <div class="product-card">
-                <div class="wishlist">♡</div>
-                <img src="https://via.placeholder.com/200x200?text=Linen+Pants+4" alt="Dark Florian Onepiece">
-                <h3>Dark Florian Onepiece</h3>
-                <p>$95.00</p>
-                <button>Add to Cart</button>
+            <div class="carousel-controls">
+                <button aria-label="Previous Slide" onclick="slideCarousel('linen-carousel', -1)">❮</button>
+                <button aria-label="Next Slide" onclick="slideCarousel('linen-carousel', 1)">❯</button>
             </div>
         </div>
     </div>
 
-    <!-- Category Section: Polo Shirts -->
+    <!-- Category Section: Polos -->
     <div class="category-section">
-        <div class="category-header">
-            <h2>Polo Shirts</h2>
-            <a href="#" class="view-all">View All Products</a>
-        </div>
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="wishlist">♡</div>
-                <img src="https://via.placeholder.com/200x200?text=Dark+Green+Polo" alt="Dark Green Polo Shirt">
-                <h3>Dark Green Polo Shirt</h3>
-                <p>$45.00</p>
-                <button>Add to Cart</button>
+        <h2>Centurion Polos</h2>
+        <div class="product-carousel" id="polo-carousel">
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                    <div class="image-container">
+                        <img class="primary-img" src="https://images.unsplash.com/photo-1618886614636-8e01c4c860a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Praetor Polo">
+                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Praetor Polo Detail">
+                    </div>
+                    <div class="details">
+                        <h3>Praetor Polo</h3>
+                        <p>$145.00</p>
+                        <button aria-label="Add Praetor Polo to Cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                    <div class="image-container">
+                        <img class="primary-img" src="https://images.unsplash.com/photo-1618886614636-8e01c4c860a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Tribune Polo">
+                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Tribune Polo Detail">
+                    </div>
+                    <div class="details">
+                        <h3>Tribune Polo</h3>
+                        <p>$145.00</p>
+                        <button aria-label="Add Tribune Polo to Cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                    <div class="image-container">
+                        <img class="primary-img" src="https://images.unsplash.com/photo-1618886614636-8e01c4c860a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Legate Polo">
+                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Legate Polo Detail">
+                    </div>
+                    <div class="details">
+                        <h3>Legate Polo</h3>
+                        <p>$145.00</p>
+                        <button aria-label="Add Legate Polo to Cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                    <div class="image-container">
+                        <img class="primary-img" src="https://images.unsplash.com/photo-1618886614636-8e01c4c860a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Dominator Polo">
+                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Dominator Polo Detail">
+                    </div>
+                    <div class="details">
+                        <h3>Dominator Polo</h3>
+                        <p>$145.00</p>
+                        <button aria-label="Add Dominator Polo to Cart">Add to Cart</button>
+                    </div>
+                </div>
             </div>
-            <div class="product-card">
-                <div class="wishlist">♡</div>
-                <img src="https://via.placeholder.com/200x200?text=Navy+Blue+Polo" alt="Navy Blue Polo Shirt">
-                <h3>Navy Blue Polo Shirt</h3>
-                <p>$45.00</p>
-                <button>Add to Cart</button>
-            </div>
-            <div class="product-card">
-                <div class="wishlist">♡</div>
-                <img src="https://via.placeholder.com/200x200?text=White+Polo" alt="White Polo Shirt">
-                <h3>White Polo Shirt</h3>
-                <p>$45.00</p>
-                <button>Add to Cart</button>
-            </div>
-            <div class="product-card">
-                <div class="wishlist">♡</div>
-                <img src="https://via.placeholder.com/200x200?text=Red+Polo" alt="Red Polo Shirt">
-                <h3>Red Polo Shirt</h3>
-                <p>$45.00</p>
-                <button>Add to Cart</button>
+            <div class="carousel-controls">
+                <button aria-label="Previous Slide" onclick="slideCarousel('polo-carousel', -1)">❮</button>
+                <button aria-label="Next Slide" onclick="slideCarousel('polo-carousel', 1)">❯</button>
             </div>
         </div>
     </div>
 
-    <%-include('../../views/partials/user/footer') %>
+    <%- include('../../views/partials/user/footer') %>
 
-   
+    <script>
+        // Typewriter Effect
+        const text = "Forge Your Legacy";
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+
+        // Crest Animation
+        gsap.to(".crest", { opacity: 1, duration: 1.5, delay: 0.5, ease: "power2.out" });
+
+        // Hero Animations
+        gsap.from(".hero .text-container", { opacity: 0, y: 30, duration: 1, delay: 1 });
+        gsap.from(".hero .subtitle", { opacity: 0, y: 20, duration: 1, delay: 1.5 });
+        gsap.from(".hero p", { opacity: 0, y: 20, duration: 1, delay: 2 });
+        gsap.from(".hero .cta-button", { opacity: 0, scale: 0.9, duration: 1, delay: 2.5 });
+
+        // Section Reveal Animations
+        gsap.utils.toArray(".featured-collections, .tailors-note, .legacy-collection, .category-section").forEach(section => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 30,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    end: "bottom 20%",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // Countdown Timer
+        function updateCountdown() {
+            const launchDate = new Date("May 28, 2025 17:07:00 GMT+0530").getTime();
+            const now = new Date().getTime();
+            const distance = launchDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerHTML = `Launching in ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+            if (distance < 0) {
+                document.getElementById("countdown").innerHTML = "Launched!";
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            typeWriter();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        };
+
+        // Carousel Functionality
+        let positions = { 'linen-carousel': 0, 'polo-carousel': 0 };
+        function slideCarousel(carouselId, direction) {
+            const carousel = document.getElementById(carouselId);
+            const grid = carousel.querySelector('.product-grid');
+            const cardWidth = grid.children[0].offsetWidth + 30; // Include margin
+            const totalCards = grid.children.length;
+            positions[carouselId] = Math.min(Math.max(positions[carouselId] + direction, -(totalCards - 2)), 0);
+            grid.style.transform = `translateX(${positions[carouselId] * cardWidth}px)`;
+        }
+
+        // Initialize Tilt.js for Collection Cards
+        VanillaTilt.init(document.querySelectorAll(".collection-card"), {
+            max: 8,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.2
+        });
+    </script>
 </body>
 </html>

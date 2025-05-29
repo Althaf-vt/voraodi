@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="/user/userHomeStyle.css">
+</head>
+<body>
+  <%- include('../../views/partials/user/header') %>
+  <section class="auth-section">
+    <div class="auth-container">
+      <h2>Sign Up</h2>
+      <form id="signup-form" action="/signup" method="POST">
+        <div class="form-field">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name">
+          <span class="error-message" data-field="name"></span>
+        </div>
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email">
+          <span class="error-message" data-field="email"></span>
+        </div>
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password">
+          <span class="error-message" data-field="password"></span>
+        </div>
+        <div class="form-field">
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" name="cPassword">
+          <span class="error-message" data-field="confirm-password"></span>
+        </div>
+        <div class="form-field">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" pattern="\+?[1-9]\d{1,14}" placeholder="+1234567890">
+          <span class="error-message" data-field="phone"></span>
+        </div>
+        <button type="submit" class="submit-btn">Sign Up</button>
+      </form>
+      <div class="auth-divider">or</div>
+      <a href="/auth/google" class="google-signin-btn" onclick="handleGoogleSignUp()">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
+        Sign Up with Google
+      </a>
+      <p class="link">Already have an account? <a href="/signin">Sign In</a></p>
+    </div>
+  </section>
+  <%- include('../../views/partials/user/footer') %>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="/user/google-signin.js"></script>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      clearErrors();
+      let isValid = validateForm();
+
+      if (isValid) {
+        this.submit();
+      }
+    });
+
+    function validateForm() {
+      let isValid = true;
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const phone = document.getElementById('phone').value.trim();
+
+      // Name validation
+      if (name.length < 4) {
+        showError('name', 'Name must be at least 2 characters long');
+        isValid = false;
+      } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(name)) {
+        showError('name', 'Name can only contain letters and single spaces between words');
+        isValid = false;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showError('email', 'Please enter a valid email address');
+        isValid = false;
+      }
+
+      // Password validation
+      if (password.length < 8) {
+        showError('password', 'Password must be at least 8 characters long');
+        isValid = false;
+      } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+        showError('password', 'Password must contain at least one uppercase letter, one lowercase letter, and one number');
+        isValid = false;
+      }
+
+      // Confirm password validation
+      if (password !== confirmPassword) {
+        showError('confirm-password', 'Passwords do not match');
+        isValid = false;
+      }
+
+      // Phone validation
+      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+      if (phone && !phoneRegex.test(phone)) {
+        showError('phone', 'Please enter a valid phone number (e.g., +1234567890)');
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function showError(fieldId, message) {
+      const errorElement = document.querySelector(`.error-message[data-field="${fieldId}"]`);
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    }
+
+    function clearErrors() {
+      const errorElements = document.querySelectorAll('.error-message');
+      errorElements.forEach(element => {
+        element.textContent = '';
+        element.style.display = 'none';
+      });
+    }
+
+    // Real-time validation on input (commented out as in original)
+    /*
+    document.querySelectorAll('#signup-form input').forEach(input => {
+      input.addEventListener('input', function() {
+        clearErrors();
+        validateForm();
+      });
+    });
+    */
+  </script>
+</body>
+</html>

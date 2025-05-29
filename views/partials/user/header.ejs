@@ -1,14 +1,23 @@
-    <!-- Navigation Bar -->
-    <nav>
+<nav>
+    <div class="logo-container">
+        <div class="crest"></div>
         <div class="logo">VOGUE</div>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Collections</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a href="#">About</a></li>
-        </ul>
-        <div class="nav-buttons">
-            <button>♡</button>
-            <button>🛒</button>
+    </div>
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Collections</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">About</a></li>
+    </ul>
+    <div class="nav-buttons">
+        <button aria-label="Add to Wishlist">♡</button>
+        <button aria-label="View Cart">🛒</button>
+        <div class="user-profile-container">
+            <button class="user-profile" aria-label="User Profile">🧑</button>
+            <div class="user-dropdown">
+                <a href="/signin" class="auth-button" aria-label="Sign In">Sign In</a>
+                <a href="/signup" class="auth-button" aria-label="Sign Up">Sign Up</a>
+            </div>
         </div>
-    </nav>
+    </div>
+</nav>
