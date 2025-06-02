@@ -4,24 +4,43 @@ const User = require('../../models/userSchema');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 
-const pageNotFound = async (req,res) =>{
-    try {
-        res.render('page-404');
-    } catch (error) {
-        res.redirect('/pageNotFound');
-    }
-}
+
+// const loadHomepage = async (req,res) =>{
+//     try {
+//         const user = req.session.user;
+//         if(user){
+//             const userData = await User.findOne({_id:user._id});
+//             return res.render("home",{user:userData})
+//         }else{
+//             return res.render('home');
+//         }
+
+//     } catch (error) {
+//         console.log("Home page not found");
+//         res.status(500).send('Server error');
+//     }
+// }
 
 
-const loadHomepage = async (req,res) =>{
+
+
+// Load HomePage
+const loadHomepage = async (req, res) => {
     try {
-        return res.render("home")
+        const user = req.session.user;
+        if (user) {
+            const userData = await User.findOne({ _id: user });
+            return res.render("home", { user: userData });
+        } else {
+            return res.render('home');
+        }
     } catch (error) {
         console.log("Home page not found");
         res.status(500).send('Server error');
     }
-}
+};
 
+// Load Signup
 const loadSignup = async (req,res) =>{
     try {
         return res.render('signup')
@@ -31,7 +50,7 @@ const loadSignup = async (req,res) =>{
     }
 }
 
-// OTP generation
+// OTP Generation
 function generateOtp(){
     return Math.floor(100000 + Math.random()*900000).toString();
 }
@@ -67,7 +86,7 @@ async function sendVerificationEmail(email,otp){
     }
 }
 
-
+// Signup Checks
 const signup = async (req,res) =>{
     try {
         const {name,phone,email,password,cPassword} = req.body;
@@ -80,7 +99,7 @@ const signup = async (req,res) =>{
             return res.render('signup',{message: "User with this email already exists"})
         }
 
-        const otp = generateOtp();
+        const otp = generateOtp();// generate otp
 
         const emailSend = await sendVerificationEmail(email,otp);
 
@@ -109,10 +128,12 @@ const securePassword = async (password) =>{
         return passwordHash
 
     } catch (error) {
-        
+        console.error('Error hashing password:', error);
+        throw new Error('Password hashing failed');
     }
 }
 
+// OTP Verification
 const otpVerification = async (req,res) =>{
     try {
         
@@ -127,6 +148,10 @@ const otpVerification = async (req,res) =>{
             const user= req.session.userData;
             const passwordHash = await securePassword(user.password);
 
+            if (!passwordHash) {
+                throw new Error('Password hashing failed');
+            }
+
             const saveUserData = new User ({
                 name: user.name,
                 email: user.email,
@@ -136,9 +161,9 @@ const otpVerification = async (req,res) =>{
 
             await saveUserData.save();
 
-            req.session.user = saveUserData._id;
+            // req.session.user = saveUserData._id;
 
-            return res.json({success: true, redirectUrl: '/'})
+            return res.json({success: true, redirectUrl: '/signin'})
         }else{
             return res.status(400).json({success:false,message:'Invalid OTP, Please try again'});
         }
@@ -177,14 +202,102 @@ const resendOtp = async (req,res)=>{
     }
 }
 
+// Load Signing
 const loadSignin = async (req,res) =>{
     try {
-        return res.render('signin')
+        if(!req.session.user){
+        return res.render('signin');
+        }else{
+            res.redirect('/');
+        }
     } catch (error) {
+        res.redirect('/pageNotFound')
         console.log("Signin page not loading",error);
         res.status(500).send('Server Error');
     }
 }
+// Signin Checks
+const signin = async (req,res) =>{
+    try {
+        const {email,password} = req.body;
+
+        if (!email || !password) {
+            return res.render('signin', { message: 'Email and password are required' });
+        }
+
+        const findUser = await User.findOne({isAdmin:0,email:email});
+
+        if(!findUser){
+            return res.render('signin',{message:"User not found"});
+        }
+        if(findUser.isBlocked){
+            return res.render("signin",{message:"User is blocked by admin"});
+        }
+        if (!findUser.password) {
+            console.error('No password found for user:', email);
+            return res.render('signin', { message: 'User account is corrupted. Please contact support.' });
+        }
+        const passwordMatch = await bcrypt.compare(password,findUser.password);
+
+        if(!passwordMatch){
+            return res.render('signin',{message:"Incorrect Password"});
+        }
+        req.session.user = findUser._id;
+
+        res.redirect('/')
+    } catch (error) {
+        console.error("login error",error);
+        res.render("signin",{message:"signin failed, please try again"})
+    }
+}
+
+// Logout User
+const logout = async (req,res)=>{
+    try {
+        
+        req.session.destroy((err)=>{
+            if(err){
+                console.log("Session destruction error",err.message);
+                return res.redirect('/pageNotFound');
+            }
+            return res.redirect('/signin')
+        })
+
+    } catch (error) {
+        console.log('Logout error',error);
+        res.redirect('/pageNotFound');
+    }
+}
+
+// Page Not Found
+const pageNotFound = async (req,res) =>{
+    try {
+        res.render('page-404');
+    } catch (error) {
+        res.redirect('/pageNotFound');
+    }
+}
+
+
+
+
+// Middleware to check session and set locals.user
+// const setUserLocals = async (req, res, next) => {
+//     try {
+//         if (req.session.user) {
+//             const userData = await User.findOne({ _id: req.session.user });
+//             res.locals.user = userData || null;
+//         } else {
+//             res.locals.user = null;
+//         }
+//         next();
+//     } catch (error) {
+//         console.error("Error in setUserLocals middleware:", error);
+//         res.locals.user = null;
+//         next();
+//     }
+// };
+
 
 module.exports = {
     loadHomepage,
@@ -193,6 +306,9 @@ module.exports = {
     loadSignin,
     signup,
     otpVerification,
-    resendOtp
+    resendOtp,
+    signin,
+    logout,
+    // setUserLocals
     // loadOtp
 }

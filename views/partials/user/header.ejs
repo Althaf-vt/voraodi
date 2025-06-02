@@ -15,8 +15,13 @@
         <div class="user-profile-container">
             <button class="user-profile" aria-label="User Profile">🧑</button>
             <div class="user-dropdown">
-                <a href="/signin" class="auth-button" aria-label="Sign In">Sign In</a>
-                <a href="/signup" class="auth-button" aria-label="Sign Up">Sign Up</a>
+                <% if (locals.user) { %>
+                    <a href="/userProfile" class="auth-button logged-in-button">Profile</a>
+                    <a href="/logout" class="auth-button logged-in-button">Logout</a>
+                <% } else { %>
+                    <a href="/signin" class="auth-button" aria-label="Sign In">Sign In</a>
+                    <a href="/signup" class="auth-button" aria-label="Sign Up">Sign Up</a>
+                <% } %>
             </div>
         </div>
     </div>

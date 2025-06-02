@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <!-- Font Awesome CDN for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Use correct CSS path -->
+  <link rel="stylesheet" href="/admin/adminStyle.css" />
+</head>
+<body>
+  <!-- Navbar with Brand Name and Profile Icon -->
+  <nav class="top-nav">
+    <div class="brand-container">
+      <div class="logo">VOGUE</div>
+    </div>
+    <div class="nav-right">
+      <button class="sidebar-toggle" aria-label="Toggle Sidebar">
+        <span class="toggle-icon">☰</span>
+      </button>
+      <div class="profile-container">
+        <i class="fas fa-user-circle profile-icon" aria-label="Profile"></i>
+        <div class="profile-dropdown">
+          <a href="/admin/profile" class="dropdown-item">Profile</a>
+          <a href="/admin/logout" class="dropdown-item">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar">
+    <ul class="sidebar-menu">
+      <li><a href="/admin/dashboard" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+      <li><a href="/admin/customers"><i class="fas fa-users"></i> Customer</a></li>
+      <li><a href="/admin/category"><i class="fas fa-th-large"></i> Category</a></li>
+      <li><a href="/admin/products"><i class="fas fa-boxes"></i> Products</a></li>
+      <li><a href="/admin/add-product"><i class="fas fa-plus-square"></i> Add Product</a></li>
+      <li><a href="/admin/coupons"><i class="fas fa-ticket-alt"></i> Coupon</a></li>
+      <li><a href="/admin/offers"><i class="fas fa-tags"></i> Offer</a></li>
+      <li><a href="/admin/add-offer"><i class="fas fa-plus-circle"></i> Add Offer</a></li>
+      <li><a href="/admin/banners"><i class="fas fa-image"></i> Banner</a></li>
+      <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+    </ul>
+  </div>
+
+  <!-- Sidebar Backdrop -->
+  <div class="sidebar-backdrop"></div>
+
+  <!-- Main content wrapper -->
+  <div class="main-content"></div>
+
+  <!-- JavaScript for sidebar toggle -->
+  <script>
+    const sidebar = document.querySelector(".sidebar");
+    const toggleBtn = document.querySelector(".sidebar-toggle");
+    const mainContent = document.querySelector(".main-content");
+    const backdrop = document.querySelector(".sidebar-backdrop");
+
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+      mainContent.classList.toggle("expanded");
+      backdrop.classList.toggle("active");
+    });
+
+    // Close sidebar when clicking on backdrop
+    backdrop.addEventListener("click", () => {
+      sidebar.classList.remove("collapsed");
+      mainContent.classList.remove("expanded");
+      backdrop.classList.remove("active");
+    });
+  </script>
+
+  <!-- Optional: Custom styling -->
+  <style>
+    .sidebar-menu li a i {
+      margin-right: 10px;
+      min-width: 20px;
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOGUE - Error</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="/admin/adminStyle.css">
+</head>
+<body>
+  <!-- Include the Header (Navbar and Sidebar) -->
+  <%- include('../../views/partials/admin/header') %>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-content">
+    <section class="error-section">
+      <div class="error-container">
+        <h2 id="typewriter">Access Denied</h2>
+        <div class="subtitle">An Error Occurred in the VOGUE Dominion</div>
+        <p class="error-message">Something went wrong. Please try again or return to the dashboard.</p>
+        <button class="return-btn" onclick="window.location.href='/admin/'">Return to Dashboard</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Typewriter Effect
+    const text = "Access Denied";
+    let i = 0;
+    function typeWriter() {
+      if (i < text.length) {
+        document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
+        i++;
+        setTimeout(typeWriter, 100);
+      }
+    }
+
+    // Animations
+    gsap.from(".error-container", { opacity: 0, y: 50, duration: 1, delay: 0.5 });
+    gsap.from(".subtitle", { opacity: 0, y: 20, duration: 1, delay: 1 });
+    gsap.from(".error-message", { opacity: 0, y: 20, duration: 1, delay: 1.5 });
+    gsap.from(".return-btn", { opacity: 0, scale: 0.9, duration: 1, delay: 2 });
+
+    // Initialize
+    window.onload = function() {
+      document.getElementById("typewriter").innerHTML = "";
+      typeWriter();
+    };
+  </script>
+</body>
+</html>

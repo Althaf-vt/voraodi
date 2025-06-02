@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOGUE - Admin Command Access</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/adminStyle.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+</head>
+<body>
+  <section class="auth-section">
+    <div class="auth-container">
+      <h2 id="typewriter">Admin Command<br>Access</h2>
+      <div class="subtitle">Secure Entry to the VOGUE Dominion</div>
+      <form id="admin-signin-form" action="/admin/signin" method="POST">
+        <div class="form-field">
+          <label for="email">Admin Email</label>
+          <input type="email" id="email" name="email" required>
+          <span class="error-message" data-field="email"></span>
+        </div>
+        <div class="form-field">
+          <label for="password">Master Key</label>
+          <input type="password" id="password" name="password" required>
+          <span class="error-message" data-field="password"></span>
+        </div>
+        <% if (locals.message && message.length > 0) { %>
+          <div class="alert alert-danger text-center">
+            <%= message %>
+          </div>
+        <% } %>
+        <button type="submit" class="submit-btn">Grant Access</button>
+      </form>
+      <p class="link">Contact the VOGUE Council for access issues.</p>
+    </div>
+  </section>
+
+  <script>
+    // Typewriter Effect
+    const text = "Admin Command Access"; // Plain text for typing
+    let i = 0;
+    function typeWriter() {
+      if (i < text.length) {
+        document.getElementById("typewriter").innerHTML = text.substring(0, i + 1).replace("Access", "<br>Access");
+        i++;
+        setTimeout(typeWriter, 100);
+      } else {
+        document.getElementById("typewriter").innerHTML = "Admin Command<br>Access"; // Ensure final text has break
+      }
+    }
+
+    // Animations
+    gsap.from(".auth-container", { opacity: 0, y: 50, duration: 1, delay: 0.5 });
+    gsap.from(".subtitle", { opacity: 0, y: 20, duration: 1, delay: 1 });
+    gsap.from(".form-field", { opacity: 0, y: 20, stagger: 0.2, duration: 1, delay: 1.5 });
+    gsap.from(".submit-btn", { opacity: 0, scale: 0.9, duration: 1, delay: 2 });
+
+    // Initialize
+    window.onload = function() {
+      document.getElementById("typewriter").innerHTML = ""; // Clear initial content
+      typeWriter();
+    };
+  </script>
+  <script src="/admin/admin-signin.js"></script>
+</body>
+</html>

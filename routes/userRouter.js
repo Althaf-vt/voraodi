@@ -9,14 +9,17 @@ router.get('/signup',userController.loadSignup);
 router.post('/signup',userController.signup);
 router.post('/otp-verification',userController.otpVerification)
 router.post('/resend-otp',userController.resendOtp)
+
+
 router.get('/signin',userController.loadSignin);
+router.post('/signin',userController.signin)
 
 router.get('/auth/google',passport.authenticate('google',{scope:['profile','email']}));
 router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/signup'}),(req,res) =>{
     res.redirect('/')
 });
 
-
+router.get('/logout',userController.logout);
 router.get('/pageNotFound',userController.pageNotFound)
 
 module.exports = router;
