@@ -27,7 +27,8 @@ const bcrypt = require('bcrypt');
 // Load HomePage
 const loadHomepage = async (req, res) => {
     try {
-        const user = req.session.user;
+        // Get the logged-in user ID from session (normal login) or from Passport (Google login)
+        const user = req.session.user || (req.user && req.user._id);
         if (user) {
             const userData = await User.findOne({ _id: user });
             return res.render("home", { user: userData });
@@ -35,7 +36,7 @@ const loadHomepage = async (req, res) => {
             return res.render('home');
         }
     } catch (error) {
-        console.log("Home page not found");
+        console.log("Home page not found",error);
         res.status(500).send('Server error');
     }
 };
@@ -94,6 +95,7 @@ const signup = async (req,res) =>{
             return res.render('signup',{message: "Password do not match"});
         }
 
+        // checkig user exist or not
         const findUser = await User.findOne({email});
         if(findUser){
             return res.render('signup',{message: "User with this email already exists"})
@@ -139,9 +141,9 @@ const otpVerification = async (req,res) =>{
         
         const {otp} = req.body;
         const userOtp = req.session.userOtp;
-        console.log(otp);
+        // console.log(otp);
 
-        console.log(`session otp ${userOtp}`)
+        // console.log(`session otp ${userOtp}`)
         
 
         if(otp===userOtp){
@@ -203,19 +205,24 @@ const resendOtp = async (req,res)=>{
 }
 
 // Load Signing
-const loadSignin = async (req,res) =>{
+const loadSignin = async (req, res) => {
     try {
-        if(!req.session.user){
-        return res.render('signin');
-        }else{
+        if (!req.session.user) {
+            // Get any failure messages from passport (Google OAuth)
+            const messages = req.session.messages || [];
+            req.session.messages = []; // clear messages after reading
+
+            return res.render('signin', { message: messages[0] || '' });
+        } else {
             res.redirect('/');
         }
     } catch (error) {
-        res.redirect('/pageNotFound')
-        console.log("Signin page not loading",error);
+        res.redirect('/pageNotFound');
+        console.log("Signin page not loading", error);
         res.status(500).send('Server Error');
     }
-}
+};
+
 // Signin Checks
 const signin = async (req,res) =>{
     try {
@@ -225,7 +232,7 @@ const signin = async (req,res) =>{
             return res.render('signin', { message: 'Email and password are required' });
         }
 
-        const findUser = await User.findOne({isAdmin:0,email:email});
+        const findUser = await User.findOne({isAdmin:false,email:email});
 
         if(!findUser){
             return res.render('signin',{message:"User not found"});
@@ -280,25 +287,6 @@ const pageNotFound = async (req,res) =>{
 
 
 
-
-// Middleware to check session and set locals.user
-// const setUserLocals = async (req, res, next) => {
-//     try {
-//         if (req.session.user) {
-//             const userData = await User.findOne({ _id: req.session.user });
-//             res.locals.user = userData || null;
-//         } else {
-//             res.locals.user = null;
-//         }
-//         next();
-//     } catch (error) {
-//         console.error("Error in setUserLocals middleware:", error);
-//         res.locals.user = null;
-//         next();
-//     }
-// };
-
-
 module.exports = {
     loadHomepage,
     pageNotFound,
@@ -309,6 +297,5 @@ module.exports = {
     resendOtp,
     signin,
     logout,
-    // setUserLocals
-    // loadOtp
+   
 }

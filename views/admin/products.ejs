@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOGUE - Product Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+  <link rel="stylesheet" href="/admin/productListStyle.css?v=<%= new Date().getTime() %>">
+</head>
+<body>
+  <!-- Include the Header (Navbar and Sidebar) -->
+  <%- include('../../views/partials/admin/header') %>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-content">
+    <!-- Product Management Header -->
+    <div class="product-management-header">
+      <div class="text-container">
+        <h1 id="typewriter">Product Management</h1>
+        <div class="subtitle">Curate VOGUE’s Collection</div>
+        <p>Administer with Precision</p>
+      </div>
+    </div>
+
+    <!-- Product List Section -->
+    <div class="product-list">
+      <h2>Product List</h2>
+      <div class="add-product-container">
+        <button class="action-btn add-product-btn" aria-label="Add New Product">
+          <a href="/admin/addProduct">Add Product</a>
+        </button>
+      </div>
+      <div class="products-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Regular Price</th>
+              <th>Sale Price</th>
+              <th>Offer Price</th>
+              <th>Offer</th>
+              <th>Qty</th>
+              <th>Block/Unblock</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (data && data.length > 0) { %>
+              <% for(let i = data.length - 1; i >= 0; i--) { %>
+                <tr>
+                  <td>
+                    <img src="<%= data[i].productImage && data[i].productImage.length > 0 ? data[i].productImage[0] : '/images/placeholder.jpg' %>" alt="<%= data[i].productName || 'Product' %>" class="product-image">
+                  </td>
+                  <td><%= data[i].productName || 'N/A' %></td>
+                  <td><%= data[i].category && data[i].category.name ? data[i].category.name : 'N/A' %></td>
+                  <td>$<%= typeof data[i].regularPrice === 'number' ? data[i].regularPrice.toFixed(2) : 'N/A' %></td>
+                  <td>$<%= typeof data[i].salePrice === 'number' ? data[i].salePrice.toFixed(2) : 'N/A' %></td>
+                  <td>$<%= typeof data[i].offerPrice === 'number' ? data[i].offerPrice.toFixed(2) : 'N/A' %></td>
+                  <td>
+                    <% if (typeof data[i].offerPrice === 'number' && data[i].offerPrice > 0) { %>
+                      <button class="action-btn remove-offer-btn" aria-label="Remove Offer">
+                        <a href="/admin/removeOffer?id=<%= data[i]._id || '' %>">Remove Offer</a>
+                      </button>
+                    <% } else { %>
+                      <button class="action-btn add-offer-btn" aria-label="Add Offer">
+                        <a href="/admin/addOffer?id=<%= data[i]._id || '' %>">Add Offer</a>
+                      </button>
+                    <% } %>
+                  </td>
+                  <td><%= typeof data[i].quantity === 'number' ? data[i].quantity : 'N/A' %></td>
+                  <td>
+                    <% if (data[i].isBlocked === false) { %>
+                      <button class="action-btn block-btn" aria-label="Block Product">
+                        <a href="/admin/blockProduct?id=<%= data[i]._id || '' %>">Block</a>
+                      </button>
+                    <% } else { %>
+                      <button class="action-btn unblock-btn" aria-label="Unblock Product">
+                        <a href="/admin/unblockProduct?id=<%= data[i]._id || '' %>">Unblock</a>
+                      </button>
+                    <% } %>
+                  </td>
+                  <td>
+                    <span class="status <%= data[i].isBlocked ? 'blocked' : 'active' %>">
+                      <%= data[i].isBlocked ? 'Blocked' : 'Active' %>
+                    </span>
+                  </td>
+                  <td>
+                    <button class="action-btn edit-btn" aria-label="Edit Product">
+                      <a href="/admin/editProduct?id=<%= data[i]._id || '' %>">Edit</a>
+                    </button>
+                    <button class="action-btn delete-btn" aria-label="Delete Product">
+                      <a href="/admin/deleteProduct?id=<%= data[i]._id || '' %>">Delete</a>
+                    </button>
+                  </td>
+                </tr>
+              <% } %>
+            <% } else { %>
+              <tr>
+                <td colspan="11">No products found.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination Section -->
+    <div class="pagination">
+      <nav aria-label="Page navigation">
+        <ul class="pagination-list">
+          <% if (typeof totalPages === 'number' && totalPages > 0) { %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+              </li>
+            <% } %>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    // Typewriter Effect
+    const text = "Product Management";
+    let i = 0;
+    function typeWriter() {
+      if (i < text.length) {
+        document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
+        i++;
+        setTimeout(typeWriter, 100);
+      }
+    }
+
+    // Section Reveal Animation
+    gsap.utils.toArray(".product-list").forEach(section => {
+      gsap.from(section, {
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        scrollTrigger: {
+          trigger: section,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none none"
+        }
+      });
+    });
+
+    // Initialize
+    window.onload = function() {
+      typeWriter();
+    };
+  </script>
+</body>
+</html>

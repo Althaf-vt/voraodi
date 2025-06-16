@@ -10,10 +10,6 @@ const productSchema = new Schema({
         type: String,
         required: true
     },
-    brand: {
-        type: String,
-        required: true
-    },
     category: {
         type: Schema.Types.ObjectId,
         ref: "Category",
@@ -56,6 +52,5 @@ const productSchema = new Schema({
 },{timestamps: true})
 
 
-const Product = mongoose.model("Product",productSchema);
-
+const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 module.exports = Product;
