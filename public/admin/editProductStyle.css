@@ -1,0 +1,356 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  background-color: #f5f5e8;
+  overflow-x: hidden;
+}
+
+/* Product Management Header */
+.product-management-header {
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(rgba(26, 37, 47, 0.9), rgba(47, 58, 68, 0.9)), url(https://www.transparenttextures.com/patterns/black-linen.png);
+  color: #f5f5e8;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-management-header .text-container {
+  padding: 20px;
+}
+
+.product-management-header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 48px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  margin-bottom: 10px;
+  white-space: nowrap;
+}
+
+.product-management-header .subtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-style: italic;
+  color: #c9a022;
+  margin-bottom: 10px;
+}
+
+.product-management-header p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+/* Edit Product Section */
+.edit-product-section {
+  padding: 60px 20px;
+  background: linear-gradient(135deg, #1a252f, #2f3a44);
+  color: #f5f5e8;
+  text-align: center;
+}
+
+.edit-product-section h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 36px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+form {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(255, 255, 245, 0.9);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #1a252f;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(201, 160, 34, 0.2);
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #1a252f;
+  background-color: #f5f5e8;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #c9a022;
+}
+
+.current-images {
+  margin-top: 10px;
+}
+
+.current-images p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #1a252f;
+}
+
+.product-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin: 5px;
+  border: 1px solid rgba(201, 160, 34, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.action-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #c9a022, #a3821b);
+  color: #1a252f;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #004d00, #1a661a);
+  color: #f5f5e8;
+  transform: scale(1.05);
+}
+
+.cancel-btn {
+  background: linear-gradient(135deg, #ff4040, #cc3333);
+  color: #f5f5e8;
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(135deg, #cc3333, #ff4040);
+  color: #f5f5e8;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .product-management-header h1 {
+    font-size: 36px;
+  }
+
+  .product-management-header .subtitle {
+    font-size: 20px;
+  }
+
+  .product-management-header p {
+    font-size: 14px;
+  }
+
+  .edit-product-section h2 {
+    font-size: 30px;
+  }
+
+  .action-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-management-header {
+    height: 50vh;
+  }
+
+  .product-management-header h1 {
+    font-size: 30px;
+  }
+
+  .product-management-header .subtitle {
+    font-size: 18px;
+  }
+
+  .product-management-header p {
+    font-size: 12px;
+  }
+
+  .edit-product-section h2 {
+    font-size: 26px;
+  }
+
+  form {
+    padding: 15px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .action-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .product-image {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-management-header {
+    height: 40vh;
+  }
+
+  .product-management-header h1 {
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+
+  .product-management-header .subtitle {
+    font-size: 16px;
+  }
+
+  .product-management-header p {
+    font-size: 10px;
+  }
+
+  .edit-product-section h2 {
+    font-size: 22px;
+  }
+
+  .form-group label {
+    font-size: 10px;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 10px;
+    padding: 6px;
+  }
+
+  .action-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+
+  .product-image {
+    width: 40px;
+    height: 40px;
+  }
+}
+.image-container {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+.product-image, .new-image {
+    object-fit: cover;
+    position: relative;
+}
+.image-actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.remove-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ff0000;
+    color: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.crop-icon {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    color: #000;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 3px;
+    padding: 2px;
+}
+.new-images-preview {
+    margin-top: 10px;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(201, 160, 34, 0.2); /* Matching gold border with opacity */
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #1a252f;
+    background-color: #f5f5e8; /* Matching background color */
+    transition: border-color 0.3s ease;
+    resize: vertical; /* Allow vertical resizing only */
+    min-height: 100px; /* Suitable height for description */
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #c9a022; /* Matching focus border color */
+}

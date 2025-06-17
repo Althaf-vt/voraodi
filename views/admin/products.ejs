@@ -8,6 +8,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
   <link rel="stylesheet" href="/admin/productListStyle.css?v=<%= new Date().getTime() %>">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 </head>
 <body>
   <!-- Include the Header (Navbar and Sidebar) -->
@@ -56,31 +60,39 @@
                   <td>
                     <img src="<%= data[i].productImage && data[i].productImage.length > 0 ? data[i].productImage[0] : '/images/placeholder.jpg' %>" alt="<%= data[i].productName || 'Product' %>" class="product-image">
                   </td>
-                  <td><%= data[i].productName || 'N/A' %></td>
-                  <td><%= data[i].category && data[i].category.name ? data[i].category.name : 'N/A' %></td>
-                  <td>$<%= typeof data[i].regularPrice === 'number' ? data[i].regularPrice.toFixed(2) : 'N/A' %></td>
-                  <td>$<%= typeof data[i].salePrice === 'number' ? data[i].salePrice.toFixed(2) : 'N/A' %></td>
-                  <td>$<%= typeof data[i].offerPrice === 'number' ? data[i].offerPrice.toFixed(2) : 'N/A' %></td>
+                  <td><%=data[i].productName%></td>
+                  <td><%=data[i].category.name%></td>
+                  <td><%=data[i].regularPrice%></td>
+                  <td><%=data[i].salePrice%></td>
                   <td>
-                    <% if (typeof data[i].offerPrice === 'number' && data[i].offerPrice > 0) { %>
-                      <button class="action-btn remove-offer-btn" aria-label="Remove Offer">
-                        <a href="/admin/removeOffer?id=<%= data[i]._id || '' %>">Remove Offer</a>
+                    <%if(locals.data[i].productOffer){%>
+                      <%=data[i].productOffer%>
+                      <%}else{%>
+                        0%
+                        <%}%>
+                  </td>
+                  <td>
+                    <% if (locals.data[i].productOffer===0) { %>
+                      <button class="action-btn add-offer-btn" aria-label="Add Offer" onclick="addOffer('<%=data[i]._id%>')">
+                        <a href="#">Add Offer</a>
                       </button>
                     <% } else { %>
-                      <button class="action-btn add-offer-btn" aria-label="Add Offer">
-                        <a href="/admin/addOffer?id=<%= data[i]._id || '' %>">Add Offer</a>
+                      <button class="action-btn remove-offer-btn" aria-label="Remove Offer" onclick="removeOffer('<%=data[i]._id%>')">
+                        <a href="#">Remove Offer</a>
                       </button>
                     <% } %>
                   </td>
-                  <td><%= typeof data[i].quantity === 'number' ? data[i].quantity : 'N/A' %></td>
+                  <!-- Quantity -->
+                  <td><%=data[i].quantity%></td>
+                  <!-- Block & Unblock -->
                   <td>
                     <% if (data[i].isBlocked === false) { %>
                       <button class="action-btn block-btn" aria-label="Block Product">
-                        <a href="/admin/blockProduct?id=<%= data[i]._id || '' %>">Block</a>
+                        <a href="/admin/blockProduct?id=<%= data[i]._id%>">Block</a>
                       </button>
                     <% } else { %>
                       <button class="action-btn unblock-btn" aria-label="Unblock Product">
-                        <a href="/admin/unblockProduct?id=<%= data[i]._id || '' %>">Unblock</a>
+                        <a href="/admin/unblockProduct?id=<%= data[i]._id%>">Unblock</a>
                       </button>
                     <% } %>
                   </td>
@@ -91,10 +103,10 @@
                   </td>
                   <td>
                     <button class="action-btn edit-btn" aria-label="Edit Product">
-                      <a href="/admin/editProduct?id=<%= data[i]._id || '' %>">Edit</a>
+                      <a href="/admin/editProduct?id=<%= data[i]._id%>">Edit</a>
                     </button>
                     <button class="action-btn delete-btn" aria-label="Delete Product">
-                      <a href="/admin/deleteProduct?id=<%= data[i]._id || '' %>">Delete</a>
+                      <a href="/admin/deleteProduct?id=<%= data[i]._id%>">Delete</a>
                     </button>
                   </td>
                 </tr>
@@ -156,6 +168,71 @@
     window.onload = function() {
       typeWriter();
     };
+
+    async function addOffer(productId){
+      const {value:amount} = await Swal.fire({
+        title: 'Offer in percentage',
+        input: 'number',
+        inputLabel: 'percentage',
+        inputPlaceholder: '%'
+      })
+      $.ajax({
+        url:'/admin/addProductOffer',
+        method:'post',
+        data:{
+          percentage: amount,
+          productId: productId
+        },
+        success:(response)=>{
+          if(response.status === true){
+              Swal.fire('Success', 'The offer has been added', 'success').then(() => {
+                location.reload()
+              })
+          }else{
+            alert('failed')
+          }
+        }
+      })
+    }
+
+    async function removeOffer(productId) {
+      try {
+        Swal.fire({
+          title: 'Remove offer',
+          text: 'Are you sure you want to remove this offer',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: 'd33',
+          confirmButtonText: 'Yes,remove it!',
+          timer: 5000,
+          timerProgressBar: true,
+
+        }).then(async(result)=>{
+          if(result.isConfirmed){
+            $.ajax({
+              url: '/admin/removeProductOffer',
+              method: 'post',
+              data: {
+                productId: productId,
+              },
+              success: (response)=>{
+                if(response.status===true){
+                  Swal.fire("Removed!",'The offer has been removed',"success");
+                  location.reload()
+                }else if(response.status===false){
+                  Swal.fire("Failed");
+                }else{
+                  alert('Failed')
+                }
+              }
+            })
+          }
+        })
+      } catch (error) {
+        console.error(error);
+      }
+    }
   </script>
 </body>
 </html>

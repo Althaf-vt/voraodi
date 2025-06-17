@@ -94,12 +94,7 @@
                                 >
                             <div id="salePrice-error" class="error-message"></div>
                         </div>
-                        <div class="form-field">
-                            <label for="productOffer">Product Offer (%)</label>
-                            <input type="number" id="productOffer" name="productOffer" min="0"
-                                max="100" value="0">
-                            <div id="productOffer-error" class="error-message"></div>
-                        </div>
+                        
                     </div>
 
                     <!-- Row 4: Stock and Color -->
@@ -366,10 +361,16 @@
                 isValid = false;
             }
 
-            if (parseFloat(price) <= parseFloat(salePrice)) {
-                displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
+            // if (parseFloat(price) <= parseFloat(salePrice)) {
+            //     displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
+            //     isValid = false;
+            // }
+
+            if (parseFloat(salePrice) > parseFloat(price)) {
+                displayErrorMessage('regularPrice-error', 'Sale price cannot be greater than regular price.');
                 isValid = false;
             }
+
    
             if (quantity.trim() === '') {
                 displayErrorMessage('quantity-error', 'Please enter a quantity.');

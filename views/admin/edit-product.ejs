@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOGUE - Edit Product</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <link rel="stylesheet" href="/admin/editProductStyle.css?v=<%= new Date().getTime() %>">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <!-- Include the Header (Navbar and Sidebar) -->
+  <%- include('../../views/partials/admin/header') %>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-content">
+    <!-- Edit Product Header -->
+    <div class="product-management-header">
+      <div class="text-container">
+        <h1 id="typewriter">Edit Product</h1>
+        <div class="subtitle">Refine VOGUE’s Collection</div>
+        <p>Update with Elegance</p>
+      </div>
+    </div>
+
+    <!-- Edit Product Form Section -->
+    <div class="edit-product-section">
+      <h2>Edit Product Details</h2>
+      <form id="editProductForm" action="/admin/editProduct/<%=product._id%>" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <input type="hidden" name="productId" value="<%= product._id %>">
+
+        <!-- Product Name -->
+        <div class="form-group">
+          <label for="productName">Product Name</label>
+          <input type="text" id="productName" name="productName" value="<%= product.productName %>" required>
+        </div>
+
+        <!-- Description field -->
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="4" required><%= product.description || '' %></textarea>
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select id="category" name="category" required>
+            <% for (let i = 0; i < cat.length; i ++){%>
+                <option value="<%=cat[i]._id%>" <%= product.category.toString() === cat[i]._id.toString() ? 'selected' : '' %>>
+                    <%=cat[i].name%>
+                </option>
+                <%}%>
+          </select>
+        </div>
+
+        <!-- Color -->
+        <div class="form-group">
+          <label for="color">Color</label>
+          <input type="text" id="color" name="color" value="<%= product.color || '' %>" required>
+        </div>
+
+        <!-- Regular Price -->
+        <div class="form-group">
+          <label for="regularPrice">Regular Price</label>
+          <input type="number" id="regularPrice" name="regularPrice" value="<%= product.regularPrice %>" step="0.01" required>
+        </div>
+
+        <!-- Sale Price -->
+        <div class="form-group">
+          <label for="salePrice">Sale Price</label>
+          <input type="number" id="salePrice" name="salePrice" value="<%= product.salePrice %>" step="0.01" required>
+        </div>
+
+        <!-- Quantity -->
+        <div class="form-group">
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" name="quantity" value="<%= product.quantity %>" required>
+        </div>
+
+        <!-- Product Images -->
+        <div class="form-group">
+          <label for="productImages">Product Images</label>
+          <input type="file" id="productImages" name="productImages" multiple accept="image/*">
+          <div class="new-images-preview" id="newImagesPreview"></div>
+          <div class="current-images">
+            <p>Current Images:</p>
+            <% if (product.productImage && product.productImage.length > 0) { %>
+              <% for (let i = 0; i < product.productImage.length; i++) { %>
+                <div class="image-container" id="image-container-<%= i %>">
+                  <input type="hidden" name="existingImages" value="<%= product.productImage[i] %>">
+                  <img src="<%= product.productImage[i] %>" alt="Product Image" class="product-image" style="width: 80px; height: 100px; border-radius: 5px;">
+                  <div class="image-actions">
+                    <span class="crop-icon" onclick="openCropperForExisting('<%= product.productImage[i] %>', '<%= i %>')">⌗</span>
+                    <span class="remove-icon" onclick="deleteSingleImage('<%= product.productImage[i] %>', '<%= product._id %>')">×</span>
+                  </div>
+                </div>
+              <% } %>
+            <% } else { %>
+              <p>No images uploaded.</p>
+            <% } %>
+          </div>
+          <!-- Cropper Modal -->
+          <div id="cropperModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border-radius: 10px; max-width: 600px;">
+              <img id="cropperImage" style="max-width: 100%;">
+              <div style="margin-top: 10px; text-align: center;">
+                <button type="button" id="cropButton" class="action-btn submit-btn">Crop & Save</button>
+                <button type="button" id="cancelCropButton" class="action-btn cancel-btn">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button type="submit" class="action-btn submit-btn">Update Product</button>
+          <button type="button" class="action-btn cancel-btn" onclick="window.location.href='/admin/products'">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+function validateForm() {
+    console.log("validate form");
+    clearErrorMessages();
+    const name = document.getElementsByName('productName')[0].value;
+    const price = document.getElementsByName('regularPrice')[0].value;
+    const saleprice = document.getElementsByName('salePrice')[0].value;
+    const color = document.getElementsByName('color')[0].value;
+    const category = document.getElementsByName('category')[0].value;
+    const quantity = document.getElementsByName('quantity')[0].value;
+    const existingImages = document.getElementsByName('existingImages');
+    const totalImages = existingImages.length + selectedImages.length;
+    let isValid = true;
+
+    if (name.trim() === "") {
+        displayErrorMessage('productName-error', 'Please enter a product name.');
+        isValid = false;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
+        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+        isValid = false;
+    }
+    if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+        isValid = false;
+    }
+
+    if (color.trim() === "") {
+        displayErrorMessage('color-error', 'Please enter a color.');
+        isValid = false;
+    }
+
+    if (parseInt(quantity) < 0) {
+        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        isValid = false;
+    }
+
+    // Edited: Updated image validation to show a more prominent message using SweetAlert
+    if (totalImages < 3) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Image Requirement Not Met',
+            text: 'Minimum 3 images required.',
+        });
+        isValid = false;
+    }
+    if (totalImages > 4) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Too Many Images',
+            text: 'You can only upload a maximum of 4 images.',
+        });
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function displayErrorMessage(elementId, message) {
+    let errorElement = document.getElementById(elementId);
+    if (!errorElement) {
+        errorElement = document.createElement('div');
+        errorElement.id = elementId;
+        errorElement.className = 'error-message';
+        const inputElement = document.getElementById(elementId.split('-')[0]);
+        inputElement.parentNode.appendChild(errorElement);
+    }
+    errorElement.innerText = message;
+    errorElement.style.display = "block";
+}
+
+function clearErrorMessages() {
+    const errorElements = document.getElementsByClassName('error-message');
+    Array.from(errorElements).forEach(element => {
+        element.innerText = '';
+        element.style.display = 'none';
+    });
+}
+
+function deleteSingleImage(imageId, productId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/admin/deleteImage',
+                method: 'POST',
+                data: { imageNameToServer: imageId, productIdToServer: productId },
+                success: (response) => {
+                    if (response.status === true) {
+                        Swal.fire('Deleted!', 'Image has been deleted.', 'success').then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                         Swal.fire('Error', response.error || 'Failed to delete image.', 'error');
+                    }
+                },
+                error: (err) => {
+                    const errorMessage = err.responseJSON?.error || 'An error occurred while deleting the image';
+                    Swal.fire('Error', errorMessage, 'error');
+                    console.error('Delete image error:', err);
+                }
+            });
+        }
+    });
+}
+
+let cropper;
+const selectedImages = [];
+
+function handleFileSelect(event) {
+    const files = event.target.files;
+    const newImagesPreview = document.getElementById('newImagesPreview');
+    const existingImages = document.getElementsByName('existingImages');
+    const totalImages = existingImages.length + selectedImages.length + files.length;
+
+    if (totalImages > 4) {
+        Swal.fire('Error', 'You can only upload a maximum of 4 images.', 'error');
+        event.target.value = '';
+        return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        selectedImages.push(file);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const thumbnail = document.createElement('div');
+            thumbnail.classList.add('image-container');
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = 'New Image';
+            img.style.width = '80px';
+            img.style.height = '100px';
+            img.style.borderRadius = '5px';
+            img.classList.add('new-image');
+            const currentIndex = selectedImages.length - 1;
+            img.dataset.index = currentIndex;
+            img.addEventListener('click', () => openCropper(file, currentIndex, false));
+            const removeIcon = document.createElement('span');
+            removeIcon.classList.add('remove-icon');
+            removeIcon.innerHTML = '×';
+            removeIcon.addEventListener('click', () => {
+                selectedImages.splice(currentIndex, 1);
+                thumbnail.remove();
+                updateFileInput();
+                updateNewImagesIndices();
+            });
+            thumbnail.appendChild(img);
+            thumbnail.appendChild(removeIcon);
+            newImagesPreview.appendChild(thumbnail);
+        };
+        reader.readAsDataURL(file);
+    }
+    updateFileInput();
+}
+
+function updateNewImagesIndices() {
+    const newImages = document.getElementsByClassName('new-image');
+    for (let i = 0; i < newImages.length; i++) {
+        newImages[i].dataset.index = i;
+    }
+}
+
+function openCropper(file, index, isExisting = false) {
+    const modal = document.getElementById('cropperModal');
+    const cropperImage = document.getElementById('cropperImage');
+    modal.style.display = 'block';
+    cropperImage.src = isExisting ? file : URL.createObjectURL(file);
+
+    if (cropper) {
+        cropper.destroy();
+    }
+
+    cropper = new Cropper(cropperImage, {
+        aspectRatio: 1,
+        viewMode: 1,
+        guides: true,
+        background: false,
+        autoCropArea: 1,
+        zoomable: true
+    });
+
+    document.getElementById('cropButton').onclick = () => {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        croppedCanvas.toBlob(blob => {
+            const fileName = `cropped-img-${Date.now()}-${index}.png`;
+            const croppedFile = new File([blob], fileName, { type: 'image/png' });
+            if (isExisting) {
+                const existingImageContainer = document.getElementById(`image-container-${index}`);
+                const existingImage = existingImageContainer.querySelector('.product-image');
+                existingImage.src = URL.createObjectURL(croppedFile);
+                existingImageContainer.querySelector('input[name="existingImages"]').value = fileName;
+                selectedImages.push(croppedFile);
+                updateFileInput();
+            } else {
+                selectedImages[index] = croppedFile;
+                const thumbnail = document.getElementsByClassName('new-image')[index];
+                thumbnail.src = URL.createObjectURL(croppedFile);
+            }
+            modal.style.display = 'none';
+            cropper.destroy();
+        }, 'image/png');
+    };
+
+    document.getElementById('cancelCropButton').onclick = () => {
+        modal.style.display = 'none';
+        cropper.destroy();
+    };
+}
+
+function openCropperForExisting(imageUrl, index) {
+    openCropper(imageUrl, index, true);
+}
+
+function updateFileInput() {
+    const fileInput = document.getElementById('productImages');
+    const dataTransfer = new DataTransfer();
+    selectedImages.forEach(file => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
+}
+
+document.getElementById('productImages').addEventListener('change', handleFileSelect);
+
+// Typewriter Effect
+const text = "Edit Product";
+let i = 0;
+function typeWriter() {
+    if (i < text.length) {
+        document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
+        i++;
+        setTimeout(typeWriter, 100);
+    }
+}
+
+// Section Reveal Animation
+gsap.utils.toArray(".edit-product-section").forEach(section => {
+    gsap.from(section, {
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none"
+        }
+    });
+});
+
+// Initialize
+window.onload = function() {
+    typeWriter();
+};
+
+// Form Submission Handling
+$('#editProductForm').on('submit', function(e) {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    const formData = new FormData(this);
+    
+    $.ajax({
+        url: this.action,
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: (response) => {
+            if (response.status === true) {
+                Swal.fire('Success', 'Product updated successfully', 'success').then(() => {
+                    window.location.href = '/admin/products';
+                });
+            } else {
+                Swal.fire('Error', response.error || 'Failed to update product', 'error');
+            }
+        },
+        error: (error) => {
+            const errorMessage = error.responseJSON?.error || 'An error occurred while updating the product';
+            Swal.fire('Error', errorMessage, 'error');
+            console.error('Form submission error:', error);
+        }
+    });
+});
+</script>
+</body>
+</html>

@@ -32,8 +32,15 @@ router.get('/editCategory',adminAuth,categoryController.getEditCategory);
 router.post('/editCategory/:id',adminAuth,categoryController.editCategory);
 
 // Product Management
-router.get('/products',adminAuth,productController.getAllProducts)
-router.get('/addProduct',adminAuth,productController.getAddProduct)
-router.post('/addProduct',adminAuth,upload.array('images',4),productController.addProduct)
+router.get('/products',adminAuth,productController.getAllProducts);
+router.get('/addProduct',adminAuth,productController.getAddProduct);
+router.post('/addProduct',adminAuth,upload.array('images',4),productController.addProduct);
+router.post('/addProductOffer',adminAuth,productController.addProductOffer);
+router.post('/removeProductOffer',adminAuth,productController.removeProductOffer);
+router.get('/blockProduct',adminAuth,productController.blockProduct);
+router.get('/unblockProduct',adminAuth,productController.unblockProduct);
+router.get('/editProduct',adminAuth,productController.getEditProduct)
+router.post('/editProduct/:id',adminAuth,upload.array('productImages',4),productController.editProduct)
+router.post('/deleteImage',adminAuth,productController.deleteSingleImage)
 
 module.exports = router;
