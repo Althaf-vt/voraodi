@@ -1,10 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/user/userController');
 const passport = require('../config/passport');
+const userController = require('../controllers/user/userController');
+const profileController = require('../controllers/user/profileController');
+const productController = require('../controllers/user/productController');
+const { userAuth } = require('../middlewares/auth');
 
 
+// Home Page & Shopping page
 router.get('/',userController.loadHomepage);
+router.get('/shop',userAuth,userController.loadShoppingPage);
+router.get('/filter',userAuth,userController.filterProduct)
+router.get('/filterPrice',userAuth,userController.filterByPrice);
+router.post('/searchProducts',userAuth,userController.searchProducts);
+router.get('/sortProducts',userAuth,userController.sortProducts)
+
+
 
 // Signup
 router.get('/signup',userController.loadSignup);
@@ -27,8 +38,15 @@ router.get('/auth/google/callback',passport.authenticate('google', {failureRedir
 failureMessage: true
 }),
   (req, res) => {
-    req.session.user = req.user._id;
-    res.redirect('/');
+    const authState = req.query.state;
+
+    if(authState === 'signin'){
+      req.session.user = req.user._id;
+      res.redirect('/');
+    }else{
+      res.redirect('/signin');
+    }
+    
   });
 
 // Handle Google OAuth failure and redirect accordingly
@@ -43,6 +61,18 @@ router.get('/handle-auth-failure', (req, res) => {
 
 });
 
+
+// Profile Management
+router.get('/forgot-password',profileController.getForgotPassword);
+// router.post('/forgot-password',profileController.forgotEmailValid);
+router.post('/forgot-email-valid',profileController.forgotEmailValid);
+router.post('/verify-passForgot-otp',profileController.verifyForgotPassOtp);
+router.post('/resend-forgot-otp',profileController.resendOtp);
+router.get('/reset-password',profileController.getResetPassword);
+router.post('/reset-password',profileController.NewPassword);
+
+// Product Management 
+router.get('/productDetails',userAuth,productController.productDetails);
 
 router.get('/logout',userController.logout);
 router.get('/pageNotFound',userController.pageNotFound)

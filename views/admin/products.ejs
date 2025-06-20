@@ -31,11 +31,21 @@
     <!-- Product List Section -->
     <div class="product-list">
       <h2>Product List</h2>
+      
       <div class="add-product-container">
         <button class="action-btn add-product-btn" aria-label="Add New Product">
           <a href="/admin/addProduct">Add Product</a>
         </button>
       </div>
+                <!-- Search Bar -->
+    <div class="customer-search-container">
+      <form id="searchForm" action="/admin/searchProduct" method="GET" class="customer-search-form">
+        <input type="text" name="query" id="searchInput" placeholder="Search products..." class="customer-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
+        <button type="submit" class="customer-search-button">Search</button>
+        <button type="button" class="customer-search-clear" onclick="clearSearch()">Clear</button>
+      </form>
+    </div>
+
       <div class="products-table">
         <table>
           <thead>
@@ -55,8 +65,8 @@
           </thead>
           <tbody>
             <% if (data && data.length > 0) { %>
-              <% for(let i = data.length - 1; i >= 0; i--) { %>
-                <tr>
+              <% for(let i = 0; i < data.length; i++) { %>
+                <tr id="product-<%= data[i]._id %>">
                   <td>
                     <img src="<%= data[i].productImage && data[i].productImage.length > 0 ? data[i].productImage[0] : '/images/placeholder.jpg' %>" alt="<%= data[i].productName || 'Product' %>" class="product-image">
                   </td>
@@ -74,11 +84,11 @@
                   <td>
                     <% if (locals.data[i].productOffer===0) { %>
                       <button class="action-btn add-offer-btn" aria-label="Add Offer" onclick="addOffer('<%=data[i]._id%>')">
-                        <a href="#">Add Offer</a>
+                        Add Offer
                       </button>
                     <% } else { %>
                       <button class="action-btn remove-offer-btn" aria-label="Remove Offer" onclick="removeOffer('<%=data[i]._id%>')">
-                        <a href="#">Remove Offer</a>
+                        Remove Offer
                       </button>
                     <% } %>
                   </td>
@@ -87,12 +97,12 @@
                   <!-- Block & Unblock -->
                   <td>
                     <% if (data[i].isBlocked === false) { %>
-                      <button class="action-btn block-btn" aria-label="Block Product">
-                        <a href="/admin/blockProduct?id=<%= data[i]._id%>">Block</a>
+                      <button class="action-btn block-btn" aria-label="Block Product" onclick="confirmBlock('<%= data[i]._id %>')">
+                        Block
                       </button>
                     <% } else { %>
-                      <button class="action-btn unblock-btn" aria-label="Unblock Product">
-                        <a href="/admin/unblockProduct?id=<%= data[i]._id%>">Unblock</a>
+                      <button class="action-btn unblock-btn" aria-label="Unblock Product" onclick="confirmUnblock('<%= data[i]._id %>')">
+                        Unblock
                       </button>
                     <% } %>
                   </td>
@@ -105,8 +115,8 @@
                     <button class="action-btn edit-btn" aria-label="Edit Product">
                       <a href="/admin/editProduct?id=<%= data[i]._id%>">Edit</a>
                     </button>
-                    <button class="action-btn delete-btn" aria-label="Delete Product">
-                      <a href="/admin/deleteProduct?id=<%= data[i]._id%>">Delete</a>
+                    <button onclick="confirmDelete('<%= data[i]._id%>')" class="action-btn delete-btn" aria-label="Delete Product">
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -128,7 +138,9 @@
           <% if (typeof totalPages === 'number' && totalPages > 0) { %>
             <% for (let i = 1; i <= totalPages; i++) { %>
               <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                <a class="page-link" href="<%= typeof searchQuery !== 'undefined' ? '/admin/searchProduct?page=' + i + '&query=' + encodeURIComponent(searchQuery) : '/admin/products?page=' + i %>">
+                <%= i %>
+              </a>
               </li>
             <% } %>
           <% } %>
@@ -138,43 +150,91 @@
   </div>
 
   <script>
-    // Typewriter Effect
-    const text = "Product Management";
-    let i = 0;
-    function typeWriter() {
-      if (i < text.length) {
-        document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
-        i++;
-        setTimeout(typeWriter, 100);
-      }
+
+ // Prevents the default form submission
+  document.getElementById('searchForm').addEventListener('submit',function(e){
+    e.preventDefault()
+
+    const query = document.getElementById('searchInput').value.trim();
+
+    const route = query.length > 0 ? '/admin/searchProduct' : '/admin/products';
+
+    fetch(`/admin/searchProduct?query=${encodeURIComponent(query)}`)
+      .then(res => res.text())
+        .then(html =>{
+        //Parse the returned HTML string into DOM
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        //Find the new Cus table and pagin from etched html
+        const newTable = doc.querySelector('.products-table');
+        const newPagination = doc.querySelector('.pagination');
+
+        //Replace the old ones on the page with new content
+        document.querySelector('.products-table').innerHTML = newTable.innerHTML;
+        document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+      })
+      .catch(err=>{
+        console.error('Search Customers Error',err);
+      });
+  });
+  
+  
+  // Pagination 
+  document.addEventListener('click',function(e){
+    if(e.target.classList.contains('page-link')){
+      e.preventDefault();
+      const url = new URL(e.target.href);
+      const page = url.searchParams.get('page');
+      const query = document.getElementById('searchInput').value.trim();
+
+      fetch(`/admin/searchProduct?page=${page}&query=${encodeURIComponent(query)}`)
+      .then(res => res.text())
+      .then(html =>{
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html,'text/html');
+
+        const newTable = doc.querySelector('.products-table');
+        const newPagination = doc.querySelector('.pagination');
+        
+        document.querySelector('.products-table').innerHTML = newTable.innerHTML;
+        document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+      })
+      .catch(err =>{
+        console.error('Error in customer pagination',err);
+      });
     }
 
-    // Section Reveal Animation
-    gsap.utils.toArray(".product-list").forEach(section => {
-      gsap.from(section, {
-        opacity: 0,
-        y: 30,
-        duration: 1,
-        scrollTrigger: {
-          trigger: section,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none none"
-        }
-      });
+  });
+    
+  // Clear Search
+  function clearSearch() {
+    document.getElementById('searchInput').value = "";
+
+    fetch('/admin/products')
+    .then(res => res.text())
+    .then(html =>{
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html,'text/html');
+      const newTable = doc.querySelector('.products-table');
+      const newPagination = doc.querySelector('.pagination');
+
+      document.querySelector('.products-table').innerHTML = newTable.innerHTML;
+      document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
     });
+  }
 
-    // Initialize
-    window.onload = function() {
-      typeWriter();
-    };
 
+  //Add Offer
     async function addOffer(productId){
       const {value:amount} = await Swal.fire({
         title: 'Offer in percentage',
         input: 'number',
         inputLabel: 'percentage',
-        inputPlaceholder: '%'
+        inputPlaceholder: '%',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        cancelButtonColor: '#ff4040',
       })
       $.ajax({
         url:'/admin/addProductOffer',
@@ -186,7 +246,7 @@
         success:(response)=>{
           if(response.status === true){
               Swal.fire('Success', 'The offer has been added', 'success').then(() => {
-                location.reload()
+                refreshProductTable();
               })
           }else{
             alert('failed')
@@ -195,6 +255,7 @@
       })
     }
 
+  //Remove Offer
     async function removeOffer(productId) {
       try {
         Swal.fire({
@@ -202,11 +263,12 @@
           text: 'Are you sure you want to remove this offer',
           icon: 'warning',
           showCancelButton: true,
+          cancelButtonText: 'Cancel',
           confirmButtonColor: '#3085d6',
-          cancelButtonColor: 'd33',
+          cancelButtonColor: '#ff4040',
           confirmButtonText: 'Yes,remove it!',
-          timer: 5000,
-          timerProgressBar: true,
+          // timer: 5000,
+          // timerProgressBar: true,
 
         }).then(async(result)=>{
           if(result.isConfirmed){
@@ -219,7 +281,7 @@
               success: (response)=>{
                 if(response.status===true){
                   Swal.fire("Removed!",'The offer has been removed',"success");
-                  location.reload()
+                  refreshProductTable();
                 }else if(response.status===false){
                   Swal.fire("Failed");
                 }else{
@@ -233,6 +295,116 @@
         console.error(error);
       }
     }
+
+  // Confirm block
+  function confirmBlock(productId) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to Block this product?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#004d00',
+      cancelButtonColor: '#ff4040',
+      confirmButtonText: 'Block!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await fetch(`/admin/blockProduct?id=${productId}`);
+        const data = await response.json();
+        if (data.success) {
+          refreshProductTable();
+          Swal.fire('Blocked!', 'Product has been blocked.', 'success');
+        } else {
+          Swal.fire('Error', 'Failed to block product.', 'error');
+        }
+      }
+    });
+}
+
+  // Confirm unblock
+  function confirmUnblock(productId) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to Unblock this product?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#004d00',
+      cancelButtonColor: '#ff4040',
+      confirmButtonText: 'Unblock!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await fetch(`/admin/unblockProduct?id=${productId}`);
+        const data = await response.json();
+        if (data.success) {
+          refreshProductTable();
+          Swal.fire('Unblocked!', 'Product has been unblocked.', 'success');
+        } else {
+          Swal.fire('Error', 'Failed to unblock product.', 'error');
+        }
+      }
+    });
+  }
+
+  // Refresh table
+  function refreshProductTable() {
+  const query = document.getElementById('searchInput').value.trim();
+  const currentPage = document.querySelector('.page-item.active .page-link')?.textContent || 1;
+
+  fetch(`/admin/searchProduct?page=${currentPage}&query=${encodeURIComponent(query)}`)
+    .then(res => res.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const newTable = doc.querySelector('.products-table');
+      const newPagination = doc.querySelector('.pagination');
+
+      document.querySelector('.products-table').innerHTML = newTable.innerHTML;
+      document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+    })
+    .catch(err => {
+      console.error('Error refreshing table:', err);
+    });
+}
+
+  
+
+  // Confirm Delete
+  async function confirmDelete(productId) {
+    event.preventDefault();
+    
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this product?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#004d00',
+      cancelButtonColor: '#ff4040',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
+
+    if(result.isConfirmed){
+      try {
+        const response = await fetch(`/admin/deleteProduct?id=${productId}`,{
+          method: 'GET',
+        });
+
+        if(response.redirected && response.url.includes('/admin/products')){
+          refreshProductTable();
+
+          Swal.fire('Deleted', 'The product has been deleted', 'success');
+        }else{
+          Swal.fire('Failed', 'Could not delete the product.', 'error');
+        }
+      } catch (error) {
+        console.error('Error during deletion:', error);
+        Swal.fire('Error', 'Something went wrong while deleting.', 'error');
+      }
+    }
+  }
+    
   </script>
 </body>
 </html>

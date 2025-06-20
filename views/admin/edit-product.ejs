@@ -208,32 +208,27 @@ function clearErrorMessages() {
 function deleteSingleImage(imageId, productId) {
     Swal.fire({
         title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        text: "You won't be able to revert this, After update the product!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, delete it!',
         cancelButtonText: 'No, cancel!'
     }).then((result) => {
         if (result.isConfirmed) {
-            $.ajax({
-                url: '/admin/deleteImage',
-                method: 'POST',
-                data: { imageNameToServer: imageId, productIdToServer: productId },
-                success: (response) => {
-                    if (response.status === true) {
-                        Swal.fire('Deleted!', 'Image has been deleted.', 'success').then(() => {
-                            window.location.reload();
-                        });
-                    } else {
-                         Swal.fire('Error', response.error || 'Failed to delete image.', 'error');
-                    }
-                },
-                error: (err) => {
-                    const errorMessage = err.responseJSON?.error || 'An error occurred while deleting the image';
-                    Swal.fire('Error', errorMessage, 'error');
-                    console.error('Delete image error:', err);
-                }
-            });
+            // 1. Remove image from UI
+            const container = document.querySelector(`img[src="${imageId}"]`)?.closest('.image-container');
+            if (container) container.remove();
+
+            // 2. Remove <input name="existingImages" value="...">
+            const hiddenInput = container?.querySelector('input[name="existingImages"]');
+            if (hiddenInput) hiddenInput.remove();
+
+            // 3. Add a new <input> to keep track of deletions
+            const deleteListInput = document.createElement('input');
+            deleteListInput.type = 'hidden';
+            deleteListInput.name = 'deletedImages';
+            deleteListInput.value = imageId;
+            document.getElementById('editProductForm').appendChild(deleteListInput);
         }
     });
 }
@@ -323,9 +318,20 @@ function openCropper(file, index, isExisting = false) {
                 const existingImageContainer = document.getElementById(`image-container-${index}`);
                 const existingImage = existingImageContainer.querySelector('.product-image');
                 existingImage.src = URL.createObjectURL(croppedFile);
-                existingImageContainer.querySelector('input[name="existingImages"]').value = fileName;
+                
+                // Remove old hidden input (existing image path)
+                const oldInput = existingImageContainer.querySelector('input[name="existingImages"]');
+                if (oldInput) oldInput.remove();
+
                 selectedImages.push(croppedFile);
                 updateFileInput();
+
+                // Add a new hidden field to include it in the form (optional)
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'newCroppedImages';
+                hiddenInput.value = fileName; // just for form structure; actual file is in FormData
+                existingImageContainer.appendChild(hiddenInput);
             } else {
                 selectedImages[index] = croppedFile;
                 const thumbnail = document.getElementsByClassName('new-image')[index];
@@ -355,37 +361,6 @@ function updateFileInput() {
 
 document.getElementById('productImages').addEventListener('change', handleFileSelect);
 
-// Typewriter Effect
-const text = "Edit Product";
-let i = 0;
-function typeWriter() {
-    if (i < text.length) {
-        document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
-        i++;
-        setTimeout(typeWriter, 100);
-    }
-}
-
-// Section Reveal Animation
-gsap.utils.toArray(".edit-product-section").forEach(section => {
-    gsap.from(section, {
-        opacity: 0,
-        y: 30,
-        duration: 1,
-        scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none none"
-        }
-    });
-});
-
-// Initialize
-window.onload = function() {
-    typeWriter();
-};
-
 // Form Submission Handling
 $('#editProductForm').on('submit', function(e) {
     e.preventDefault();
@@ -401,11 +376,21 @@ $('#editProductForm').on('submit', function(e) {
         contentType: false,
         success: (response) => {
             if (response.status === true) {
-                Swal.fire('Success', 'Product updated successfully', 'success').then(() => {
+                Swal.fire({
+                icon: 'success',
+                title: 'Product updated successfully',
+                // text: 'Redirecting in 2.5 seconds...',
+                timer: 2500,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                confirmButtonText: 'Go Now',
+                willClose: () => {
                     window.location.href = '/admin/products';
-                });
+                }
+            });
+
             } else {
-                Swal.fire('Error', response.error || 'Failed to update product', 'error');
+                Swal.fire('!?', 'No changes detected.', 'info');
             }
         },
         error: (error) => {

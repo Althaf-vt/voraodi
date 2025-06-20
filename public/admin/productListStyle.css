@@ -448,3 +448,64 @@ td {
     height: 25px;
   }
 }
+
+/* -------- Search --------- */
+
+.customer-search-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    padding-right: 20px;
+}
+
+.customer-search-form {
+    display: flex;
+    gap: 10px;
+}
+
+.customer-search-input {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    background-color: #fff7e0;
+    color: #1a252f;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.customer-search-button {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #c9a022, #a3821b);
+    color: #f5f5e8;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.customer-search-clear {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #767675, #4c4b49);
+    color: #f5f5e8;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.customer-search-button:hover {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    transform: scale(1.05);
+}
+
+.customer-search-clear:hover {
+    background: linear-gradient(135deg, #b66801, #986211);
+    transform: scale(1.05);
+}

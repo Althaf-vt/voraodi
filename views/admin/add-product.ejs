@@ -13,6 +13,7 @@
     <!-- Cropper.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/admin/productStyle.css">
 </head>
 
@@ -125,7 +126,7 @@
                     <div class="form-buttons">
                         <button type="submit" class="submit-btn">Add Product</button>
                         <button type="button" class="block-btn">
-                            <a href="/admin/product"
+                            <a href="/admin/products"
                                 style="color: #f5f5e8; text-decoration: none;">Back to Products</a>
                         </button>
                     </div>
@@ -150,31 +151,6 @@
     </div>
 
     <script>
-        // Typewriter Effect
-        const text = "Add Product";
-        let i = 0;
-        function typeWriter() {
-            if (i < text.length) {
-                document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
-                i++;
-                setTimeout(typeWriter, 100);
-            }
-        }
-
-        // Section Reveal Animations
-        gsap.utils.toArray(".product-container").forEach(section => {
-            gsap.from(section, {
-                opacity: 0,
-                y: 30,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%",
-                    end: "bottom 20%",
-                    toggleActions: "play none none none"
-                }
-            });
-        });
 
         // Cropper.js Setup
         let currentCropper = null;
@@ -309,6 +285,7 @@
                 });
 
                 const cropButton = document.createElement('button');
+                cropButton.type = 'button';
                 cropButton.classList.add('submit-btn', 'crop-btn');
                 cropButton.textContent = 'Crop';
                 cropButton.addEventListener('click', function() {
@@ -447,19 +424,26 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Product Added',
+                        text: 'Your product has been successfully added!',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    // Reset the form and UI without page reload
                     form.reset();
                     selectedFiles = [];
                     updateThumbnails();
-                    window.location.reload();
                 } else {
-                    messageDiv.innerText = result.message || 'An error occurred';
-                    messageDiv.style.color = '#ff4040';
-                    messageDiv.style.display = 'block';
-                    setTimeout(() => {
-                        messageDiv.innerText = '';
-                        messageDiv.style.display = 'none';
-                    }, 2000);
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Add Failed',
+                        text: result.message || 'Something went wrong!',
+                    });
                 }
+
             } catch (error) {
                 console.error('Error submitting form:', error);
                 messageDiv.innerText = 'Failed to add product. Please try again.';
@@ -470,29 +454,7 @@
                     messageDiv.style.display = 'none';
                 }, 2000);
             }
-        });
-
-        // Initialize
-        window.onload = () => {
-            console.log('Page loaded, initializing event listeners');
-            typeWriter();
-            document.getElementById('images').addEventListener('change', handleFileSelect);
-
-            // Check for success query parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            const messageDiv = document.getElementById('form-messages');
-            if (urlParams.get('success') === 'product_added') {
-                messageDiv.innerText = 'Product added successfully';
-                messageDiv.style.color = '#004d00';
-                messageDiv.style.display = 'block';
-                setTimeout(() => {
-                    messageDiv.innerText = '';
-                    messageDiv.style.display = 'none';
-                    // Clear query parameter from URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }, 2000);
-            }
-        };
+        });         
     </script>
 </body>
 </html>

@@ -1,0 +1,296 @@
+/* Basic reset and global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: #f5f5e8;
+    overflow-x: hidden;
+}
+
+/* Admin Dashboard Styles */
+.admin-hero {
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(rgba(26, 37, 47, 0.9), rgba(47, 58, 68, 0.9)), url(https://www.transparenttextures.com/patterns/black-linen.png);
+    color: #f5f5e8;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-hero .text-container {
+    padding: 20px;
+}
+
+.admin-hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 48px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+    white-space: nowrap;
+}
+
+.admin-hero .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-style: italic;
+    color: #c9a022;
+    margin-bottom: 10px;
+}
+
+.admin-hero p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.dashboard-overview {
+    padding: 60px 20px;
+    background-color: #f5f5e8;
+    text-align: center;
+}
+
+.dashboard-overview h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 36px;
+    color: #1a252f;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.metric-card {
+    background: rgba(255, 255, 245, 0.9);
+    border: 2px solid #c9a022;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.metric-card h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: #1a252f;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.metric-card p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #c9a022;
+}
+
+.recent-orders {
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #1a252f, #2f3a44);
+    color: #f5f5e8;
+    text-align: center;
+}
+
+.recent-orders h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 36px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.orders-table {
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 245, 0.9);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+}
+
+th {
+    background: #1a252f;
+    color: #f5f5e8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+td {
+    color: #1a252f;
+    border-bottom: 1px solid rgba(201, 160, 34, 0.2);
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.status.shipped {
+    background-color: #a3821b;
+    color: #f5f5e8;
+}
+
+.status.pending {
+    background-color: #ff4040;
+    color: #f5f5e8;
+}
+
+.status.delivered {
+    background-color: #004d00;
+    color: #f5f5e8;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #c9a022, #a3821b);
+    color: #1a252f;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.action-btn:hover {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    color: #f5f5e8;
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .admin-hero h1 {
+        font-size: 36px;
+    }
+
+    .admin-hero .subtitle {
+        font-size: 20px;
+    }
+
+    .admin-hero p {
+        font-size: 14px;
+    }
+
+    .dashboard-overview h2,
+    .recent-orders h2 {
+        font-size: 30px;
+    }
+
+    .metric-card h3 {
+        font-size: 16px;
+    }
+
+    .metric-card p {
+        font-size: 20px;
+    }
+
+    th, td {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .action-btn {
+        padding: 6px 12px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-hero {
+        height: 50vh;
+    }
+
+    .admin-hero h1 {
+        font-size: 30px;
+    }
+
+    .admin-hero .subtitle {
+        font-size: 18px;
+    }
+
+    .admin-hero p {
+        font-size: 12px;
+    }
+
+    .dashboard-overview h2,
+    .recent-orders h2 {
+        font-size: 26px;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-hero {
+        height: 40vh;
+    }
+
+    .admin-hero h1 {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+
+    .admin-hero .subtitle {
+        font-size: 16px;
+    }
+
+    .admin-hero p {
+        font-size: 10px;
+    }
+
+    .dashboard-overview h2,
+    .recent-orders h2 {
+        font-size: 22px;
+    }
+
+    .metric-card h3 {
+        font-size: 14px;
+    }
+
+    .metric-card p {
+        font-size: 18px;
+    }
+}

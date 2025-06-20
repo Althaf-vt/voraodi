@@ -8,7 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="/admin/adminStyle.css">
+  <link rel="stylesheet" href="/admin/categoryStyle.css">
 </head>
 <body>
   <!-- Include the Header (Navbar and Sidebar) -->
@@ -58,6 +58,16 @@
       <!-- Category Table -->
       <div class="categories-table">
         <h2>Category List</h2>
+
+              <!-- Search Bar -->
+    <div class="customer-search-container">
+      <form id="searchForm" action="/admin/searchCategory" method="GET" class="customer-search-form">
+        <input type="text" name="query" id="searchInput" placeholder="Search customers..." class="customer-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
+        <button type="submit" class="customer-search-button">Search</button>
+        <button type="button" class="customer-search-clear" onclick="clearSearch()">Clear</button>
+      </form>
+    </div>
+      <div class="category-table">
         <table>
           <thead>
             <tr>
@@ -67,12 +77,12 @@
               <th>Offer</th>
               <th>Status</th>
               <th>List/Unlist</th>
-              <th>Edit</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <% cat.forEach((category, index) => { %>
-              <tr>
+              <tr id="category-<%= category._id%>">
                 <td class="text-start"><%= category.name %></td>
                 <td class="text-start"><%= category.description || 'No description' %></td>
                 <td>
@@ -84,12 +94,12 @@
                 </td>
                 <td class="text-start">
                   <% if (!category.categoryOffer || category.categoryOffer === 0) { %>
-                    <button class="view-btn" style="width: 100px">
-                      <a href="#" class="text-white" onclick="addOffer('<%= category._id %>')">Add Offer</a>
+                    <button class="view-btn" style="width: 100px" onclick="addOffer('<%= category._id%>')">
+                      Add Offer
                     </button>
                   <% } else { %>
-                    <button class="block-btn" style="width: 100px">
-                      <a href="#" class="text-white" onclick="removeOffer('<%= category._id %>')">Remove Offer</a>
+                    <button class="block-btn" style="width: 100px" onclick="removeOffer('<%= category._id%>')">
+                      Remove Offer
                     </button>
                   <% } %>
                 </td>
@@ -104,12 +114,12 @@
                 <!--  -->
                 <td class="text-start">
                   <% if (category.isListed) { %>
-                    <button class="block-btn" style="width: 80px; margin-right: 5px;">
-                      <a href="/admin/listCategory?id=<%= category._id %>" style="color: #f5f5e8 !important; text-decoration: none;">Unlist</a>
+                    <button class="block-btn" style="width: 80px; margin-right: 5px;" onclick="confirmUnlistCategory('<%= category._id %>')">
+                      Unlist
                     </button>
                   <% } else { %>
-                    <button class="unblock-btn" style="width: 80px; margin-right: 5px;">
-                      <a href="/admin/unlistCategory?id=<%= category._id %>" style="color: #f5f5e8 !important; text-decoration: none;">List</a>
+                    <button class="unblock-btn" style="width: 80px; margin-right: 5px;" onclick="confirmListCategory('<%= category._id %>')">
+                      List
                     </button>
                   <% } %>
                 </td>
@@ -118,77 +128,209 @@
                   <button class="unblock-btn" style="width: 100px">
                     <a href="/admin/editCategory?id=<%= category._id %>" class="text-white">Edit</a>
                   </button>
+                  <button class="action-btn delete-btn" aria-label="Delete Category" onclick="confirmDelete('<%= category._id %>')">
+                    <a href="#" class="text-white">Delete</a>
+                  </button>
                 </td>
               </tr>
             <% }) %>
           </tbody>
         </table>
       </div>
+    </div>
 
       <!-- Pagination -->
       <div class="pagination">
-        <div class="pagination-list">
-          <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>" class="page-link">« Previous</a>
-          <% } %>
+      <nav aria-label="Page navigation">
+        <ul class="pagination-list">
           <% for (let i = 1; i <= totalPages; i++) { %>
-            <% if (i === currentPage) { %>
-              <span class="page-item active"><a class="page-link"><%= i %></a></span>
-            <% } else { %>
-              <a href="?page=<%= i %>" class="page-link"><%= i %></a>
-            <% } %>
+            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+              <a class="page-link" href="<%= typeof searchQuery !== 'undefined' ? '/admin/searchCategory?page=' + i + '&query=' + encodeURIComponent(searchQuery) : '/admin/category?page=' + i %>">
+                <%= i %>
+              </a>
+            </li>
           <% } %>
-          <% if (currentPage < totalPages) { %>
-            <a href="?page=<%= currentPage + 1 %>" class="page-link">Next »</a>
-          <% } %>
-        </div>
-      </div>
+        </ul>
+      </nav>
+    </div>
     </div>
   </div>
 
   <script>
-    // Typewriter Effect
-    const text = "Category Management";
-    let i = 0;
-    function typeWriter() {
-      if (i < text.length) {
-        document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
-        i++;
-        setTimeout(typeWriter, 100);
+
+ // Prevents the default form submission
+  document.getElementById('searchForm').addEventListener('submit',function(e){
+    e.preventDefault()
+
+    const query = document.getElementById('searchInput').value.trim();
+
+    const route = query.length > 0 ? '/admin/searchCategory' : '/admin/category';
+
+    fetch(`/admin/searchCategory?query=${encodeURIComponent(query)}`)
+      .then(res => res.text())
+        .then(html =>{
+        //Parse the returned HTML string into DOM
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        //Find the new Cus table and pagin from etched html
+        const newTable = doc.querySelector('.category-table');
+        const newPagination = doc.querySelector('.pagination');
+
+        //Replace the old ones on the page with new content
+        document.querySelector('.category-table').innerHTML = newTable.innerHTML;
+        document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+      })
+      .catch(err=>{
+        console.error('Search category Error',err);
+      });
+  });
+  
+  
+  // Pagination 
+  document.addEventListener('click',function(e){
+    if(e.target.classList.contains('page-link')){
+      e.preventDefault();
+      const url = new URL(e.target.href);
+      const page = url.searchParams.get('page');
+      const query = document.getElementById('searchInput').value.trim();
+
+      fetch(`/admin/searchCategory?page=${page}&query=${encodeURIComponent(query)}`)
+      .then(res => res.text())
+      .then(html =>{
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html,'text/html');
+
+        const newTable = doc.querySelector('.category-table');
+        const newPagination = doc.querySelector('.pagination');
+        
+        document.querySelector('.category-table').innerHTML = newTable.innerHTML;
+        document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+      })
+      .catch(err =>{
+        console.error('Error in category pagination',err);
+      });
+    }
+
+  });
+    
+  // Clear Search
+  function clearSearch() {
+    document.getElementById('searchInput').value = "";
+
+    fetch('/admin/category')
+    .then(res => res.text())
+    .then(html =>{
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html,'text/html');
+      const newTable = doc.querySelector('.category-table');
+      const newPagination = doc.querySelector('.pagination');
+
+      document.querySelector('.category-table').innerHTML = newTable.innerHTML;
+      document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+    });
+  }
+
+    // Confirm Delete
+    async function confirmDelete(categoryId) {
+      event.preventDefault();
+
+      const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this product?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#004d00',
+      cancelButtonColor: '#ff4040',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+      });
+
+      if(result.isConfirmed){
+        try {
+          const response = await fetch(`/admin/deleteCategory?id=${categoryId}`,{
+            method: 'GET',
+          });
+
+          if(response.redirected && response.url.includes('/admin/category')){
+            reloadCategoryTable();
+            Swal.fire('Deleted','The category has been deleted', 'success');
+          }else{
+            Swal.fire('Failed', 'Could not delete the category', 'error');
+          }
+        } catch (error) {
+          console.error('Error in delete category',error);
+          Swal.fire('Error', 'Something went wrong whilte deleting.', 'error');
+        }
       }
     }
 
-    // Section Reveal Animations
-    gsap.utils.toArray(".customer-list").forEach(section => {
-      gsap.from(section, {
-        opacity: 0,
-        y: 30,
-        duration: 1,
-        scrollTrigger: {
-          trigger: section,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none none"
+    //Add category fetch
+
+    document.getElementById('add-category-form').addEventListener('submit', async(e)=>{
+      e.preventDefault();
+      if(!validateForm()) return;
+
+      const formData = {
+        categoryName: e.target.categoryName.value,
+        description: e.target.description.value
+      }
+
+      try {
+        const response = await fetch('/admin/addCategory',{
+          method: 'POST',
+          headers: {
+            "Content-Type":"application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if(response.ok){
+          Swal.fire({
+            icon: 'success',
+            title: 'Category Added',
+            text: data.message,
+            confirmButtonColor: '#004d00'
+          });
+
+          // Reset form
+          e.target.reset();
+
+          // Refresh table & pagin
+          const updatedPage = await fetch('/admin/category');
+          const html = await updatedPage.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+
+
+          const newTable = doc.querySelector('.category-table');
+          const newPagination = doc.querySelector('.pagination');
+
+          document.querySelector('.category-table').innerHTML = newTable.innerHTML;
+          document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Add Failed',
+            text: data.message || 'Something went wrong.',
+            confirmButtonColor: '#ff4040'
+          });
         }
-      });
+
+      } catch (error) {
+        console.error('Add category error',error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Server Error',
+          text: 'Failed to add category',
+          confirmButtonColor: '#ff4040'
+        });
+      }
     });
 
-    // Confirm Delete
-    function confirmDelete(categoryId) {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you want to delete this category?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#004d00',
-        cancelButtonColor: '#ff4040',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = `/admin/deleteCategory/${categoryId}`;
-        }
-      });
-    }
 
     // Form Validation
     function validateForm() {
@@ -238,142 +380,169 @@
       messageDiv.style.opacity = '0';
     }
 
-    // Handle Add Category Form Submission via AJAX
-    document.getElementById('add-category-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      console.log('Form submission triggered');
-      if (!validateForm()) return;
-
-      const formData = {
-        categoryName: e.target.categoryName.value,
-        description: e.target.description.value
-      };
-      const messageDiv = document.getElementById('form-messages');
-
-      try {
-        const response = await fetch('/admin/addCategory', {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(formData)
-        });
-        console.log(response);
-        const data = await response.json();
-
-        if (response.ok) {
-          messageDiv.style.color = '#004d00';
-          messageDiv.textContent = data.message;
-          messageDiv.style.opacity = '1';
-          e.target.reset();
-          setTimeout(clearMessageDiv, 3000); // Clear message after 3 seconds
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500); // Reload after 1.5 seconds
-        } else {
-          messageDiv.style.color = '#ff4040';
-          messageDiv.textContent = data.error;
-          messageDiv.style.opacity = '1';
-          setTimeout(clearMessageDiv, 3000); // Clear message after 3 seconds
-        }
-      } catch (error) {
-        console.error('Form submission error:', error);
-        messageDiv.style.color = '#ff4040';
-        messageDiv.textContent = 'Failed to add category';
-        messageDiv.style.opacity = '1';
-        setTimeout(clearMessageDiv, 3000); // Clear message after 3 seconds
-      }
-    });
-
-    // Initialize
-    window.onload = function() {
-      console.log('Page loaded, initializing event listeners');
-      typeWriter();
-    };
-
     // Add Offer
-    async function addOffer(categoryId) {
-      const { value: amount } = await Swal.fire({
+    function addOffer(categoryId){
+      event.preventDefault();
+      Swal.fire({
         title: 'Offer in percentage',
         input: 'number',
         inputLabel: 'Percentage',
         inputPlaceholder: '%',
-      });
-      // Passing the entered amount to backend
-      if (amount) {
-        try {
-          const response = await fetch('/admin/addCategoryOffer', {
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        cancelButtonColor: '#ff4040',
+      }).then((result) =>{
+        if(result.isConfirmed){
+          fetch(`/admin/addCategoryOffer`,{
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              percentage: amount,
-              categoryId: categoryId,
-            }),
-          });
-
-          // Accessing returned backend data
-          const data = await response.json();
-
-          if (response.ok && data.status === true) {
-            Swal.fire(
-              'Offer added',
-              'The offer has been added',
-              'success'
-            ).then(() => {
-              location.reload();
-            });
-          } else {
-            Swal.fire('Failed', data.message || 'Adding offer failed', 'error');
-          }
-        } catch (error) {
-          Swal.fire(
-            'Error',
-            'An error occurred while adding the offer',
-            'error'
-          );
-          console.error('Error adding offer:', error);
+              id: categoryId,
+              percentage: result.value
+            })
+          })
+          .then(res => res.json())
+          .then(data =>{
+            if(data.success){
+              Swal.fire('Offer Added', '', 'success');
+              reloadCategoryTable();
+            }else{
+              Swal.fire('Failed to add offer', '', 'error');
+            }
+          })
+          .catch(err =>{
+            Swal.fire('Error!', 'Something went wrong', 'error');
+            console.error('Add offer error:',err);
+          })
         }
-      }
+      })
     }
+
 
     // Remove Offer
-    async function removeOffer(categoryId) {
-      try {
-        const response = await fetch('/admin/removeCategoryOffer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            categoryId: categoryId,
+    function removeOffer(categoryId){
+      event.preventDefault();
+      Swal.fire({
+        title: 'Remove Offer',
+        text: 'Are you sure you want to remove this offer?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#ff4040',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel'
+      }).then((result)=>{
+        if(result.isConfirmed){
+          fetch(`/admin/removeCategoryOffer?`,{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: categoryId }) 
           })
-        });
-
-        // Accessing returned backend data
-        const data = await response.json();
-
-        if (response.ok && data.status === true) {
-          Swal.fire(
-            'Offer removed',
-            'The offer has been removed',
-            'success'
-          ).then(() => {
-            location.reload();
+          .then(res => res.json())
+          .then(data =>{
+            if(data.success){
+              Swal.fire('Offer Removed', '', 'success');
+              reloadCategoryTable();
+            }else{
+              Swal.fire('Failed to remove offer', '', 'error');
+            }
+          })
+          .catch(err =>{
+            Swal.fire('Error!', 'Something went wrong.', 'error');
+            console.error('Remove offer error:',err);
           });
-        } else {
-          Swal.fire('Failed', data.message || 'Removing offer failed', 'error');
         }
-      } catch (error) {
-        Swal.fire(
-          'Error',
-          'An error occurred while removing the offer',
-          'error'
-        );
-        console.error('Error removing offer:', error);
-      }
+      });
     }
+
+// List category
+function confirmListCategory(id) {
+  event.preventDefault();
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to list this category?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#004d00',
+    cancelButtonColor: '#ff4040',
+    confirmButtonText: 'List'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(`/admin/unlistCategory?id=${id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire('Listed!', '', 'success');
+            reloadCategoryTable();
+          } else {
+            Swal.fire('Failed to list!', '', 'error');
+          }
+        })
+        .catch(err => {
+          Swal.fire('Error!', 'Something went wrong.', 'error');
+          console.error('List category error:', err);
+        });
+    }
+  });
+}
+
+
+// Unlist category
+function confirmUnlistCategory(id) {
+  event.preventDefault();
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to unlist this category?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#004d00',
+    cancelButtonColor: '#ff4040',
+    confirmButtonText: 'Unlist'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch(`/admin/listCategory?id=${id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire('Unlisted!', '', 'success');
+            reloadCategoryTable();
+          } else {
+            Swal.fire('Failed to unlist!', '', 'error');
+          }
+        })
+        .catch(err => {
+          Swal.fire('Error!', 'Something went wrong.', 'error');
+          console.error('Unlist category error:', err);
+        });
+    }
+  });
+}
+
+
+// Reaload table
+function reloadCategoryTable() {
+  const query = document.getElementById('searchInput').value.trim();
+  const queryString = query ? `?query=${encodeURIComponent(query)}` : '';
+
+  fetch(`/admin/searchCategory${queryString}`)
+    .then(res => res.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const newTable = doc.querySelector('.category-table');
+      const newPagination = doc.querySelector('.pagination');
+
+      document.querySelector('.category-table').innerHTML = newTable.innerHTML;
+      document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+    })
+    .catch(err => console.error('Reload category table error:', err));
+}
+
   </script>
 </body>
 </html>

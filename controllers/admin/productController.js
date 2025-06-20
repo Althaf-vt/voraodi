@@ -1,4 +1,4 @@
-const Product = require('../../models/ProductSchema');
+const Product = require('../../models/productSchema');
 const Category = require('../../models/categorySchema');
 const User = require('../../models/userSchema');
 const fs = require('fs');
@@ -75,22 +75,18 @@ const addProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
     try {
-        const search = req.query.search || '';
         const page = req.query.page || 1;
         const limit = 4;
+        const skip = (page-1)*limit;
 
-        // Search product with name
-        const productData = await Product.find({
-            $or: [
-                { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
-            ]
-        }).limit(limit * 1).skip((page - 1) * limit).populate('category').exec();
+        const productData = await Product.find({})
+        .populate('category')
+        .sort({createdAt:-1})
+        .skip(skip)
+        .limit(limit);
 
-        const count = await Product.find({
-            $or: [
-                { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
-            ]
-        }).countDocuments();
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / limit);
 
         const category = await Category.find({ isListed: true });
 
@@ -98,15 +94,15 @@ const getAllProducts = async (req, res) => {
             return res.render('products', {
                 data: productData,
                 currentPage: page,
-                totalPages: Math.ceil(count / limit),
-                cate: category,
-                search: search // Add search to template data
+                totalPages: totalPages,
+                // category: category
             });
         } else {
-            return res.render('pageError');
+            return res.redirect('/admin/pageError');
         }
     } catch (error) {
-        return res.redirect('/pageError');
+        console.log(error)
+        return res.redirect('/admin/pageError');
     }
 };
 
@@ -152,11 +148,11 @@ const blockProduct = async(req,res)=>{
     try {
         let id = req.query.id;
         await Product.updateOne({_id:id},{$set:{isBlocked:true}});
-       return res.redirect('/admin/products');
+       res.json({ success: true });
 
     } catch (error) {
-        console.log(error);
-        res.redirect('/pageError');
+        console.error(error);
+        res.status(500).json({ success: false });
     }
 }
 
@@ -164,10 +160,10 @@ const unblockProduct = async (req,res) =>{
     try {
         let id = req.query.id;
         await Product.updateOne({_id:id},{$set:{isBlocked:false}});
-        return res.redirect('/admin/products');
+        res.json({ success: true });
     } catch (error) {
-        console.log(error);
-        res.redirect('/pageError');
+        console.error(error);
+        res.status(500).json({ success: false });
     }
 }
 
@@ -200,14 +196,6 @@ const editProduct = async(req,res)=>{
             return res.status(400).json({error:'Product with this name already exists. Please try with another name'});
         }
 
-        // const images = [];
-
-        // if(req.files && req.files.length > 0){
-        //     for(let i = 0; i < req.files.length; i ++){
-        //         images.push(req.files[i].filename);
-        //     }
-        // }
-
         const images = [];
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
@@ -226,31 +214,39 @@ const editProduct = async(req,res)=>{
             productName: data.productName,
            description: data.description,
             category: data.category,
-            regularPrice: data.regularPrice,
-            salePrice: data.salePrice,
+            regularPrice: parseFloat(data.regularPrice),
+            salePrice: parseFloat(data.salePrice),
             quantity: parseInt(data.quantity),
             // size: data.size,
             color: data.color,
             productImage: [...existingImages, ...images] // Combine existing and new images
-
         }
 
-        // if(req.files.length > 0){
-        //     //// updateFields.$push = {productImage:{$each:images}};
-        //     updateFields.productImage = [...(product.productImage || []), ...images];
+        // Check if any field is actually changed
+        const hasChanges =
+            product.productName !== updateFields.productName ||
+            product.description !== updateFields.description ||
+            product.category.toString() !== updateFields.category ||
+            parseFloat(product.regularPrice) !== updateFields.regularPrice ||
+            parseFloat(product.salePrice) !== updateFields.salePrice ||
+            parseInt(product.quantity) !== updateFields.quantity ||
+            product.color !== updateFields.color ||
+            JSON.stringify(product.productImage) !== JSON.stringify(updateFields.productImage);
 
-        // }
+        if (!hasChanges) {
+            return res.status(200).json({
+                status: false,
+                message: 'No changes detected. Product not updated.',
+            });
+        }
 
         const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, { new: true });
         if (!updatedProduct) {
             return res.status(500).json({ status: false, error: 'Failed to update product in database' });
         }
-        //// await Product.findByIdAndUpdate(id,updateFields,{new:true});
-        // res.redirect('/admin/products');
         res.json({ status: true, message: 'Product updated successfully' });
     } catch (error) {
         console.error('Error in editProduct:',error);
-        // res.redirect('/pageError')
         res.status(500).json({ status: false, error: 'Failed to update product' });
 
     }
@@ -265,27 +261,76 @@ const deleteSingleImage = async(req,res)=>{
         }
 
         const imagePath = path.join(__dirname, '..', 'public', 'uploads', 'product-images', path.basename(imageNameToServer));        
-        // if(fs.existsSync(imagePath)){
-        //     await fs.unlinkSync(imagePath);
-        //     console.log(`Image ${imageNameToServer} deleted successfully`);
-        // }else{
-        //     console.log(`Image ${imageNameToServer} not found`);
-        // }
-
         try {
             await fs.unlink(imagePath);
             console.log(`Image ${imageNameToServer} deleted successfully`);
         } catch (err) {
             console.warn(`Image ${imageNameToServer} not found on disk:`, err.message);
         }
-
-        // res.send({status:true});
         res.json({ status: true, message: 'Image deleted successfully' });
     } catch (error) {
-        // console.error(error)
-        // res.redirect('/pageError');
+
         console.error('Error in deleteSingleImage:', error);
         res.status(500).json({ status: false, error: 'Failed to delete image' });
+    }
+}
+
+
+const searchProduct = async(req,res)=>{
+    try {
+        const search = (req.body?.query || req.query?.query || "").trim();
+
+        let searchResult = [];
+
+        // const matchedCategories = await Category.find({
+        //     name: { $regex: search, $options: 'i' }
+        // }).select('_id');
+
+
+        if (search === "") {
+            searchResult = await Product.find();
+        }else{
+            searchResult = await Product.find({
+            productName:{$regex:".*"+search+".*",$options:"i"}
+            // $or:[
+            //     {productName:{$regex:".*"+search+".*",$options:"i"}},
+            // ]    
+        })};
+
+        searchResult.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+
+        let productsPerPage = 4;
+        let currentPage = parseInt(req.query.page) || 1;
+        let startIndex = (currentPage - 1)*productsPerPage;
+        let endIndex = startIndex + productsPerPage;
+        let totalPages = Math.ceil(searchResult.length/productsPerPage);
+        const currentProducts = searchResult.slice(startIndex,endIndex);
+
+        return res.render('products',{
+            data: currentProducts,
+            totalPages,
+            currentPage,
+            count: searchResult.length,
+            searchQuery: search
+        });
+
+
+    } catch (error) {
+        console.log("Error in Search Products",error);
+        return res.redirect('/admin/pageError');
+    }
+}
+
+const deleteProduct = async(req,res)=>{
+    try {
+        const productId = req.query.id;
+        await Product.deleteOne({_id:productId});
+
+        return res.redirect('/admin/products')
+        
+    } catch (error) {
+        console.error('Error in Delete product',error);
+        return res.redirect('/admin/pageError')
     }
 }
 
@@ -300,6 +345,7 @@ module.exports = {
     unblockProduct,
     getEditProduct,
     editProduct,
-    deleteSingleImage
-
-};
+    deleteSingleImage,
+    searchProduct,
+    deleteProduct
+}

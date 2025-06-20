@@ -1,0 +1,627 @@
+/* Hero Section */
+.hero {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #2f3a44;
+  overflow: hidden;
+}
+
+.hero video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.hero .text-container {
+  position: relative;
+  padding: 40px;
+  background: rgba(255, 255, 245, 0.85);
+  border: 5px solid #d4af37;
+  border-image: linear-gradient(45deg, #d4af37, #b8972e) 1;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.hero h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 80px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+  color: #2f3a44;
+}
+
+.hero .subtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 400;
+  margin-bottom: 20px;
+  color: #2f3a44;
+}
+
+.hero p {
+  font-size: 24px;
+  font-weight: 400;
+  max-width: 800px;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #d4af37;
+}
+
+.hero .cta-button {
+  padding: 15px 40px;
+  background: linear-gradient(135deg, #d4af37, #b8972e);
+  color: #2f3a44;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero .cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.hero .cta-button:hover::before {
+  left: 100%;
+}
+
+.hero .cta-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
+  background: linear-gradient(135deg, #006400, #228B22);
+  color: #f5f5e8;
+}
+
+/* Featured Collections Section */
+.featured-collections {
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #fffcf4, #f5f5e8), url(https://www.transparenttextures.com/patterns/white-linen.png);
+}
+
+.featured-collections h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 40px;
+  text-align: center;
+  margin-bottom: 50px;
+  color: #2f3a44;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.featured-collections h2::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background-color: #d4af37;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.collections-grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.collection-card {
+  max-width: 400px;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #d4af37;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  background-color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.collection-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+}
+
+.collection-card img {
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.collection-card .overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(47, 58, 68, 0.9), transparent);
+  color: #fff;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.collection-card .overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(47, 58, 68, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.collection-card:hover .overlay::before {
+  opacity: 1;
+}
+
+.collection-card h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 28px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.collection-card h3::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background-color: #d4af37;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+.collection-card:hover h3::after {
+  width: 50%;
+}
+
+.collection-card p {
+  font-size: 16px;
+  font-weight: 300;
+  text-transform: uppercase;
+  color: #d4af37;
+}
+
+.collection-card:hover .overlay {
+  transform: translateY(-10px);
+}
+
+/* Tailor's Note Section */
+.tailors-note {
+  padding: 60px 20px;
+  background: #fff url(https://www.transparenttextures.com/patterns/paper.png);
+  text-align: center;
+}
+
+.tailors-note h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 36px;
+  color: #2f3a44;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.tailors-note h2::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background-color: #d4af37;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tailors-note .note {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background: #f5f5e8 url(https://www.transparenttextures.com/patterns/paper.png);
+  border: 2px solid #d4af37;
+  border-radius: 10px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.tailors-note .note::before,
+.tailors-note .note::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: url(https://www.transparenttextures.com/patterns/gold-scales.png), linear-gradient(135deg, #d4af37, #b8972e);
+  border-radius: 50%;
+}
+
+.tailors-note .note::before {
+  top: -10px;
+  left: -10px;
+}
+
+.tailors-note .note::after {
+  bottom: -10px;
+  right: -10px;
+}
+
+.tailors-note .note p {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: #2f3a44;
+  line-height: 1.6;
+}
+
+.tailors-note .note .signature {
+  margin-top: 20px;
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: #d4af37;
+  text-align: right;
+}
+
+/* Legacy Collection Section */
+.legacy-collection {
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #2f3a44, #3a4651);
+  color: #f5f5e8;
+  text-align: center;
+}
+
+.legacy-collection h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 36px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.legacy-collection h2::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background-color: #d4af37;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.legacy-collection p {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+.legacy-collection .countdown {
+  font-size: 24px;
+  font-weight: 700;
+  color: #d4af37;
+  margin-bottom: 40px;
+}
+
+.legacy-card {
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #d4af37;
+  background-color: #fff;
+}
+
+.legacy-card img {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+}
+
+.legacy-card .details {
+  padding: 20px;
+  background: #f5f5e8;
+  text-align: center;
+}
+
+.legacy-card h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 28px;
+  color: #2f3a44;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.legacy-card p {
+  font-size: 16px;
+  color: #2f3a44;
+  font-weight: 300;
+  margin-bottom: 20px;
+}
+
+.legacy-card button {
+  padding: 10px 30px;
+  background: linear-gradient(135deg, #d4af37, #b8972e);
+  color: #2f3a44;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.legacy-card button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.legacy-card button:hover::before {
+  left: 100%;
+}
+
+.legacy-card button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
+  background: linear-gradient(135deg, #006400, #228B22);
+  color: #f5f5e8;
+}
+
+/* Category Section */
+.category-section {
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #f5f5e8, #fffcf4);
+  overflow: visible;
+}
+
+.category-section h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 36px;
+  color: #2f3a44;
+  margin-bottom: 30px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.category-section h2::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background-color: #d4af37;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.product-carousel {
+  position: relative;
+  overflow: visible; 
+}
+
+.product-grid {
+  display: flex;
+  justify-content: center;
+  position: relative;  /* ✅ Ensure z-index stacking works */
+  overflow: visible;   /* ✅ Prevent clipping */
+}
+
+.product-card {
+  flex: 0 0 300px;
+  margin: 0 15px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  border: 1px solid #d4af37;
+  transition: transform 0.3s ease;
+  z-index: 1;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  z-index: 10;
+}
+
+.product-card .image-container {
+  position: relative;
+  width: 100%;
+  height: 220px;
+}
+
+.product-card .primary-img,
+.product-card .secondary-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+.product-card .secondary-img {
+  opacity: 0;
+}
+
+.product-card .details {
+  padding: 20px;
+  text-align: center;
+}
+
+.product-card h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  color: #2f3a44;
+  margin-bottom: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.product-card p {
+  font-size: 14px;
+  color: #d4af37;
+  margin-bottom: 15px;
+  font-weight: 400;
+}
+
+.product-card button {
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #d4af37, #b8972e);
+  color: #2f3a44;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.product-card button:hover::before {
+  left: 100%;
+}
+
+.product-card button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
+  background: linear-gradient(135deg, #006400, #228B22);
+  color: #f5f5e8;
+}
+
+.product-card .wishlist {
+  background: none;
+  border: none;
+  position: absolute;
+  top: 10px;
+  right: 10px; /* ✅ Moved to right side */
+  font-size: 20px;
+  color: #2f3a44;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  z-index: 10;
+}
+
+.product-card:hover .wishlist {
+  color: #2f3a44;
+}
+
+.product-card .wishlist:hover {
+  color: #ff4040;
+}
+
+.carousel-controls {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+}
+
+.carousel-controls button {
+  background: rgba(47, 58, 68, 0.7);
+  border: none;
+  color: #d4af37;
+  font-size: 28px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.carousel-controls button:hover {
+  background: rgba(47, 58, 68, 0.9);
+}
+
+
+.explore-collections-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  margin-right: 95px; /* 👈 Add this line to move button left */
+  margin-top: 30px; /* 👈 Moves the button slightly up */
+}
+
+
+.explore-collections-button {
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #d4af37, #b8972e); /* Same gradient as Add to Cart */
+  color: #2f3a44;
+  border: none;
+  border-radius: 5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.explore-collections-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.explore-collections-button:hover::before {
+  left: 100%;
+}
+

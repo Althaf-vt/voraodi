@@ -8,7 +8,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
-    <link rel="stylesheet" href="/user/userHomeStyle.css">
+    <link rel="stylesheet" href="/user/homeStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css" />
+    <link rel="stylesheet" href="/user/footerStyle.css" />
+
 </head>
 <body>
     <%- include('../../views/partials/user/header') %>
@@ -27,15 +30,17 @@
     </div>
 
     <!-- Featured Collections Section -->
-    <div class="featured-collections">
+    <!-- <div class="featured-collections">
         <h2>Signature Collections</h2>
         <div class="collections-grid">
             <div class="collection-card">
+                <a href="/filter?category=6853dd0aa1516b95f1def11e">
                 <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Imperial Tailored Blazers">
                 <div class="overlay">
                     <h3>Imperial Tailored Blazers</h3>
                     <p>Rule with Authority</p>
                 </div>
+                </a>
             </div>
             <div class="collection-card">
                 <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Warrior Leather Coats">
@@ -52,158 +57,63 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <!-- Tailor's Note Section -->
-    <div class="tailors-note">
-        <h2>Tailor's Note</h2>
-        <div class="note">
-            <p>"Pair the Imperial Tailored Blazer with our Legion Linen Trousers for a commanding presence at any gala. Let the deep navy tones reflect your unwavering resolve."</p>
-            <div class="signature">— Master Tailor, VOGUE</div>
-        </div>
-    </div>
-
-    <!-- Legacy Collection Section -->
-    <div class="legacy-collection">
-        <h2>Legacy Collection</h2>
-        <p>Limited Edition - A Tribute to Timeless Valor</p>
-        <div class="countdown" id="countdown">Launching in 5d 12h 30m</div>
-        <div class="legacy-card">
-            <img src="https://images.unsplash.com/photo-1617137968427-8593c4b91a56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Legacy Monarch Suit">
-            <div class="details">
-                <h3>Legacy Monarch Suit</h3>
-                <p>Only 50 pieces available. Crafted for the true elite.</p>
-                <button aria-label="Reserve Legacy Monarch Suit">Reserve Now</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Category Section: Linen Trousers -->
-    <div class="category-section">
-        <h2>Warrior Linen Trousers</h2>
-        <div class="product-carousel" id="linen-carousel">
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                    <div class="image-container">
-                        <img class="primary-img" src="https://images.unsplash.com/photo-1594633312681-863f110ec2d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Legion Linen Trousers">
-                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Legion Linen Trousers Detail">
-                    </div>
-                    <div class="details">
-                        <h3>Legion Linen Trousers</h3>
-                        <p>$195.00</p>
-                        <button aria-label="Add Legion Linen Trousers to Cart">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                    <div class="image-container">
-                        <img class="primary-img" src="https://images.unsplash.com/photo-1594633312681-863f110ec2d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Gladiator Linen Trousers">
-                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Gladiator Linen Trousers Detail">
-                    </div>
-                    <div class="details">
-                        <h3>Gladiator Linen Trousers</h3>
-                        <p>$195.00</p>
-                        <button aria-label="Add Gladiator Linen Trousers to Cart">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                    <div class="image-container">
-                        <img class="primary-img" src="https://images.unsplash.com/photo-1594633312681-863f110ec2d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Vanguard Linen Trousers">
-                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Vanguard Linen Trousers Detail">
-                    </div>
-                    <div class="details">
-                        <h3>Vanguard Linen Trousers</h3>
-                        <p>$195.00</p>
-                        <button aria-label="Add Vanguard Linen Trousers to Cart">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                    <div class="image-container">
-                        <img class="primary-img" src="https://images.unsplash.com/photo-1594633312681-863f110ec2d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Spartan Linen Trousers">
-                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Spartan Linen Trousers Detail">
-                    </div>
-                    <div class="details">
-                        <h3>Spartan Linen Trousers</h3>
-                        <p>$195.00</p>
-                        <button aria-label="Add Spartan Linen Trousers to Cart">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-controls">
-                <button aria-label="Previous Slide" onclick="slideCarousel('linen-carousel', -1)">❮</button>
-                <button aria-label="Next Slide" onclick="slideCarousel('linen-carousel', 1)">❯</button>
-            </div>
-        </div>
+<div class="category-section">
+    <h2>New Arrivals</h2>
+
+    <!-- Explore Button -->
+    <div class="explore-collections-wrapper">
+      <a href="/shop" class="explore-collections-button">Explore Collections</a>
     </div>
 
-    <!-- Category Section: Polos -->
-    <div class="category-section">
-        <h2>Centurion Polos</h2>
-        <div class="product-carousel" id="polo-carousel">
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                    <div class="image-container">
-                        <img class="primary-img" src="https://images.unsplash.com/photo-1618886614636-8e01c4c860a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Praetor Polo">
-                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Praetor Polo Detail">
+    
+    <div class="product-carousel" id="linen-carousel">
+        <div class="product-grid">
+            <% if (products && products.length > 0) { %>
+                
+                <% for (let i = 0; i < products.length; i++) { %>
+
+                    <div class="product-card">
+                        <a href="/addToWishlist?id=<%= products[i]._id %>" style="text-decoration: none;">
+                            <div class="wishlist" aria-label="Add to Wishlist">♡</div>
+                            
+                        </a>
+                        <div class="image-container">
+                            <a href="/productDetails?id=<%=products[i]._id%>">
+                            <img class="primary-img" 
+                                 src="<%= products[i].productImage[0] %>" 
+                                 alt="<%= products[i].productName %>">
+                             </a>
+                        </div>
+                        <div class="details">
+                            <h3><%= products[i].productName %></h3>
+                            <p>$<%= products[i].salePrice %></p>
+                            <% if (products[i].regularPrice > products[i].salePrice) { %>
+                                <p><span style="color: rgb(219, 75, 9);" class="text-muted"><strike>₹<%=products[i].regularPrice.toLocaleString('en-IN')%></strike></span></p>
+                            <% } else { %>
+                                <br>
+                            <% } %>
+
+                            <a href="/addToCart?id=<%=products[i]._id%>" style="text-decoration: none;">
+                                <button aria-label="Add <%= products[i].productName %> to Cart">Add to Cart</button>
+                            </a>
+                        </div>
                     </div>
-                    <div class="details">
-                        <h3>Praetor Polo</h3>
-                        <p>$145.00</p>
-                        <button aria-label="Add Praetor Polo to Cart">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                    <div class="image-container">
-                        <img class="primary-img" src="https://images.unsplash.com/photo-1618886614636-8e01c4c860a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Tribune Polo">
-                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Tribune Polo Detail">
-                    </div>
-                    <div class="details">
-                        <h3>Tribune Polo</h3>
-                        <p>$145.00</p>
-                        <button aria-label="Add Tribune Polo to Cart">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                    <div class="image-container">
-                        <img class="primary-img" src="https://images.unsplash.com/photo-1618886614636-8e01c4c860a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Legate Polo">
-                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Legate Polo Detail">
-                    </div>
-                    <div class="details">
-                        <h3>Legate Polo</h3>
-                        <p>$145.00</p>
-                        <button aria-label="Add Legate Polo to Cart">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                    <div class="image-container">
-                        <img class="primary-img" src="https://images.unsplash.com/photo-1618886614636-8e01c4c860a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Dominator Polo">
-                        <img class="secondary-img" src="https://images.unsplash.com/photo-1604004555489-723a93d6ce74?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Dominator Polo Detail">
-                    </div>
-                    <div class="details">
-                        <h3>Dominator Polo</h3>
-                        <p>$145.00</p>
-                        <button aria-label="Add Dominator Polo to Cart">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-controls">
-                <button aria-label="Previous Slide" onclick="slideCarousel('polo-carousel', -1)">❮</button>
-                <button aria-label="Next Slide" onclick="slideCarousel('polo-carousel', 1)">❯</button>
-            </div>
+                <% } %>
+            <% } else { %>
+                <p>No products available.</p>
+            <% } %>
         </div>
     </div>
+</div>
 
+  
     <%- include('../../views/partials/user/footer') %>
 
     <script>
-        // Typewriter Effect
         const text = "Forge Your Legacy";
         let i = 0;
         function typeWriter() {
@@ -214,16 +124,12 @@
             }
         }
 
-        // Crest Animation
         gsap.to(".crest", { opacity: 1, duration: 1.5, delay: 0.5, ease: "power2.out" });
-
-        // Hero Animations
         gsap.from(".hero .text-container", { opacity: 0, y: 30, duration: 1, delay: 1 });
         gsap.from(".hero .subtitle", { opacity: 0, y: 20, duration: 1, delay: 1.5 });
         gsap.from(".hero p", { opacity: 0, y: 20, duration: 1, delay: 2 });
         gsap.from(".hero .cta-button", { opacity: 0, scale: 0.9, duration: 1, delay: 2.5 });
 
-        // Section Reveal Animations
         gsap.utils.toArray(".featured-collections, .tailors-note, .legacy-collection, .category-section").forEach(section => {
             gsap.from(section, {
                 opacity: 0,
@@ -238,7 +144,6 @@
             });
         });
 
-        // Countdown Timer
         function updateCountdown() {
             const launchDate = new Date("May 28, 2025 17:07:00 GMT+0530").getTime();
             const now = new Date().getTime();
@@ -256,25 +161,22 @@
             }
         }
 
-        // Initialize
-        window.onload = function() {
+        window.onload = function () {
             typeWriter();
             updateCountdown();
             setInterval(updateCountdown, 1000);
         };
 
-        // Carousel Functionality
         let positions = { 'linen-carousel': 0, 'polo-carousel': 0 };
         function slideCarousel(carouselId, direction) {
             const carousel = document.getElementById(carouselId);
             const grid = carousel.querySelector('.product-grid');
-            const cardWidth = grid.children[0].offsetWidth + 30; // Include margin
+            const cardWidth = grid.children[0].offsetWidth + 30;
             const totalCards = grid.children.length;
             positions[carouselId] = Math.min(Math.max(positions[carouselId] + direction, -(totalCards - 2)), 0);
             grid.style.transform = `translateX(${positions[carouselId] * cardWidth}px)`;
         }
 
-        // Initialize Tilt.js for Collection Cards
         VanillaTilt.init(document.querySelectorAll(".collection-card"), {
             max: 8,
             speed: 400,

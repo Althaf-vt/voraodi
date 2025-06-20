@@ -6,10 +6,10 @@ const customerController = require('../controllers/admin/customerController');
 const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
 const {userAuth,adminAuth} = require('../middlewares/auth');
-const Product = require('../models/ProductSchema');
+const Product = require('../models/productSchema');
 
 
-router.get('/pageError',adminController.pageError);
+
 //Login Managemant
 router.get('/signin',adminController.loadAdminSignin);
 router.post('/signin',adminController.signin);
@@ -20,6 +20,16 @@ router.get('/logout',adminController.logout);
 router.get('/users',adminAuth,customerController.customerInfo);
 router.get('/blockCustomer',adminAuth,customerController.customerBlocked);
 router.get('/unblockCustomer',adminAuth,customerController.customerUnblocked);
+router.get('/searchCustomer',adminAuth,customerController.seachCustomer)
+// router.get('/customer-action',adminAuth,(req,res)=>{
+//     const {action,id} = req.query;
+
+//     if(action === 'block'){
+//        return customerController.customerBlocked(req,res);
+//     }else{
+//        return customerController.customerUnblocked(req,res);
+//     }
+// })
 
 // Category Management
 router.get('/category',adminAuth,categoryController.categoryInfo);
@@ -30,6 +40,8 @@ router.get('/listCategory',adminAuth,categoryController.getListCategory);
 router.get('/unlistCategory',adminAuth,categoryController.getUnlistCategory);
 router.get('/editCategory',adminAuth,categoryController.getEditCategory);
 router.post('/editCategory/:id',adminAuth,categoryController.editCategory);
+router.get('/deleteCategory',adminAuth,categoryController.deleteCategory);
+router.get('/searchCategory',adminAuth,categoryController.searchCategory);
 
 // Product Management
 router.get('/products',adminAuth,productController.getAllProducts);
@@ -39,8 +51,16 @@ router.post('/addProductOffer',adminAuth,productController.addProductOffer);
 router.post('/removeProductOffer',adminAuth,productController.removeProductOffer);
 router.get('/blockProduct',adminAuth,productController.blockProduct);
 router.get('/unblockProduct',adminAuth,productController.unblockProduct);
-router.get('/editProduct',adminAuth,productController.getEditProduct)
+router.get('/editProduct',adminAuth,productController.getEditProduct);
 router.post('/editProduct/:id',adminAuth,upload.array('productImages',4),productController.editProduct)
-router.post('/deleteImage',adminAuth,productController.deleteSingleImage)
+router.post('/deleteImage',adminAuth,productController.deleteSingleImage);
+router.get('/deleteProduct',adminAuth,productController.deleteProduct)
+router.get('/searchProduct',adminAuth,productController.searchProduct);
+
+
+
+
+router.get('/pageError',adminController.pageError);
+
 
 module.exports = router;

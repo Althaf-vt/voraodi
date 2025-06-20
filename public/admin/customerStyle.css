@@ -1,0 +1,390 @@
+/* Basic reset and global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: #f5f5e8;
+    overflow-x: hidden;
+}
+
+/* Customer Management Header */
+.customer-management-header {
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(rgba(26, 37, 47, 0.9), rgba(47, 58, 68, 0.9)), url(https://www.transparenttextures.com/patterns/black-linen.png);
+    color: #f5f5e8;
+    position: relative;
+    overflow: hidden;
+}
+
+.customer-management-header .text-container {
+    padding: 20px;
+}
+
+.customer-management-header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 48px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+    white-space: nowrap;
+}
+
+.customer-management-header .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-style: italic;
+    color: #c9a022;
+    margin-bottom: 10px;
+}
+
+.customer-management-header p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+/* Customer List */
+.customer-list {
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #1a252f, #2f3a44);
+    color: #f5f5e8;
+    text-align: center;
+}
+
+.customer-list h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 36px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.customers-table {
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 245, 0.9);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+}
+
+th {
+    background: #1a252f;
+    color: #f5f5e8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+td {
+    color: #1a252f;
+    border-bottom: 1px solid rgba(201, 160, 34, 0.2);
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.status.active {
+    background-color: #004d00;
+    color: #f5f5e8;
+}
+
+.status.blocked {
+    background-color: #ff4040;
+    color: #f5f5e8;
+}
+
+.view-btn {
+    background: linear-gradient(135deg, #c9a022, #a3821b);
+    margin-right: 5px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.view-btn:hover {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.block-btn {
+    background: linear-gradient(135deg, #ff4040, #cc3333);
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.block-btn:hover {
+    background: linear-gradient(135deg, #cc3333, #ff4040);
+    transform: scale(1.05);
+}
+
+.unblock-btn {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.unblock-btn:hover {
+    background: linear-gradient(135deg, #1a661a, #004d00);
+    transform: scale(1.05);
+}
+
+.block-btn a,
+.unblock-btn a,
+.view-btn a {
+    color: #f5f5e8;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+    line-height: normal;
+}
+
+.block-btn:hover a,
+.unblock-btn:hover a,
+.view-btn:hover a {
+    color: #f5f5e8;
+}
+
+/* Pagination */
+.pagination {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a252f, #2f3a44);
+}
+
+.pagination-list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 10px;
+}
+
+.page-item {
+  display: inline-block;
+}
+
+.page-link {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #c9a022, #a3821b);
+  color: #1a252f;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.page-link:hover {
+  background: linear-gradient(135deg, #004d00, #1a661a);
+  color: #f5f5e8;
+  transform: scale(1.05);
+}
+
+.page-item.active .page-link {
+  background: linear-gradient(135deg, #004d00, #1a661a);
+  color: #f5f5e8;
+  cursor: default;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .customer-management-header h1 {
+        font-size: 36px;
+    }
+
+    .customer-management-header .subtitle {
+        font-size: 20px;
+    }
+
+    .customer-management-header p {
+        font-size: 14px;
+    }
+
+    .customer-list h2 {
+        font-size: 30px;
+    }
+
+    th, td {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .view-btn,
+    .block-btn,
+    .unblock-btn {
+        padding: 6px 12px;
+        font-size: 10px;
+    }
+
+    .page-link {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .customer-management-header {
+        height: 50vh;
+    }
+
+    .customer-management-header h1 {
+        font-size: 30px;
+    }
+
+    .customer-management-header .subtitle {
+        font-size: 18px;
+    }
+
+    .customer-management-header p {
+        font-size: 12px;
+    }
+
+    .customer-list h2 {
+        font-size: 26px;
+    }
+
+    .page-link {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .customer-management-header {
+        height: 40vh;
+    }
+
+    .customer-management-header h1 {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+
+    .customer-management-header .subtitle {
+        font-size: 16px;
+    }
+
+    .customer-management-header p {
+        font-size: 10px;
+    }
+
+    .customer-list h2 {
+        font-size: 22px;
+    }
+
+    .page-link {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+}
+/* ///////////////// */
+.customer-search-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    padding-right: 20px;
+}
+
+.customer-search-form {
+    display: flex;
+    gap: 10px;
+}
+
+.customer-search-input {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    background-color: #fff7e0;
+    color: #1a252f;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.customer-search-button {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #c9a022, #a3821b);
+    color: #1a252f;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.customer-search-clear {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #767675, #4c4b49);
+    color: #f5f5e8;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.customer-search-button:hover {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    transform: scale(1.05);
+    color: #fff;
+}
+
+.customer-search-clear:hover {
+    background: linear-gradient(135deg, #b66801, #986211);
+    transform: scale(1.05);
+}
+

@@ -7,7 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
-  <link rel="stylesheet" href="/admin/adminStyle.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <link rel="stylesheet" href="/admin/customerStyle.css">
 </head>
 <body>
   <!-- Include the Header (Navbar and Sidebar) -->
@@ -25,8 +27,18 @@
     </div>
 
     <!-- Customer List Section -->
-    <div class="customer-list">
+    <div class="customer-list ">
       <h2>Customer List</h2>
+
+      <!-- Search Bar -->
+    <div class="customer-search-container">
+      <form id="searchForm" action="/admin/searchCustomer" method="GET" class="customer-search-form">
+        <input type="text" name="query" id="searchInput" placeholder="Search customers..." class="customer-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
+        <button type="submit" class="customer-search-button">Search</button>
+        <button type="button" class="customer-search-clear" onclick="clearSearch()">Clear</button>
+      </form>
+    </div>
+
       <div class="customers-table">
         <table>
           <thead>
@@ -55,13 +67,13 @@
                   <td>
                     <% if (data[i].isBlocked === false) { %>
                       <button class="action-btn view-btn" aria-label="View Customer">View</button>
-                      <button class="action-btn block-btn" aria-label="Block Customer">
-                        <a href="/admin/blockCustomer?id=<%= data[i]._id %>">Block</a>
+                      <button class="action-btn block-btn" aria-label="Block Customer" onclick="confirmBlock('<%=data[i]._id%>')">
+                        <a href="#">Block</a>
                       </button>
                     <% } else { %>
                       <button class="action-btn view-btn" aria-label="View Customer">View</button>
-                      <button class="action-btn unblock-btn" aria-label="Unblock Customer">
-                        <a href="/admin/unblockCustomer?id=<%= data[i]._id %>">Unblock</a>
+                      <button class="action-btn unblock-btn" aria-label="Unblock Customer" onclick="confirmUnblock('<%=data[i]._id%>')">
+                        <a href="#">Unblock</a>
                       </button>
                     <% } %>
                   </td>
@@ -83,7 +95,9 @@
         <ul class="pagination-list">
           <% for (let i = 1; i <= totalPages; i++) { %>
             <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-              <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+              <a class="page-link" href="<%= typeof searchQuery !== 'undefined' ? '/admin/searchCustomer?page=' + i + '&query=' + encodeURIComponent(searchQuery) : '/admin/users?page=' + i %>">
+                <%= i %>
+              </a>
             </li>
           <% } %>
         </ul>
@@ -91,37 +105,161 @@
     </div>
   </div>
 
-  <script>
-    // Typewriter Effect
-    const text = "Customer Management";
-    let i = 0;
-    function typeWriter() {
-      if (i < text.length) {
-        document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
-        i++;
-        setTimeout(typeWriter, 100);
-      }
+<script>
+  // Prevents the default form submission
+  document.getElementById('searchForm').addEventListener('submit',function(e){
+    e.preventDefault()
+
+    const query = document.getElementById('searchInput').value.trim();
+
+    const route = query.length > 0 ? '/admin/searchCustomer' : '/admin/users';
+
+    fetch(`/admin/searchCustomer?query=${encodeURIComponent(query)}`)
+      .then(res => res.text())
+        .then(html =>{
+        //Parse the returned HTML string into DOM
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        //Find the new Cus table and pagin from etched html
+        const newTable = doc.querySelector('.customers-table');
+        const newPagination = doc.querySelector('.pagination');
+
+        //Replace the old ones on the page with new content
+        document.querySelector('.customers-table').innerHTML = newTable.innerHTML;
+        document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+      })
+      .catch(err=>{
+        console.error('Search Customers Error',err);
+      });
+  });
+  
+  
+  // Pagination 
+  document.addEventListener('click',function(e){
+    if(e.target.classList.contains('page-link')){
+      e.preventDefault();
+      const url = new URL(e.target.href);
+      const page = url.searchParams.get('page');
+      const query = document.getElementById('searchInput').value.trim();
+
+      fetch(`/admin/searchCustomer?page=${page}&query=${encodeURIComponent(query)}`)
+      .then(res => res.text())
+      .then(html =>{
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html,'text/html');
+
+        const newTable = doc.querySelector('.customers-table');
+        const newPagination = doc.querySelector('.pagination');
+        
+        document.querySelector('.customers-table').innerHTML = newTable.innerHTML;
+        document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+      })
+      .catch(err =>{
+        console.error('Error in customer pagination',err);
+      });
     }
 
-    // Section Reveal Animation
-    gsap.utils.toArray(".customer-list").forEach(section => {
-      gsap.from(section, {
-        opacity: 0,
-        y: 30,
-        duration: 1,
-        scrollTrigger: {
-          trigger: section,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none none"
-        }
-      });
-    });
+  });
+    
+  // Clear Search
+  function clearSearch() {
+    document.getElementById('searchInput').value = "";
 
-    // Initialize
-    window.onload = function() {
-      typeWriter();
-    };
-  </script>
+    fetch('/admin/users')
+    .then(res => res.text())
+    .then(html =>{
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html,'text/html');
+      const newTable = doc.querySelector('.customers-table');
+      const newPagination = doc.querySelector('.pagination');
+
+      document.querySelector('.customers-table').innerHTML = newTable.innerHTML;
+      document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+    });
+  }
+
+  // Confirm Block
+  function confirmBlock(userId) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to Block this user?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#004d00',
+      cancelButtonColor: '#ff4040',
+      confirmButtonText: 'Block!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`/admin/blockCustomer?id=${userId}`)
+        .then(res => res.json())
+        .then(data =>{
+          if(data.success){
+            Swal.fire('Blocked!', '', 'success');
+            reloadCustomerTable();
+          }else{
+            Swal.fire('Failed to block!', '', 'error');
+          }
+        })
+        .catch(err =>{
+          Swal.fire('Error!', 'Something went wrong.', 'error');
+          console.error('Block user error:', err);
+        });
+      }
+    });
+  }
+
+  // Confirm unBlock
+  function confirmUnblock(userId) {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to Unblock this user?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#004d00',
+      cancelButtonColor: '#ff4040',
+      confirmButtonText: 'Unblock!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+          fetch(`/admin/unblockCustomer?id=${userId}`)
+          .then(res => res.json())
+          .then(data => {
+            if(data.success){
+              Swal.fire('Unblocked!', '', 'success');
+              reloadCustomerTable();
+            }else{
+              Swal.fire('Failed to unblock!', '', 'error');
+            }
+          })
+          .catch(err =>{
+            Swal.fire('Error!', 'Something went wrong.', 'error');
+            console.error('Unblock user error:', err); 
+          });
+      }
+    });
+  }
+
+  function reloadCustomerTable(){
+    const query = document.getElementById('searchInput').value.trim();
+    const queryString = query ? `?query=${encodeURIComponent(query)}` : '';
+  
+  
+    fetch(`/admin/searchCustomer${queryString}`)
+    .then(res => res.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const newTable = doc.querySelector('.customers-table');
+      const newPagination = doc.querySelector('.pagination');
+
+      document.querySelector('.customers-table').innerHTML = newTable.innerHTML;
+      document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+    })
+    .catch(err => console.error('Reload table error',err));
+  }
+
+</script>
 </body>
 </html>

@@ -20,7 +20,7 @@ const productSchema = new Schema({
         required: true
     },
     salePrice: {
-        type: String,
+        type: Number,
         required: true
     },
     productOffer: {

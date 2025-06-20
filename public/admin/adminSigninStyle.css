@@ -1,0 +1,268 @@
+/* Basic reset and global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: #f5f5e8;
+    overflow-x: hidden;
+}
+
+/* Sign In Page */
+.auth-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at center, #1a252f, #2f3a44);
+    padding: 80px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(https://www.transparenttextures.com/patterns/black-linen.png);
+    opacity: 0.1;
+    z-index: -1;
+}
+
+.auth-container {
+    position: relative;
+    padding: 40px;
+    background: rgba(255, 255, 245, 0.9);
+    border: 6px solid #c9a022;
+    border-image: linear-gradient(45deg, #c9a022, #a3821b) 1;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 10px rgba(201, 160, 34, 0.5);
+    border-radius: 12px;
+    max-width: 450px;
+    width: 100%;
+}
+
+.auth-container h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 26px;
+    color: #1a252f;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.auth-container .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: #c9a022;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.auth-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-container label {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a252f;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.auth-container input {
+    padding: 10px;
+    border: 2px solid #c9a022;
+    border-radius: 6px;
+    outline: none;
+    background-color: #fff;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-container input:focus {
+    border-color: #a3821b;
+    box-shadow: 0 0 8px rgba(201, 160, 34, 0.6);
+}
+
+.auth-container .submit-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #c9a022, #a3821b);
+    color: #1a252f;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-container .submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.auth-container .submit-btn:hover::before {
+    left: 100%;
+}
+
+.auth-container .submit-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(201, 164, 34, 0.7);
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    color: #f5f5e8;
+}
+
+.auth-container .link {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: #1a252f;
+    margin-top: 12px;
+}
+
+.auth-container .link a {
+    color: #c9a022;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.auth-container .link a:hover {
+    color: #a3821b;
+}
+
+.auth-container .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.auth-container .error-message {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    color: #ff4040;
+    text-align: left;
+    min-height: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .auth-container h2 {
+        font-size: 22px;
+    }
+
+    .auth-container .subtitle {
+        font-size: 16px;
+    }
+
+    .auth-container input,
+    .auth-container .submit-btn {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .auth-container label {
+        font-size: 12px;
+    }
+
+    .auth-container .link {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 30px;
+        max-width: 380px;
+    }
+
+    .auth-container h2 {
+        font-size: 20px;
+    }
+
+    .auth-container .subtitle {
+        font-size: 14px;
+    }
+
+    .auth-container input,
+    .auth-container .submit-btn {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .auth-container label {
+        font-size: 12px;
+    }
+
+    .auth-container .link {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 20px;
+        max-width: 320px;
+    }
+
+    .auth-container h2 {
+        font-size: 18px;
+    }
+
+    .auth-container .subtitle {
+        font-size: 14px;
+    }
+
+    .auth-container input,
+    .auth-container .submit-btn {
+        padding: 6px;
+        font-size: 10px;
+    }
+
+    .auth-container label {
+        font-size: 10px;
+    }
+
+    .auth-container .link {
+        font-size: 10px;
+    }
+}
+
+.alert-danger {
+  background-color: #c77c7c;
+  color: #000000;
+  font-weight: 500;
+  border: 1px solid #8b1717;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Montserrat', sans-serif;
+  margin-top: 10px;
+  box-shadow: 0 0 10px rgba(204, 0, 0, 0.1);
+}

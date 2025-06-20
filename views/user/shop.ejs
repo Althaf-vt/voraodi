@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Montserrat&family=Playfair+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/user/shopStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css" />
+    <link rel="stylesheet" href="/user/footerStyle.css" />
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+    <div class="main-container">
+        <div class="page-header breadcrumb-wrap">
+      <div class="container">
+        <div class="breadcrumb">
+          <a class="b1" href="/" rel="nofollow">Home</a>
+          <span></span> <a class="b2" href="/shop" style="text-decoration: none;">Shop</a>
+        </div>
+      </div>
+    </div>
+        <section class="shop-page container">
+            <div class="shop-topbar">
+                <div class="search-bar">
+                    <form action="/searchProducts" method="POST" class="search-form">
+                        <input type="text" name="query" placeholder="Search items..." class="search-input"  value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+                        <button type="submit" class="search-button">Search</button>
+                        <button type="button" class="clear-button" onclick="clearSearch()">Clear</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="product-list-container">
+                <aside class="sidebar">
+                    <div class="filter-section">
+                        <div class="filter-title">Categories</div>
+                        <div class="category-brand-container">
+                            <ul>
+                                <% for(let i = 0; i < category.length; i ++){%>
+                                <li class="filter-item">
+                                    <a href="/filter?category=<%= category[i]._id %>"><%= category[i].name %></a>
+                                </li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="price-filter">
+                        <div class="filter-title">Sort Products</div>
+                        <div class="price-options">
+                            <a href="/sortProducts?sort=Low-High"><button type="button" class="price-button">Low - Hight ⬆</button></a>
+                            <a href="/sortProducts?sort=High-Low"><button type="button" class="price-button">High - Low ⬇</button></a>
+                            <a href="/sortProducts?sort=A-Z"><button type="button" class="price-button">Aa - Zz</button></a>
+                            <a href="/sortProducts?sort=Z-A"><button type="button" class="price-button">Zz - Aa</button></a>
+                        </div>
+                    </div>
+
+                    <div class="price-filter">
+                        <div class="filter-title">Filter by Price</div>
+                        <div class="price-options">
+                            <a href="/filterPrice?gt=0&lt=500"><button type="button" class="price-button">Under ₹500</button></a>
+                            <a href="/filterPrice?gt=500&lt=1000"><button type="button" class="price-button">₹500 - ₹1000</button></a>
+                            <a href="/filterPrice?gt=1000&lt=1500"><button type="button" class="price-button">₹1000 - ₹1500</button></a>
+                            <a href="/filterPrice?gt=1500&lt=1000000"><button type="button" class="price-button">Above ₹1500</button></a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="product-grid">
+                    <% if (products.length === 0) { %>
+                        <div class="no-products">No products available.</div>
+                    <% } else { %>
+                        <% for(let i = 0; i < products.length; i ++) {%>
+                            <div class="product-card">
+                                <span class="wishlist-btn" onclick="addToWishlist('<%= products._id %>')">♡</span>
+                                <a href="/productDetails?id=<%= products[i]._id %>" style="text-decoration: none;">
+                                    <img src="<%= products[i].productImage[0]%>" alt="<%= products[i].productName %>">
+                                    <h4><%= products[i].productName %></h4>
+                                    <p>₹<%=products[i].salePrice.toLocaleString('en-IN')%></p>
+                                    <% if (products[i].regularPrice > products[i].salePrice) { %>
+                                        <p><span style="color: rgb(219, 75, 9);" class="text-muted"><strike>₹<%=products[i].regularPrice.toLocaleString('en-IN')%></strike></span></p>
+                                    <% } else{%>
+                                        <p><span class="text-muted"><br></span></p>
+                                    <% } %>
+                                </a>
+                                <button class="add-to-cart-btn" onclick="addToCart('<%= products._id %>')">Add to Cart</button>
+                            </div>
+                        <% } %>
+                    <% } %>
+                </main>
+            </div>
+
+            <div class="pagination">
+                <% if (currentPage > 1) { %>
+                        <a class="btn" href="/shop?page=<%= currentPage - 1 %>">Prev</a>   
+                <% } %>
+
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                        <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/shop?page=<%= i %>"><%= i %></a>
+                <% } %>
+
+                <% if (currentPage < totalPages) { %>
+                        <a class="btn" href="/shop?page=<%= currentPage + 1 %>">Next</a>
+                <% } %>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function addToWishlist(productId) {
+            window.location.href = `/wishlist/add?id=${productId}`;
+        }
+
+        function addToCart(productId) {
+            window.location.href = `/addToCart?id=${productId}`;
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <%- include("../../views/partials/user/footer") %>
+</body>
+</html>
+<script>
+     function clearSearch() {
+        // Option 1: Reload full page
+        window.location.href = "/shop";
+
+        // Option 2: If you want to just clear the input field and resubmit
+        // document.querySelector('.search-input').value = '';
+        // document.getElementById('searchForm').submit();
+     }
+</script>
