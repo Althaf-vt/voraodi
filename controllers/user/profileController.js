@@ -579,99 +579,143 @@ const postAddAddress = async(req,res)=>{
     }
 }
 
+// const getEditAddress = async(req,res)=>{
+//     try {
+//         const addressId = req.query.id;
+//         const user = req.session.user;
+
+//         const currentAddress = await Address.findOne({
+//             "address._id" : addressId
+//         });
+
+//         if(!currentAddress){
+//             console.warn('Address not found');
+//             return res.status(400).json({success:false,message:'Address not found'});
+//         }
+
+//         const addressData = currentAddress.address.find((item)=>{
+//             return item._id.toString() === addressId.toString();
+//         });
+
+//         if(!addressData){
+//             console.warn('No Address Data');
+//             return res.status(400).json({success:false, message: 'Address data not found'});
+//         }
+
+//         return res.status(200).json({success:true,address:addressData});
+//     } catch (error) {
+//         console.error('Error in loading edit address',error);
+//         return res.status(500).json({success:false,message:'Internal Server Error'});
+//     }
+// }
+
 const getEditAddress = async(req,res)=>{
     try {
-        const addressId = req.query.id;
-        const user = req.session.user;
+        console.log('backend')
+        const id = req.query.id;
+        const userId = req.session.user;
 
-        const currentAddress = await Address.findOne({
-            "address._id" : addressId
-        });
-
-        if(!currentAddress){
-            console.warn('Address not found');
-            return res.redirect('/pageNotFound');
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            console.log('ivalid address id')
+            return res.status(400).json({ success: false, message: 'Invalid address id' });
         }
 
-        const addressData = currentAddress.address.find((item)=>{
-            return item._id.toString() === addressId.toString();
-        });
+        const doc = await Address.findOne(
+            { userId, 'address._id': id },
+            { 'address.$': 1, _id: 0 }
+        ).lean();
 
-        if(!addressData){
-            console.warn('No Address Data');
-            return res.redirect('/pageNotFound');
+        
+        if(!doc){
+            console.log('no user')
+            return res.status(400).json({success:false,message:'Address not found'});
         }
-        return res.render('edit-address',{
-            address: addressData,
-            user: user
-        });
+        console.log('user here')
+
+        return res.status(200).json({success:true, address: doc.address[0] })
+
     } catch (error) {
-        console.error('Error in loading edit address',error);
-        return res.redirect('/pageNotFound');
+        console.error('GET /address error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
 
 const editAddress = async(req,res)=>{
     try {
-        const data = req.body;
-        const addressId = req.query.id;
-        const user = req.session.user;
-        const findAddress = await Address.findOne({"address._id":addressId});
 
-        if(!findAddress){
-            console.warn('Could not find address')
-            return res.redirect('/pageNotFound');
+        const userId = req.session.user;
+        const addressId = req.query.id;
+
+        const {
+        name,
+        country,
+        state,
+        city,
+        street,
+        pincode,
+        phone,
+        altPhone = ''                       
+        } = req.body;
+
+        const address = await Address.findOne({userId,'address._id':addressId});
+        if(!address){
+            console.log('address not found in db');
+            return res.status(400).json({success:false, message:'Address not found'});
         }
 
         await Address.updateOne(
-            {"address._id": addressId},
-            {$set: {
-                "address.$":{
-                    _id: addressId,
-                    name: data.name,
-                    country: data.country,
-                    state: data.state,
-                    city: data.city,
-                    street: data.street,
-                    pincode: data.pincode,
-                    phone: data.phone,
-                    altPhone: data.altPhone
+            {userId,'address._id':addressId},
+            {
+                $set:{
+                    'address.$.name':name,
+                    'address.$.country': country,
+                    'address.$.state': state,
+                    'address.$.city': city,
+                    'address.$.street': street,
+                    'address.$.pincode': pincode,
+                    'address.$.phone': phone,
+                    'address.$.altPhone': altPhone
                 }
-            }}
+            }
         )
-        res.redirect('/userAddress');
+
+        return res.status(200).json({success:true,message:'Address updated successfully'});
+
     } catch (error) {
         console.error("Errorn in edit address",error);
-        res.redirect('/pageNotFound');
+        return res.status(500).json({success:false,message:'Internal Server Error'});
     }
 }
 
 const deleteAddress = async(req,res)=>{
     try {
-        const addressId = req.query.id;
-        const findAddress = await Address.findOne({"address._id":addressId});
-
-        if(!findAddress){
-            return res.status(404).send('Address not found');
+        const {id} = req.body;
+        const userId = req.session.user
+        
+        if(!id){
+            console.log('no id')
+            return res.status(400).json({success:false});
         }
 
-        await Address.updateOne({
-                "address._id": addressId
-            },
-            {
-                $pull: {
-                    address: {
-                        _id: addressId
-                    }
-                }
-            }
-        )
+        const addrId = new mongoose.Types.ObjectId(id); 
 
-        res.redirect('/userAddress');
+        console.log('id here')
+        const result = await Address.updateOne(
+            {userId, 'address._id':addrId},
+            {$pull:{address:{_id:addrId}}}
+        );
+
+
+        if(!result.modifiedCount){
+            console.log('not modified')
+            return res.status(400).json({success:false, message:'Address not found'})
+        }
+
+        return res.status(200).json({success:true,message:'Address deleted'});
 
     } catch (error) {
         console.error('Error in delete Address',error);
-        res.redirect('/pageNotFound');
+        return res.redirect('/pageNotFound');
     }
 }
 
@@ -681,6 +725,8 @@ const loadCart = async(req,res)=>{
         const userData = await User.findOne({_id:userId});
 
         const userCart = await Cart.findOne({userId:userId}).populate('items.productId');
+
+        console.log('===== ',userCart)
 
         
             return res.render('cart',{

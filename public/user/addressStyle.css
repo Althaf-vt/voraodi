@@ -318,3 +318,165 @@
         margin: 0;
     }
 }
+
+/* ───────── Edit‑Address Modal ───────── */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden { display: none; }
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.modal-card {
+  position: relative;
+  width: 95%;
+  max-width: 700px;
+  background: #fff;
+  border: 2px solid #d4af37;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  padding: 35px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  animation: zoomIn 0.25s ease;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.modal-title {
+  font-family: 'Cinzel', serif;
+  font-size: 30px;
+  color: #2f3a44;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.modal-title::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background-color: #d4af37;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* reuse form‑row / form‑group from Add‑Address so inputs look identical */
+.modal-form { display: flex; flex-direction: column; gap: 20px; }
+
+.modal-form .form-row   { display: flex; gap: 20px; flex-wrap: wrap; }
+.modal-form .form-group { flex: 1; min-width: 250px; display: flex; flex-direction: column; }
+
+.modal-form label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #2f3a44;
+  margin-bottom: 6px;
+}
+
+.modal-form input {
+  padding: 10px;
+  border: 1px solid #d4af37;
+  border-radius: 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  color: #2f3a44;
+}
+
+.modal-form .form-message {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  padding: 7px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 7px;
+  opacity: 0;
+}
+
+.modal-form .form-message.error   { color:#d32f2f; border:1px solid #d32f2f; background:#fffcf4; }
+.modal-form .form-message.success { color:#006400; border:1px solid #006400; background:#f5f5e8; }
+
+.modal-form .form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.modal-form .action-button {
+  padding: 10px 30px;
+  background: linear-gradient(45deg,#d4af37,#b8972e);
+  color: #2f3a44;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.modal-form .action-button.cancel {
+  background: linear-gradient(45deg,#2f3a44,#3a4651);
+  color:#f5f5e8;
+}
+
+.modal-form .action-button::before {
+  content:'';
+  position:absolute;
+  top:0; left:-100%; width:100%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  transition:left .5s ease;
+}
+.modal-form .action-button:hover::before { left:100%; }
+
+.modal-form .action-button:hover {
+  transform:scale(1.05);
+  box-shadow:0 8px 20px rgba(212,175,55,.7);
+  background:linear-gradient(135deg,#006400,#228b22);
+  color:#f5f5e8;
+}
+
+.modal-form .action-button.cancel:hover {
+  background:linear-gradient(135deg,#ff4040,#d32f2f);
+}
+
+/* responsive tweaks */
+@media (max-width:600px){
+  .modal-card      { padding:25px 20px; }
+  .modal-form .form-row { flex-direction:column; gap:15px; }
+  .modal-form .form-group{ min-width:100%; }
+}
+
+
+/* Toast */
+.toastify {
+  border-radius: 12px !important; /* or whatever curve you like */
+  font-family: 'Montserrat', sans-serif; /* optional, to match your VOGUE theme */
+  top: 80px !important; /* Adjust this value based on your navbar height */
+  z-index: 9999; /* Make sure it appears above content, but not over navbar */
+}

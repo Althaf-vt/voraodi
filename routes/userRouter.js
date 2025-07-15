@@ -94,9 +94,9 @@ router.patch('/edit-profile/image',userAuth,multer.single('avatar'),profileContr
 router.get('/userAddress',userAuth,profileController.addresses)
 router.get('/add-address',userAuth,profileController.addAddress);
 router.post('/add-address',userAuth,profileController.postAddAddress);
-router.get('/edit-address',userAuth,profileController.getEditAddress);
-router.post('/edit-address',userAuth,profileController.editAddress);
-router.get('/delete-address',userAuth,profileController.deleteAddress);
+router.get('/get-address',userAuth,profileController.getEditAddress);
+router.patch('/edit-address',userAuth,profileController.editAddress);
+router.delete('/delete-address',userAuth,profileController.deleteAddress);
 
 //Cart
 router.get('/cart',userAuth,profileController.loadCart);

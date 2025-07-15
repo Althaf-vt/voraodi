@@ -6,7 +6,9 @@
     <title>VOGUE - User Addresses</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="/re-use/toast.js"></script>
     <link rel="stylesheet" href="/user/AddressStyle.css">
     <link rel="stylesheet" href="/user/headerStyle.css">
     <link rel="stylesheet" href="/user/footerStyle.css">
@@ -66,8 +68,8 @@
                                     </label>
                                     <span><%= address.altPhone %></span>
                                 </div>
-                                <a href="/edit-address?id=<%= address.id %>" class="edit-button">Edit</a>
-                                <a href="/delete-address?id=<%= address.id %>" class="delete-button">Delete</a>
+                                <a onclick="editAddress('<%=address.id%>')" class="edit-button">Edit</a>
+                                <a onclick="deleteAddress('<%=address.id%>')" class="delete-button">Delete</a>
                             </div>
                         </div>
                     <% }) %>
@@ -81,9 +83,165 @@
         </div>
     </div>
 
+    <!-- Edit address modal -->
+    <div id="editModal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeEditModal()"></div>
+
+    <div class="modal-card">
+        <h2 class="modal-title">Edit Address</h2>
+
+        <form id="editForm" class="modal-form">
+        <input type="hidden" name="id" />
+
+        <div class="form-row">
+            <div class="form-group">
+            <label>Name</label>
+            <input name="name" required>
+            </div>
+            <div class="form-group">
+            <label>Country</label>
+            <input name="country" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group"><label>State</label><input name="state" required></div>
+            <div class="form-group"><label>City</label><input name="city" required></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group"><label>Street</label><input name="street" required></div>
+            <div class="form-group"><label>Pin&nbsp;Code</label><input name="pincode" maxlength="6" required></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group"><label>Phone</label><input name="phone" maxlength="10" required></div>
+            <div class="form-group"><label>Alt&nbsp;Phone</label><input name="altPhone" maxlength="10"></div>
+        </div>
+
+        <div id="editMsg" class="form-message"></div>
+
+        <div class="form-actions">
+            <button type="submit" class="action-button">Save</button>
+            <button type="button" class="action-button cancel" onclick="closeEditModal()">Cancel</button>
+        </div>
+        </form>
+    </div>
+    </div>
+
     <%- include('../../views/partials/user/footer') %>
 
     <script>
+        async function deleteAddress(id){
+            await Swal.fire({
+                toast: true,
+                title: 'Delete this address?',
+                text: 'You won’t be able to recover it later.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    fetch('/delete-address',{
+                        method: "DELETE",
+                        headers: {
+                            'Content-Type':'application/json',
+                        },
+                        body: JSON.stringify({id})
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.success){
+                            toast(data);
+                        }else{
+                            Swal.fire({
+                                toast: true,
+                                icon: 'warning',
+                                title: 'Error!',
+                                text: data.message|| 'Failed to delete address',
+                                timer: 1500,
+                                showConfirmButton: false
+                            })
+                        }
+                    })
+                    .catch(err =>{
+                        console.error('Delete adrress error',err);
+                        Swal.fire({
+                            toast: true,
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong while Deleting address.'
+                        })
+                    })
+
+                }
+            })
+        }
+
+    
+/* ---------- helpers ---------- */
+const modal      = document.getElementById('editModal');
+const form       = document.getElementById('editForm');
+const msg        = document.getElementById('editMsg');
+const backdrop   = modal.querySelector('.modal-backdrop');
+
+function openEditModal()   { modal.classList.remove('hidden'); }
+function closeEditModal()  { modal.classList.add('hidden');  form.reset(); msg.textContent=''; }
+backdrop.addEventListener('click', closeEditModal);
+
+/* ---------- get → populate ---------- */
+async function editAddress(id){
+  try{
+    const res = await fetch(`/get-address?id=${encodeURIComponent(id)}`);   // <‑‑ ID in query string
+    console.log('Fetched get modal')
+    const data = await res.json();
+    if(!data.success){
+        Swal.fire({toast:true,icon:'error',title:'Could not fetch address',text:data.message||'sdhwj '});
+    }
+
+    console.log('data success')
+    Object.entries(data.address).forEach(([k,v])=>{
+      const input = form.elements.namedItem(k);
+      if(input) input.value = v ?? '';
+    });
+    form.dataset.id = id;            // stash the id so we can read it on submit
+    openEditModal();
+  }catch(err){
+    console.error(err);
+    Swal.fire({toast:true,icon:'error',title:'Could not fetch address'});
+  }
+}
+
+/* ---------- patch → save ---------- */
+form.addEventListener('submit', async e=>{
+  e.preventDefault();
+
+  const id   = form.dataset.id;                          // pulled from data‑attribute
+  const body = Object.fromEntries(new FormData(form).entries());
+
+  try{
+    const res   = await fetch(`/edit-address?id=${encodeURIComponent(id)}`,{  
+      method : 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body   : JSON.stringify(body)                      // body contains the fields
+    });
+    const data = await res.json();
+    if(!data.success) throw new Error(data.message);
+
+    
+    closeEditModal();
+    toast(data);
+
+  }catch(err){
+    console.error(err);
+    msg.textContent = err.message || 'Save failed';
+    msg.style.color = 'crimson';
+  }
+});
+
+
         
     </script>
 </body>
