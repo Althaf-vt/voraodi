@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - Order Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/user/orderDetailsStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css">
+    <link rel="stylesheet" href="/user/footerStyle.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="order-details-container">
+        <!-- Sidebar: Amazon/Flipkart-inspired compact navigation -->
+        <div class="sidebar">
+            <button class="sidebar-toggle">☰ Menu</button>
+            <h2 class="sidebar-title">My Account</h2>
+            <ul class="sidebar-nav">
+                <li><a href="/userProfile">Profile</a></li>
+                <li><a href="/userAddress">Address</a></li>
+                <li><a href="/orders" class="active">Orders</a></li>
+                <li><a href="/cart">Cart</a></li>
+                <li><a href="/wishlist">Wishlist</a></li>
+                <li><a href="/wallet">Wallet</a></li>
+                <li><a href="/coupons">Coupons</a></li>
+                <li><a href="/referrals">Referrals</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Order Details Content -->
+        <div class="order-details-content">
+            <div class="order-details-header">
+                <h1 class="order-details-title">Order Details</h1>
+                <p class="order-details-subtitle">Order #<%= order.orderId %> | Placed on <%= new Date(order.createdAt).toLocaleDateString() %></p>
+            </div>
+
+            <!-- Order Tracking: Amazon/Flipkart-inspired simple design -->
+<div class="tracking-section">
+    <h2 class="section-title">Order Tracking</h2>
+    <div class="tracking-bar" style="--progress: <%= 
+        order.status === 'Ordered' ? 25 : 
+        order.status === 'Confirmed' ? 25 : 
+        order.status === 'Shipped' ? 50 : 
+        order.status === 'Out for Delivery' ? 75 : 
+        order.status === 'Delivered' ? 100 : 
+        order.status === 'Cancelled' ? 0 : 0 %>">
+        
+        <% if (order.status === 'Cancelled') { %>
+            <!-- Show cancelled flow -->
+            <div class="tracking-step completed" data-status="Ordered">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Ordered</span>
+            </div>
+            <div class="tracking-step cancelled" data-status="Cancelled">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Cancelled</span>
+            </div>
+        <% } else if (order.status === 'Return Request' || order.status === 'Returned') { %>
+            <!-- Show return flow -->
+            <div class="tracking-step completed" data-status="Ordered">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Ordered</span>
+            </div>
+            <div class="tracking-step completed" data-status="Delivered">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Delivered</span>
+            </div>
+            <div class="tracking-step <%= order.status === 'Return Request' ? 'active' : 'completed' %>" data-status="Return Request">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Return Request</span>
+            </div>
+            <% if (order.status === 'Returned') { %>
+                <div class="tracking-step completed" data-status="Returned">
+                    <div class="tracking-icon"></div>
+                    <span class="tracking-label">Returned</span>
+                </div>
+            <% } %>
+        <% } else { %>
+            <!-- Show normal flow -->
+            <div class="tracking-step <%= order.status === 'Ordered' ? 'active' : 'completed' %>" data-status="Ordered">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Ordered</span>
+            </div>
+            <div class="tracking-step <%= order.status === 'Confirmed' ? 'active' : (order.status === 'Ordered' ? '' : 'completed') %>" data-status="Confirmed">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Confirmed</span>
+            </div>
+            <div class="tracking-step <%= order.status === 'Shipped' ? 'active' : (order.status === 'Ordered' || order.status === 'Confirmed' ? '' : 'completed') %>" data-status="Shipped">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Shipped</span>
+            </div>
+            <div class="tracking-step <%= order.status === 'Out for Delivery' ? 'active' : (order.status === 'Delivered' ? 'completed' : '') %>" data-status="Out for Delivery">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Out for Delivery</span>
+            </div>
+            <div class="tracking-step <%= order.status === 'Delivered' ? 'active' : '' %>" data-status="Delivered">
+                <div class="tracking-icon"></div>
+                <span class="tracking-label">Delivered</span>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+            <!-- Order Info: Details and Address -->
+            <div class="order-info">
+                <div class="order-info-left">
+                    <h2 class="section-title">Order Information</h2>
+                    <div class="detail-item">
+                        <span class="detail-label">Order Number:</span>
+                        <span class="detail-value"><%= order.orderId %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Date:</span>
+                        <span class="detail-value"><%= new Date(order.createdAt).toLocaleDateString() %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Total:</span>
+                        <span class="detail-value">₹<%= order.totalPrice.toFixed(2) %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Payment Method:</span>
+                        <span class="detail-value"><%= order.paymentMethod%></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value" style="color: #006400; font-weight: 700;"><%= order.status %></span>
+                    </div>
+                </div>
+                <div class="order-info-right">
+                    <h2 class="section-title">Delivery Address</h2>
+                    <div class="detail-item">
+                        <span class="detail-label">Name:</span>
+                        <span class="detail-value"><%= order.address.name %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Address:</span>
+                        <span class="detail-value">
+                            <%= order.address.street %>,<br>
+                            <%= order.address.city %>, <%= order.address.state %><br>
+                            <%= order.address.country %> - <%= order.address.pincode %>
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone:</span>
+                        <span class="detail-value"><%= order.address.phone %></span>
+                    </div>
+                    <% if (order.address.altPhone) { %>
+                        <div class="detail-item">
+                            <span class="detail-label">Alt. Phone:</span>
+                            <span class="detail-value"><%= order.address.altPhone %></span>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Ordered Items -->
+            <div class="ordered-items">
+                <h2 class="section-title">Ordered Items</h2>
+
+                <table class="ordered-items-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% order.orderedItems.forEach(item => { %>
+                            <tr class="order-item-row" data-sku="<%= item.sku %>">
+                                <!-- Product image and name -->
+                                <td class="product-cell">
+                                    <div class="product-info">
+                                        <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>" class="item-image">
+                                        <span><%= item.product.productName %></span>
+                                    </div>
+                                </td>
+
+                                <!-- Size -->
+                                <td><%= item.size %></td>
+
+                                <!-- Quantity -->
+                                <td><%= item.quantity %></td>
+
+                                <!-- Unit Price -->
+                                <td>₹<%= item.product.salePrice.toFixed(2) %></td>
+
+                                <!-- Total Price -->
+                                <td>₹<%= (item.product.salePrice * item.quantity).toFixed(2) %></td>
+
+                                <!-- Status -->
+                                <td>
+                                    <% if (item.status === 'Cancelled') { %>
+                                        Cancelled
+                                    <% } else { %>
+                                        <%= order.status %>
+                                    <% } %>
+                                </td>
+
+                                <!-- Action -->
+                                <td>
+                                    <% if (item.status !== 'Cancelled' && item.status !== 'Delivered' && order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
+                                        <button 
+                                            class="cancel-item-button" 
+                                            onclick="cancelItem('<%= order.orderId %>', '<%= item.sku %>')">
+                                            Cancel Item
+                                        </button>
+                                    <% } else { %>
+                                        <% if (item.status === 'Delivered') {%>
+                                        <button 
+                                            class="cancel-item-button" 
+                                            onclick="returnItem('<%= order.orderId %>', '<%= item.sku %>')">
+                                            Return Item
+                                        </button>
+                                        <% } %>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/download-invoice?id=<%= order.id %>" class="btn btn-primary">Download Invoice</a>
+                <% if (order.status !== 'Delivered' && order.status !== 'Cancelled') { %>
+                    <button 
+                        class="cancel-order-form btn btn-secondary" 
+                        onclick="cancelOrder('<%= order.orderId%>')">
+                        Cancel Order
+                    </button>
+                <% }else{ %>
+                    <% if(order.status !== 'Cancelled') {%>
+                    <button 
+                        class="cancel-order-form btn btn-secondary" 
+                        onclick="returnOrder('<%= order.orderId%>')">
+                        Return Order
+                    </button>
+                    <% } %>
+                <% } %>
+                <a href="/orders" class="btn btn-secondary">Back to Orders</a>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    
+</body>
+</html>
+<script>
+    //cancel item 
+    async function cancelItem(orderId, sku) {
+    Swal.fire({
+        toast: true,
+        title: 'Are you sure?',
+        text: "Do you want to cancel this item?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, cancel it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/cancel-item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId, sku })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Find and remove the item DOM element using SKU
+                    const button = document.querySelector(`button[onclick*="${sku}"]`);
+                    if (button) {
+                        const itemDiv = button.closest('.order-item');
+                        if (itemDiv) itemDiv.remove();
+                    }
+
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        title: 'Cancelled!',
+                        text: 'The item has been cancelled successfully.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }),location.reload();
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Cancel Item Error:', err);
+                Swal.fire({
+                    toast: true,
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong while cancelling the item.'
+                });
+            });
+        }
+    });
+}
+
+async function cancelOrder(orderId){
+    Swal.fire({
+        toast: true,
+        title: 'Are you sure?',
+        text: "Do you want to cancel this Order?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, cancel it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/cancel-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({orderId})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        title: 'Cancelled!',
+                        text: 'The Order has been cancelled successfully.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }),location.reload();
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Cancel Order Error:', err);
+                Swal.fire({
+                    toast: true,
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong while cancelling the Order.'
+                });
+            });
+        }
+    });
+}
+</script>

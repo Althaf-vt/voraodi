@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
+
 const addressSchema = new Schema({
     userId :{
         type: Schema.Types.ObjectId,
@@ -8,11 +9,19 @@ const addressSchema = new Schema({
         required: true
     },
     address: [{
-        addressType: {
+        // addressType: {
+        //     type: String,
+        //     required: true
+        // },
+        name: {
             type: String,
             required: true
         },
-        name: {
+        country:{
+            type: String,
+            reqired: true
+        },
+        state: {
             type: String,
             required: true
         },
@@ -20,11 +29,7 @@ const addressSchema = new Schema({
             type: String,
             required: true
         },
-        landmark: {
-            type: String,
-            required: true
-        },
-        state: {
+        street: {
             type: String,
             required: true
         },
@@ -38,7 +43,7 @@ const addressSchema = new Schema({
         },
         altPhone:{
             type: String,
-            required: true
+            required: false
         }
     }]
 })

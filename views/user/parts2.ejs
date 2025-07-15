@@ -1,0 +1,156 @@
+<!-- order -->
+  <section id="orders" class="profile-section">
+                <h2>Orders</h2>
+                <% if (orders && orders.length > 0) { %>
+                    <div class="orders-list">
+                        <% orders.forEach(order => { %>
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div class="order-id">Order #<%= order.orderId %></div>
+                                    <div class="order-date"><%= new Date(order.orderDate).toLocaleDateString() %></div>
+                                    <div class="order-status <%= order.status.toLowerCase() %>"><%= order.status %></div>
+                                    <div class="order-total">$<%= order.totalAmount.toFixed(2) %></div>
+                                </div>
+                                <div class="order-items">
+                                    <% order.items.forEach(item => { %>
+                                        <div class="order-item">
+                                            <img src="<%= item.image %>" alt="<%= item.name %>" class="item-image">
+                                            <div class="item-details">
+                                                <h3><%= item.name %></h3>
+                                                <p>Size: <%= item.size %></p>
+                                                <p>Qty: <%= item.quantity %></p>
+                                                <p>$<%= item.price.toFixed(2) %></p>
+                                            </div>
+                                            <div class="item-actions">
+                                                <button class="action-button track-order">Track Order</button>
+                                                <button class="action-button buy-again">Buy Again</button>
+                                                <% if (order.status === 'Delivered') { %>
+                                                    <button class="action-button-return-item">Return</button>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <h3>No Orders Yet</h3>
+                        <p>Your order history will appear here.</p>
+                        <a href="/shop" class="cta-button">Start Shopping</a>
+                    </div>
+                <% } %>
+            </section>
+
+            <!-- whishlist -->
+             <section id="wishlist" class="profile-section">
+                <h2>Wishlist</h2>
+                <% if (wishlist && wishlist.length > 0) { %>
+                    <div class="wishlist-grid">
+                        <% wishlist.forEach(item => { %>
+                            <div class="wishlist-item">
+                                <a href="/productDetails?id=<%= item.productId %>">
+                                    <img src="<%= item.image %>" alt="<%= item.name %>">
+                                </a>
+                                <div class="wishlist-details">
+                                    <h3><%= item.name %></h3>
+                                    <p class="price">$<%= item.price.toFixed(2) %></p>
+                                    <div class="wishlist-actions">
+                                        <button class="action-button add-to-cart" data-id="<%= item.productId %>">Add to Cart</button>
+                                        <button class="action-button remove-wishlist" data-id="<%= item.productId %>">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <h3>Your Wishlist is Empty</h3>
+                        <p>Save items you love for later.</p>
+                        <a href="/shop" class="cta-button">Browse Collections</a>
+                    </div>
+                <% } %>
+            </section>
+
+            <!-- wallet -->
+            <section id="wallet" class="profile-section">
+                <h2>Wallet</h2>
+                <div class="wallet-card">
+                    <h3>Balance: $<%= user && user.wallet ? user.wallet.balance.toFixed(2) : '0.00' %></h3>
+                    <p>Manage your wallet for seamless transactions.</p>
+                    <div class="wallet-actions">
+                        <button class="action-button add-funds">Add Funds</button>
+                        <button class="action-button view-transactions">View Transactions</button>
+                    </div>
+                </div>
+            </section>
+            <!-- coupon -->
+            <section id="coupons" class="profile-section">
+                <h2>Coupons</h2>
+                <% if (coupons && coupons.length > 0) { %>
+                    <div class="coupons-grid">
+                        <% coupons.forEach(coupon => { %>
+                            <div class="coupon-card">
+                                <h3><%= coupon.code %></h3>
+                                <p><%= coupon.description %></p>
+                                <p>Discount: <%= coupon.discount %>%</p>
+                                <p>Expires: <%= new Date(coupon.expiryDate).toLocaleDateString() %></p>
+                                <button class="action-button apply-coupon" data-id="<%= coupon._id %>">Apply Coupon</button>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <h3>No Coupons Available</h3>
+                        <p>Check back later for exclusive offers.</p>
+                    </div>
+                <% } %>
+            </section>
+
+            <!-- referal -->
+             <section id="referrals" class="profile-section">
+                <h2>Referrals</h2>
+                <div class="referrals-card">
+                    <h3>Invite Friends, Earn Rewards</h3>
+                    <p>Your Referral Code: <strong><%= user && user.referralCode ? user.referralCode : 'N/A' %></strong></p>
+                    <p>Share your code to earn rewards when friends sign up.</p>
+                    <div class="referral-actions">
+                        <button class="action-button share-referral">Share Referral Code</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- address -->
+             <section id="addresses" class="profile-section">
+                <h2>Addresses</h2>
+                <button class="action-button add-address-btn">+ Add New Address</button>
+                <div class="addresses-grid">
+                    <% if (addresses && addresses.length > 0) { %>
+                        <% addresses.forEach(address => { %>
+                            <div class="address-card <%= address.isDefault ? 'default' : '' %>">
+                                <% if (address.isDefault) { %>
+                                    <div class="default-badge">Default</div>
+                                <% } %>
+                                <h3><%= address.tag %> Address</h3>
+                                <p><%= address.street %></p>
+                                <p><%= address.city %>, <%= address.state %> <%= address.zipCode %></p>
+                                <p><%= address.country %></p>
+                                <p>Phone: <%= address.phone %></p>
+                                <div class="address-actions">
+                                    <button class="action-button edit-address" data-id="<%= address._id %>">Edit</button>
+                                    <% if (!address.isDefault) { %>
+                                        <button class="action-button set-default" data-id="<%= address._id %>">Set as Default</button>
+                                        <button class="action-button delete-address" data-id="<%= address._id %>">Delete</button>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <h3>No Saved Addresses</h3>
+                            <p>Add an address for faster checkout.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </section>

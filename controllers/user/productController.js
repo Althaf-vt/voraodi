@@ -42,6 +42,24 @@ const productDetails = async(req,res)=>{
     }
 }
 
+const quickView = async(req,res)=>{
+    try {
+        const productId = req.query.id;
+        const product = await Product.findOne({_id:productId})
+
+        res.json({
+            _id: product._id,
+            productImage: product.productImage,
+            productName: product.productName,
+            description: product.description,
+            salePrice: product.salePrice
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching product' });
+    }
+}
+
 module.exports = {
     productDetails,
+    quickView
 }

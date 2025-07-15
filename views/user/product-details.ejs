@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Details - <%= product.productName %></title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Montserrat&family=Playfair+Display&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="/user/productDetails.css">
   <link rel="stylesheet" href="/user/headerStyle.css" />
   <link rel="stylesheet" href="/user/footerStyle.css" />
@@ -17,7 +18,7 @@
     <div class="page-header breadcrumb-wrap">
       <div class="container">
         <div class="breadcrumb">
-          <a  class="b1" href="/" rel="nofollow">Home</a>
+          <a class="b1" href="/" rel="nofollow">Home</a>
           <span></span> <a class="b2" href="/shop" style="text-decoration: none;">Shop</a>
           <span></span><a class="b3" href="/productDetails?id=<%= product._id %>" rel="nofollow"><%= product.productName %></a>
         </div>
@@ -35,7 +36,7 @@
                 <div class="col-md-6 col-sm-12 col-xs-12">
                   <div class="detail-gallery">
                     <div class="product-image-slider">
-                      <figure class="border-radius-10">
+                      <figure class="border-radius-10 zoom-wrapper" id="zoomWrapper">
                         <img id="mainImage" src="<%= product.productImage[0] %>" alt="product image">
                       </figure>
                     </div>
@@ -67,7 +68,7 @@
 
                     <div class="clearfix product-price-cover">
                       <div class="product-price primary-color float-left">
-                        <ins><span class="text-brand">₹<%= product.salePrice %></span></ins>&nbsp;
+                        <ins><span class="text-brand">₹<%= product.salePrice %></span></ins> 
                         <% if(product.regularPrice > product.salePrice) {%>
                         <ins><span style="color: rgb(219, 75, 9);" class="text-muted"><strike>₹<%=product.regularPrice.toLocaleString('en-IN')%></strike></span></ins>
                         <% } %>
@@ -85,18 +86,32 @@
 
                     <div class="bt-1 border-color-1 mt-15 mb-15"></div>
                     <br>
-
-                    <!-- <hr style="height: 1px; background-color: #d4af37; border: none;"> -->
-                    <br>
-
                     <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+
+                    <!-- Variant Selection -->
+                    <div class="variant-selection mb-20">
+                      <label>Select Size:</label>
+                      <div class="variant-boxes">
+                        <% const allSizes = ['S', 'M', 'L', 'XL']; %>
+                        <% allSizes.forEach(size => { %>
+                          <% const variant = product.variants.find(v => v.size === size); %>
+                          <% const isOutOfStock = !variant || variant.quantity === 0; %>
+                          <div class="variant-box <%= isOutOfStock ? 'out-of-stock' : '' %>"
+                               <%= isOutOfStock ? '' : `onclick="selectVariant('${variant ? variant.sku : ''}', this)"` %>
+                               data-variant-id="<%= variant ? variant.sku : '' %>">
+                            <%= size %>
+                          </div>
+                        <% }) %>
+                      </div>
+                      <input type="hidden" name="variantId" id="selectedVariant">
+                    </div>
 
                     <!-- Quantity + Buttons -->
                     <div class="detail-extralink">
                       <div class="detail-qty border radius">
-                        <a href="#" class="qty-down" onclick="updateQuantity(-1)" style="text-decoration: none;"><i class="fi-rs-angle-small-down">-</i></a>
+                        <a class="qty-down" onclick="updateQuantity(-1)" style="text-decoration: none;"><i class="fi-rs-angle-small-down">-</i></a>
                         <span class="qty-val" id="quantity">1</span>
-                        <a href="#" class="qty-up" onclick="updateQuantity(1)" style="text-decoration: none;" ><i class="fi-rs-angle-small-up">+</i></a>
+                        <a class="qty-up" onclick="updateQuantity(1)" style="text-decoration: none;"><i class="fi-rs-angle-small-up">+</i></a>
                       </div>
 
                       <div class="product-extra-link2">
@@ -107,18 +122,16 @@
                     <br>
                     <hr style="height: 1px; background-color: #d4af37; border: none;">
 
-                    
                     <div class="product_sort_info font-xs mb-30">
                       <ul>
                         <!-- <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 7 Day Return Policy</li> -->
-                        
                       </ul>
                     </div>
 
                     <!-- Product Meta -->
                     <ul class="product-meta font-xs color-grey mt-50">
-                    <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 7 Day Return Policy</li>
-                    <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
+                      <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 7 Day Return Policy</li>
+                      <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
                       <li class="mb-5">Tags: <a href="#" rel="tag"><%= category.name %></a></li>
                       <li>Availability: 
                         <span class="in-stock text-success ml-5">
@@ -126,52 +139,157 @@
                         </span>
                       </li>
                     </ul>
-
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-    <!-- Related Products -->
-<section class="related-products-section mt-50 mb-50">
-  <div class="container">
-    <h3 class="related-title">Related Products</h3>
-    <div class="related-products-grid">
-      <% relatedProducts.forEach(item => { %>
-        <div class="related-card">
-          <a href="/productDetails?id=<%= item._id %>" style="text-decoration: none;">
-            <img src="<%= item.productImage[0] %>" alt="<%= item.productName %>">
-            <h4><%= item.productName %></h4>
-            <p class="price">$<%= item.salePrice %></p>
-            <% if(item.productOffer) { %>
-              <p class="offer-badge"><%= item.productOffer %>% OFF</p>
-            <% } %>
-          </a>
-        </div>
-      <% }) %>
-      <% if (relatedProducts.length === 0) { %>
-        <p>No related products found.</p>
-      <% } %>
-    </div>
-  </div>
-</section>
 
+    <!-- Related Products -->
+    <section class="related-products-section mt-50 mb-50">
+      <div class="container">
+        <h3 class="related-title">Related Products</h3>
+        <div class="related-products-grid">
+          <% relatedProducts.forEach(item => { %>
+            <div class="related-card">
+              <a href="/productDetails?id=<%= item._id %>" style="text-decoration: none;">
+                <img src="<%= item.productImage[0] %>" alt="<%= item.productName %>">
+                <h4><%= item.productName %></h4>
+                <p class="price">$<%= item.salePrice %></p>
+                <% if(item.productOffer) { %>
+                  <p class="offer-badge"><%= item.productOffer %>% OFF</p>
+                <% } %>
+              </a>
+            </div>
+          <% }) %>
+          <% if (relatedProducts.length === 0) { %>
+            <p>No related products found.</p>
+          <% } %>
+        </div>
+      </div>
+    </section>
   </main>
 
   <%- include('../../views/partials/user/footer') %>
 
-  <!-- Scripts -->
   <script>
+    // Variant Selection
+    let selectedVariantId = null;
+    
+    
 
+    function addToCart(productId) {
+      const sku = document.getElementById('selectedVariant').value;
+      const quantity = document.getElementById('quantity').textContent;
+
+      
+      if (!sku) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Please select a size',
+          text: 'You need to select a size before adding to cart'
+        });
+        return;
+      }
+      console.log('variantId==============---',sku)
+
+      fetch(`addToCart?id=${productId}&sku=${sku}&quantity=${quantity}`)
+      
+      
+        .then(response => response.json())
+        .then(data => {
+          if(data.success){
+            Swal.fire({
+              toast: true,
+              icon: 'success',
+              title: 'Added!',
+              text: data.message,
+              showConfirmButton: false,
+              timer: 1500
+            });
+          } else {
+            Swal.fire({
+              toast: true,
+              icon: 'error',
+              title: 'Oops...',
+              text: data.message || 'Failed to add to cart'
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Add to Cart error', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong while adding to cart.'
+          });
+        });
+    }
 
     function changeMainImage(imageUrl) {
       document.getElementById('mainImage').src = imageUrl;
     }
-  </script>
 
+    // Zoom functionality
+    const zoomWrapper = document.getElementById('zoomWrapper');
+    const mainImage = document.getElementById('mainImage');
+
+    zoomWrapper.addEventListener('mousemove', (e) => {
+      const { left, top, width, height } = zoomWrapper.getBoundingClientRect();
+      const x = ((e.pageX - left) / width) * 100;
+      const y = ((e.pageY - top) / height) * 100;
+      mainImage.style.transformOrigin = `${x}% ${y}%`;
+      mainImage.style.transform = "scale(2)";
+    });
+
+    zoomWrapper.addEventListener('mouseleave', () => {
+      mainImage.style.transform = "scale(1)";
+      mainImage.style.transformOrigin = "center";
+    });
+
+    // Update quantity
+    function updateQuantity(change) {
+      const qtyElement = document.getElementById('quantity');
+      let currentQty = parseInt(qtyElement.textContent);
+      const newQty = currentQty + change;
+
+      if (newQty >= 1) {
+        qtyElement.textContent = newQty;
+      }
+    }
+
+    // Fix for variant selection using event delegation
+    document.querySelector('.variant-boxes').addEventListener('click', (e) => {
+      const variantBox = e.target.closest('.variant-box:not(.out-of-stock)');
+      if (!variantBox) return;
+
+      const variantId = variantBox.dataset.variantId;
+      if (!variantId) {
+        console.error('No variantId found for this variant box');
+        return;
+      }
+
+      const allVariants = document.querySelectorAll('.variant-box:not(.out-of-stock)');
+      if (selectedVariantId === variantId) {
+        console.log('Deselecting variant:', variantId);
+        variantBox.classList.remove('selected');
+        selectedVariantId = null;
+        document.getElementById('selectedVariant').value = '';
+      } else {
+        console.log('Selecting variant:', variantId);
+        allVariants.forEach(variant => {
+          variant.classList.remove('selected');
+        });
+        variantBox.classList.add('selected');
+        selectedVariantId = variantId;
+        document.getElementById('selectedVariant').value = variantId;
+      }
+      console.log('============== selectedVariantId========',selectedVariantId)
+    });
+    
+  </script>
 </body>
 </html>

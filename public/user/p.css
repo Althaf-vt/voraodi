@@ -1,0 +1,298 @@
+/* Profile Container */
+.profile-container {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f5e8, #fffcf4);
+  padding: 80px 20px;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(135deg, #f5f5e8, #fffcf4); /* Updated to match page background */
+  padding: 30px 20px;
+  border-right: 2px solid #d4af37;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); /* Lighter shadow for cohesion */
+}
+
+.sidebar-title {
+  font-family: 'Cinzel', serif;
+  font-size: 24px; /* Slightly smaller to ensure single line */
+  color: #2f3a44;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 30px;
+  text-align: center;
+  position: relative;
+  white-space: nowrap; /* Prevents line break */
+}
+
+.sidebar-title::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background-color: #d4af37;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 20px;
+}
+
+.sidebar-nav a {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  color: #2f3a44; /* Updated to match page text color */
+  text-decoration: none;
+  text-transform: uppercase;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background: linear-gradient(135deg, #d4af37, #b8972e);
+  color: #2f3a44;
+  transform: translateX(10px);
+}
+
+/* Profile Content */
+.profile-content {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-title {
+  font-family: 'Cinzel', serif;
+  font-size: 36px;
+  color: #2f3a44;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.profile-title::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background-color: #d4af37;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.profile-card {
+  max-width: 600px;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  border: 2px solid #d4af37;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+}
+
+/* Profile Image */
+.profile-image-container {
+  margin-bottom: 20px;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #d4af37;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-icon {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: #f5f5e8;
+  border: 3px solid #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  color: #2f3a44;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Profile Details */
+.profile-details {
+  text-align: left;
+}
+
+.profile-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background: #f5f5e8;
+  border-radius: 5px;
+  border: 1px solid #d4af37;
+}
+
+.profile-item label {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  color: #2f3a44;
+  font-weight: 700;
+  text-transform: uppercase;
+  width: 100px;
+}
+
+.profile-item span {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: #2f3a44;
+  flex: 1;
+  text-align: left;
+  padding-left: 20px;
+}
+
+.edit-button {
+  padding: 8px 20px;
+  background: linear-gradient(45deg, #d4af37, #b8972e);
+  color: #2f3a44;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.edit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.edit-button:hover::before {
+  left: 100%;
+}
+
+.edit-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
+  background: linear-gradient(135deg, #006400, #228B22);
+  color: #f5f5e8;
+}
+
+/* Change Password Button */
+.change-password {
+  justify-content: center;
+}
+
+.change-password-button {
+  padding: 10px 30px;
+  background: linear-gradient(45deg, #d4af37, #b8972e);
+  color: #2f3a44;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.change-password-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.change-password-button:hover::before {
+  left: 100%;
+}
+
+.change-password-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
+  background: linear-gradient(135deg, #006400, #228B22);
+  color: #f5f5e8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid #d4af37;
+    padding: 20px;
+  }
+
+  .profile-content {
+    padding: 20px;
+  }
+
+  .profile-card {
+    padding: 20px;
+  }
+
+  .profile-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .profile-item label,
+  .profile-item span {
+    width: 100%;
+    text-align: center;
+    padding-left: 0;
+  }
+
+  .edit-button {
+    align-self: center;
+  }
+}

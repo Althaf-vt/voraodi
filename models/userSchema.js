@@ -3,6 +3,10 @@ const {Schema} = mongoose;
 
 
 const userSchema = new Schema({
+    image: {
+        type: String,
+        required: false
+    },
     name: {
         type:String,
         required : true

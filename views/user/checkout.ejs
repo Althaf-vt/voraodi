@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/user/checkoutStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css">
+    <link rel="stylesheet" href="/user/footerStyle.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="checkout-container">
+        <div class="checkout-content">
+            <div class="checkout-header">
+                <h1 class="checkout-title">Checkout</h1>
+            </div>
+            <div class="checkout-main">
+                <!-- Left Section (2/3) -->
+                <div class="left-section">
+                    <!-- Cart Items -->
+                    <div class="cart-items">
+                        <h3 class="section-title">Cart Items</h3>
+                        <% if (cartItems && cartItems.length > 0) { %>
+                            <div class="cart-table">
+                                <div class="cart-table-header">
+                                    <div class="cart-column product-column">Product</div>
+                                    <div class="cart-column price-column">Price</div>
+                                    <div class="cart-column size-column">Size</div>
+                                    <div class="cart-column quantity-column">Quantity</div>
+                                    <div class="cart-column total-column">Total</div>
+                                </div>
+                                <% cartItems.forEach(item => { %>
+                                    <% if (item.productId) { %>  <!-- ✅ Null check -->
+                                        <div class="cart-table-row">
+                                            <div class="cart-column product-column">
+                                                <div class="cart-product">
+                                                    <img src="<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>" class="cart-product-image" />
+                                                    <span class="cart-product-name"><%= item.productId.productName %></span>
+                                                </div>
+                                            </div>
+                                            <div class="cart-column price-column">
+                                                <span>₹<%= item.productId.salePrice.toFixed(2) %></span>
+                                            </div>
+                                            <div class="cart-column size-column">
+                                                <span><%= item.size %></span>
+                                            </div>
+                                            <div class="cart-column quantity-column">
+                                                <span><%= item.quantity %></span>
+                                            </div>
+                                            <div class="cart-column total-column">
+                                                <span>₹<%= (item.productId.salePrice * item.quantity).toFixed(2) %></span>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="no-items">
+                                <p>Your Cart is Empty</p>
+                            </div>
+                        <% } %>
+                    </div>
+                    
+                    <!-- Address Selection -->
+                    <div class="address-selection">
+                        <h3 class="section-title">Select Delivery Address</h3>
+                        <div class="address-form" id="address-form">
+                            
+                            <% if (userAddress && userAddress.length > 0) { %>
+                                <div class="address-list">
+                                    <% userAddress.forEach((address, index) => { %>
+                                        <div class="address-card <%= index === 0 ? 'selected' : '' %>">
+                                            <input type="radio" id="address-<%= address._id %>" name="addressId" value="<%= address._id %>" <%= index === 0 ? 'checked' : '' %> required>
+                                            <label for="address-<%= address._id %>" class="address-details">
+                                                <div class="address-item">
+                                                    <span class="address-label">Name:</span>
+                                                    <span><%= address.name %></span>
+                                                </div>
+                                                <div class="address-item">
+                                                    <span class="address-label">Address:</span>
+                                                    <span><%= address.street %>, <%= address.city %>, <%= address.state %>, <%= address.country %>, <%= address.pincode %></span>
+                                                </div>
+                                                <div class="address-item">
+                                                    <span class="address-label">Phone:</span>
+                                                    <span><%= address.phone %></span>
+                                                </div>
+                                                <% if (address.altPhone) { %>
+                                                    <div class="address-item">
+                                                        <span class="address-label">Alt Phone:</span>
+                                                        <span><%= address.altPhone %></span>
+                                                    </div>
+                                                <% } %>
+                                            </label>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                                <a href="/add-address" class="add-address-button">Add New Address</a>
+                            <% } else { %>
+                                <div class="no-address">
+                                    <p>No Addresses Available. Please add an address to proceed.</p>
+                                    <a href="/add-address" class="add-address-button">Add New Address</a>
+                                </div>
+                            <% } %>
+                            <div class="form-message" id="form-message"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Section (1/3) - Order Summary -->
+                <div class="order-summary">
+                    <h3 class="section-title">Order Summary</h3>
+                    <% if (cartItems && cartItems.length > 0) { %>
+                        <% 
+                            const subtotal = cartItems.reduce((total, item) => {
+                                return item.productId ? total + (item.productId.salePrice * item.quantity) : total;
+                            }, 0);
+                            
+                            const deliveryCharge = cartItems.reduce((total, item) => {
+                                return item.productId ? total + (item.quantity * 40) : total;
+                            }, 0);
+
+                            const total = subtotal + deliveryCharge;
+                        %>
+                        <div class="summary-details">
+                            <div class="summary-item">
+                                <span>Subtotal (<%= cartItems.reduce((total, item) => total + item.quantity, 0) %> items):</span>
+                                <span>₹<%= subtotal.toFixed(2) %></span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Savings:</span>
+                                <span>-₹0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Coupon Discount:</span>
+                                <span>-₹0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Delivery:</span>
+                                <span>₹<%= deliveryCharge.toFixed(2) %></span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total:</span>
+                                <span>₹<%= total.toFixed(2) %></span>
+                            </div>
+                        </div>
+                        
+                        <hr class="summary-divider">
+                        
+                        <div class="coupon-section">
+                            <h4 class="coupon-title">Apply Coupon</h4>
+                            <button type="button" class="show-coupons-button" onclick="toggleCoupons()">Show Coupons ▼</button>
+                            <div class="coupon-input">
+                                <input type="text" id="coupon-code" placeholder="Enter coupon code">
+                                <button type="button" class="apply-coupon-button">Apply</button>
+                            </div>
+                            <div class="coupon-list" id="coupon-list" style="display: none;">
+                                <%# if (availableCoupons && availableCoupons.length > 0) { %>
+                                    <%# availableCoupons.forEach(coupon => { %>
+                                        <div class="coupon-option">
+                                            <input type="radio" id="coupon-<%#= coupon.code %>" name="coupon" value="<%#= coupon.code %>">
+                                            <label for="coupon-<%#= coupon.code %>">
+                                                <%#= coupon.code %> - <%#= coupon.discount %>% off (Max ₹<%#= coupon.maxDiscount %>)
+                                            </label>
+                                        </div>
+                                    <%# }) %>
+                                <%# } else { %>
+                                    <p style="font-size: 12px; color: #666; text-align: center;">No coupons available</p>
+                                <%# } %>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-options">
+                            <h4>Payment Method</h4>
+                            <div class="payment-option">
+                                <input type="radio" id="cod" name="paymentMethod" value="cod" checked required>
+                                <label for="cod">Cash on Delivery</label>
+                            </div>
+                            <div class="payment-option">
+                                <input type="radio" id="razorpay" name="paymentMethod" value="razorpay">
+                                <label for="razorpay">Razorpay (Cards/UPI/NetBanking)</label>
+                            </div>
+                            <div class="payment-option">
+                                <input type="radio" id="wallet" name="paymentMethod" value="wallet">
+                                <label for="wallet">Wallet (₹<%#= userWalletBalance.toFixed(2) %> available)</label>
+                            </div>
+                        </div>
+                        
+                        <button   class="place-order-button" onclick="placeOrder('<%=user._id%>')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                            Place Order • ₹<%= total.toFixed(2) %>
+                        </button>
+                    <% } else { %>
+                        <div class="no-items">
+                            <p>Your cart is empty</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+<form id="hidden-order-form" action="/place-order" method="POST" style="display: none;">
+    <input type="hidden" name="userId" value="<%= user._id %>">
+    <input type="hidden" name="addressId" id="hidden-address-id">
+    <input type="hidden" name="paymentMethod" id="hidden-payment-method">
+    <input type="hidden" name="couponCode" id="hidden-coupon-code">
+</form>
+
+</body>
+</html>
+
+<script>
+
+        function placeOrder(userId) {
+            const selectedAddressInput = document.querySelector('input[name="addressId"]:checked');
+            const selectedPaymentInput = document.querySelector('input[name="paymentMethod"]:checked');
+            const couponCodeInput = document.getElementById('coupon-code');
+
+            const addressId = selectedAddressInput ? selectedAddressInput.value : null;
+            const paymentMethod = selectedPaymentInput ? selectedPaymentInput.value : null;
+            const couponCode = couponCodeInput && couponCodeInput.value.trim() !== '' ? couponCodeInput.value.trim() : '';
+
+            if (!addressId || !paymentMethod) {
+                showMessage('Please select both address and payment method');
+                return;
+            }
+
+            // Set hidden form values
+            document.getElementById('hidden-address-id').value = addressId;
+            document.getElementById('hidden-payment-method').value = paymentMethod;
+            document.getElementById('hidden-coupon-code').value = couponCode;
+
+            // Submit the hidden form
+            document.getElementById('hidden-order-form').submit();
+        }
+       
+       
+        // Toggle Coupons
+        function toggleCoupons() {
+            const couponList = document.getElementById('coupon-list');
+            const button = document.querySelector('.show-coupons-button');
+            const isVisible = couponList.style.display === 'block';
+            
+            couponList.style.display = isVisible ? 'none' : 'block';
+            button.textContent = isVisible ? 'Show Coupons ▼' : 'Hide Coupons ▲';
+            
+            gsap.fromTo(couponList, 
+                { opacity: isVisible ? 1 : 0, height: isVisible ? 'auto' : 0 }, 
+                { opacity: isVisible ? 0 : 1, height: isVisible ? 0 : 'auto', duration: 0.3, ease: "power2.out" }
+            );
+        }
+
+        // Apply Coupon Functionality
+        document.querySelector('.apply-coupon-button').addEventListener('click', function() {
+            const couponCode = document.getElementById('coupon-code').value.trim();
+            const selectedCoupon = document.querySelector('input[name="coupon"]:checked');
+            
+            if (couponCode || (selectedCoupon && selectedCoupon.value)) {
+                // In a real app, you would send this to your backend
+                const codeToApply = couponCode || selectedCoupon.value;
+                showMessage(`Coupon "${codeToApply}" applied successfully!`, false);
+                
+                // Simulate updating the order summary
+                setTimeout(() => {
+                    // This would be replaced with actual data from your backend
+                    document.querySelector('.summary-item:nth-child(3) span:last-child').textContent = '-₹50.00';
+                    const subtotal = parseFloat(document.querySelector('.summary-item:nth-child(1) span:last-child').textContent.replace('₹', ''));
+                    const delivery = parseFloat(document.querySelector('.summary-item:nth-child(4) span:last-child').textContent.replace('₹', ''));
+                    const newTotal = subtotal + delivery - 50;
+                    document.querySelector('.summary-item.total span:last-child').textContent = `₹${newTotal.toFixed(2)}`;
+                    document.querySelector('.place-order-button').innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        Place Order • ₹${newTotal.toFixed(2)}
+                    `;
+                }, 500);
+            } else {
+                showMessage('Please enter or select a coupon code');
+            }
+        });
+
+        // Payment Method Selection
+        document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'wallet') {
+                    // Check if wallet balance is sufficient
+                    const totalAmount = parseFloat(document.querySelector('.summary-item.total span:last-child').textContent.replace('₹', ''));
+                    const walletBalance = parseFloat('<%#= userWalletBalance %>');
+                    
+                    if (walletBalance < totalAmount) {
+                        showMessage('Insufficient wallet balance');
+                        document.getElementById('cod').checked = true;
+                    }
+                }
+            });
+        });
+        function showMessage(message, isError = true) {
+            const msgBox = document.getElementById('form-message');
+            msgBox.textContent = message;
+            msgBox.style.color = isError ? 'red' : 'green';
+            msgBox.style.display = 'block';
+
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000);
+        }
+</script>

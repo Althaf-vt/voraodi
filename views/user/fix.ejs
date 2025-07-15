@@ -1,0 +1,224 @@
+#####
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Montserrat&family=Playfair+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/user/shopStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css" />
+    <link rel="stylesheet" href="/user/footerStyle.css" />
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+    <% const currentSearch = typeof searchQuery !== 'undefined' ? searchQuery : ''; %>
+    <div class="main-container">
+        <div class="page-header breadcrumb-wrap">
+      <div class="container">
+        <div class="breadcrumb">
+          <a class="b1" href="/" rel="nofollow">Home</a>
+          <span></span> <a class="b2" href="/shop" style="text-decoration: none;">Shop</a>
+        </div>
+      </div>
+    </div>
+        <section class="shop-page container">
+            <div class="shop-topbar">
+                <div class="search-bar">
+                    <form id="searchForm" action="/searchProducts" method="GET" class="search-form">
+                        <input id="searchInput" type="text" name="query" placeholder="Search items..." class="search-input"  value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
+                        <button type="submit" class="search-button">Search</button>
+                        <button type="button" class="clear-button" onclick="clearSearch()">Clear</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="product-list-container">
+                <aside class="sidebar">
+                    <div class="filter-section">
+                        <div class="filter-title">Categories</div>
+                        <div class="category-brand-container">
+                            <ul>
+                                <% for(let i = 0; i < category.length; i ++){%>
+                                <li class="filter-item">
+                                    <a href="/filter?category=<%= category[i]._id %>&query=<%= encodeURIComponent(currentSearch) %>&page=1">
+                                        <%= category[i].name %>
+                                    </a>
+                                </li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="price-filter">
+                        <div class="filter-title">Sort Products</div>
+                        <div class="price-options">
+                            <a href="/sortProducts?sort=Low-High<%= currentSearch ? `&query=${encodeURIComponent(currentSearch)}` : '' %>&page=1"><button type="button" class="price-button">Low - Hight ⬆</button></a>
+                            <a href="/sortProducts?sort=High-Low<%= currentSearch ? `&query=${encodeURIComponent(currentSearch)}` : '' %>&page=1"><button type="button" class="price-button">High - Low ⬇</button></a>
+                            <a href="/sortProducts?sort=A-Z<%= currentSearch ? `&query=${encodeURIComponent(currentSearch)}` : '' %>&page=1"><button type="button" class="price-button">Aa - Zz</button></a>
+                            <a href="/sortProducts?sort=Z-A<%= currentSearch ? `&query=${encodeURIComponent(currentSearch)}` : '' %>&page=1"><button type="button" class="price-button">Zz - Aa</button></a>
+                        </div>
+                    </div>
+
+                    <div class="price-filter">
+                        <div class="filter-title">Filter by Price</div>
+                        <div class="price-options">
+                            <a href="<%- `/filterPrice?gt=0&lt=500&query=${encodeURIComponent(currentSearch)}&page=1` %>"><button type="button" class="price-button">Under ₹500</button></a>
+                            <a href="<%- `/filterPrice?gt=500&lt=1000&query=${encodeURIComponent(currentSearch)}&page=1` %>"><button type="button" class="price-button">₹500 - ₹1000</button></a>
+                            <a href="<%- `/filterPrice?gt=1000&lt=1500&query=${encodeURIComponent(currentSearch)}&page=1` %>"><button type="button" class="price-button">₹1000 - ₹1500</button></a>
+                            <a href="<%- `/filterPrice?gt=1500&lt=100000000&query=${encodeURIComponent(currentSearch)}&page=1` %>"><button type="button" class="price-button">Above ₹1500</button></a>
+                        </div>
+                    </div>
+                </aside>
+
+
+                <div class="product-section">
+                    <div class="product-grid-container">
+                        <main class="product-grid">
+                            <% if (products.length === 0) { %>
+                                <div class="no-products">No products available.</div>
+                            <% } else { %>
+                                <% for(let i = 0; i < products.length; i ++) {%>
+                                    <div class="product-card">
+                                        <span class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">♡</span>
+                                        <a href="/productDetails?id=<%= products[i]._id %>" style="text-decoration: none;">
+                                            <img src="<%= products[i].productImage[0]%>" alt="<%= products[i].productName %>">
+                                            <h4><%= products[i].productName %></h4>
+                                            <p>₹<%=products[i].salePrice.toLocaleString('en-IN')%></p>
+                                            <% if (products[i].regularPrice > products[i].salePrice) { %>
+                                                <p><span style="color: rgb(219, 75, 9);" class="text-muted"><strike>₹<%=products[i].regularPrice.toLocaleString('en-IN')%></strike></span></p>
+                                            <% } else{%>
+                                                <p><span class="text-muted"><br></span></p>
+                                            <% } %>
+                                        </a>
+                                        <button class="add-to-cart-btn" onclick="addToCart('<%= products[i]._id %>')">Add to Cart</button>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </main>
+                    </div>
+                    
+
+                    <div class="pagination">
+                        <% if (currentPage > 1) { %>
+                                <a class="btn" href="/searchProducts?<%= currentSearch ? `query=${encodeURIComponent(currentSearch)}&` : '' %>page=<%= currentPage - 1 %>">Prev</a>   
+                        <% } %>
+
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                                <a class="btn <%= currentPage === i ? 'active' : '' %>"
+                                    href="/searchProducts?<%= currentSearch ? `query=${encodeURIComponent(currentSearch)}&` : '' %>page=<%= i %>"><%= i %>
+                                </a>
+                        <% } %>
+
+                        <% if (currentPage < totalPages) { %>
+                                <a class="btn" href="/searchProducts?<%= currentSearch ? `query=${encodeURIComponent(currentSearch)}&` : '' %>page=<%= currentPage + 1 %>">Next</a>
+                        <% } %>
+                    </div>
+                </div>   
+            </div>
+
+            
+        </section>
+    </div>
+
+    <script>
+        function addToWishlist(productId) {
+            window.location.href = `/wishlist/add?id=${productId}`;
+        }
+
+        function addToCart(productId) {
+            window.location.href = `/addToCart?id=${productId}`;
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <%- include("../../views/partials/user/footer") %>
+</body>
+</html>
+<script>
+// Search Form Submit
+  document.getElementById('searchForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const query = document.getElementById('searchInput').value.trim();
+    const route = query.length > 0 ? `/searchProducts?query=${encodeURIComponent(query)}` : `/shop`;
+
+    fetch(route)
+        .then(res => res.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            const newGrid = doc.querySelector('.product-grid-container');
+            const newPagination = doc.querySelector('.pagination');
+            const newSearchInput = doc.querySelector('#searchInput');
+
+            document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
+            document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+            document.getElementById('searchInput').value = newSearchInput ? newSearchInput.value : query;
+        })
+        .catch(err => {
+            console.error('Search Error:', err);
+            alert('An error occurred while searching. Please try again.');
+        });
+});
+
+  // AJAX Pagination
+  document.addEventListener('click', function (e) {
+    const isPaginationBtn = e.target.classList.contains('btn') && e.target.closest('.pagination');
+    if (isPaginationBtn) {
+      e.preventDefault();
+
+      const url = e.target.href;
+
+      fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+
+          const newGrid = doc.querySelector('.product-grid-container');
+          const newPagination = doc.querySelector('.pagination');
+          const newSearchInput = doc.querySelector('#searchInput');
+
+          document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
+          document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+
+          if (newSearchInput) {
+            document.getElementById('searchInput').value = newSearchInput.value;
+          }
+        })
+        .catch(err => {
+          console.error('Pagination Error:', err);
+          alert('An error occurred while loading the page. Please try again.');
+        });
+    }
+  });
+
+  // Clear Search
+  function clearSearch() {
+    document.getElementById('searchInput').value = "";
+
+    fetch('/shop')
+      .then(res => res.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const newGrid = doc.querySelector('.product-grid-container');
+        const newPagination = doc.querySelector('.pagination');
+
+        document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
+        document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+
+        // Update URL to shop
+        history.pushState({}, '', '/shop');
+      })
+      .catch(err => {
+        console.error('Clear Search Error:', err);
+      });
+  }
+  
+</script>

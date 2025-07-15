@@ -13,6 +13,15 @@ const cartSchema = new Schema({
             ref: 'Product',
             required: true
         },
+        sku: {
+            type: String,
+            required: true
+        },
+        size: {
+            type: String,
+            enum: ['S', 'M', 'L', 'XL'],
+            required: true
+        },
         quantity: {
             type: Number,
             default: 1

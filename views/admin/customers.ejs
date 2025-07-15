@@ -183,6 +183,7 @@
   function confirmBlock(userId) {
     event.preventDefault();
     Swal.fire({
+      toast: true,
       title: 'Are you sure?',
       text: 'Do you want to Block this user?',
       icon: 'warning',
@@ -214,6 +215,7 @@
   function confirmUnblock(userId) {
     event.preventDefault();
     Swal.fire({
+      toast: true,
       title: 'Are you sure?',
       text: 'Do you want to Unblock this user?',
       icon: 'warning',

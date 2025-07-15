@@ -5,9 +5,12 @@ const env = require('dotenv').config();
 const session = require('express-session');
 const passport = require('./config/passport')
 const db = require('./config/db');
+const methodOverride = require('method-override');
 const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
 db()
+
+app.use(methodOverride('_method'));
 
 
 app.use(express.json());

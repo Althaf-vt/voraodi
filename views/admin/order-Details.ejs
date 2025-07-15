@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOGUE - Order Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="/admin/orderDetail.css">
+</head>
+<body>
+  <!-- Order Detail Header -->
+  <div class="order-detail-header">
+    <div class="text-container">
+      <h1 id="typewriter">Order Details</h1>
+    </div>
+    <div class="back-button-container">
+      <button class="back-btn" onclick="goBack()">← Back to Orders</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Order Summary Card -->
+    <div class="order-summary-card">
+      <div class="card-header">
+        <h2>Order Summary</h2>
+        <div class="order-id">OrderId : <%= order.orderId %></div>
+      </div>
+      <div class="card-content">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="label">Order Date:</span>
+            <span class="value"><%= new Date(order.createtOn).toDateString() %></span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Status:</span>
+            <span class="status-badge <%= order.status.toLowerCase().replace(/\s/g, '-') %>"><%= order.status %></span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Total Amount:</span>
+            <span class="value total-amount">₹<%= order.finalAmount.toFixed(2) %></span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Payment Method:</span>
+            <span class="value"><%= order.paymentMethod %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shipping Address Card -->
+    <div class="shipping-address-card">
+      <div class="card-header">
+        <h2>Shipping Address</h2>
+      </div>
+      <div class="card-content">
+        <div class="address-details">
+          <p><strong><%= address.name %></strong></p>
+          <p><%= address.street %></p>
+          <p><%= address.city %>, <%= address.state %></p>
+          <p><%= address.country %> - <%= address.pincode %></p>
+          <p>Phone: <%= address.phone %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Items Section -->
+    <div class="order-items-section">
+      <div class="card-header">
+        <h2>Order Items</h2>
+      </div>
+      <div class="items-grid">
+        <% products.forEach(product => { %>
+          <div class="item-card">
+            <div class="item-content">
+              <div class="product-info">
+                <div class="product-image">
+                  <img src="<%= product.image[0] %>" alt="Product">
+                </div>
+                <div class="product-details">
+                  <div class="product-name"><%= product.name %></div>
+                  <div class="product-size">Size: <%= product.size || '-' %></div>
+                  <div class="product-quantity">Quantity: <%= product.quantity %></div>
+                  <div class="product-price">Price: ₹<%= product.price.toFixed(2) %></div>
+                  <div class="product-total">Total: ₹<%= (product.price * product.quantity).toFixed(2) %></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <script>
+      function goBack() {
+        window.history.back();
+      }
+
+      function printOrder() {
+        window.print();
+      }
+
+      function trackOrder() {
+        Swal.fire({
+          title: 'Order Tracking',
+          text: 'Order has been delivered successfully!',
+          icon: 'success',
+          confirmButtonColor: '#004d00'
+        });
+      }
+
+      function cancelOrder() {
+        Swal.fire({
+          title: 'Cancel Order',
+          text: 'Are you sure you want to cancel this order?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ff4040',
+          cancelButtonColor: '#767675',
+          confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire('Cancelled!', 'Order has been cancelled.', 'success');
+          }
+        });
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - OTP Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/user/changeEmailStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css">
+    <link rel="stylesheet" href="/user/footerStyle.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <!-- OTP Verification Wrapper -->
+    <div class="email-change-wrapper">
+        <!-- Sidebar -->
+        <div class="profile-sidebar">
+            <div class="sidebar-header">
+                <h3>My Account</h3>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="/userProfile" data-section="profile">Profile</a></li>
+                <li><a href="/profile#addresses" data-section="addresses">Addresses</a></li>
+                <li><a href="/profile#orders" data-section="orders">Orders</a></li>
+                <li><a href="/cart" data-section="cart">Cart</a></li>
+                <li><a href="/profile#wishlist" data-section="wishlist">Wishlist</a></li>
+                <li><a href="/profile#wallet" data-section="wallet">Wallet</a></li>
+                <li><a href="/profile#coupons" data-section="coupons">Coupons</a></li>
+                <li><a href="/profile#referrals" data-section="referrals">Referrals</a></li>
+            </ul>
+            <a href="/logout" class="logout-button">Logout</a>
+        </div>
+
+        <!-- OTP Verification Content -->
+        <div class="email-change-content">
+            <section class="email-change-section">
+                <h2>OTP Verification</h2>
+                <p>Enter the OTP</p>
+                <form class="email-change-form" method="POST" action="/verify-email-otp">
+                    <div class="form-group">
+                        <label for="otp">OTP Code</label>
+                        <input type="text" id="otp" name="otp" placeholder="Enter 6-digit OTP" maxlength="6" required>
+                    </div>
+                    <% if (typeof message !== 'undefined') { %>
+                        <div id="validationMessage" class="validation-message show"><%= message %></div>
+                        <script>
+                            setTimeout(() => {
+                            const msg = document.getElementById('validationMessage');
+                            if (msg) {
+                                msg.classList.remove('show');
+                            }
+                            }, 3000);
+                        </script>
+                    <% } %>
+                    <div class="otp-timer">
+                        <span id="timer">0:60</span>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="action-button">Verify OTP</button>
+                        <button type="button" class="action-button resend-otp" disabled>Resend OTP</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+
+        // OTP Timer
+        let timeLeft = 60;
+        const timerElement = document.getElementById('timer');
+        const resendButton = document.querySelector('.resend-otp');
+
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    resendButton.disabled = false;
+                    resendButton.classList.remove('disabled');
+                    timerElement.textContent = 'Expired';
+                }
+            }, 1000);
+        }
+
+        startTimer();
+
+        // Form submission
+        // document.querySelector('.email-change-form').addEventListener('submit', function(e) {
+        //     e.preventDefault();
+        //     alert('OTP verification functionality would go here');
+        //     // In a real implementation, this would verify the OTP and redirect to new email page
+        //     // window.location.href = '/new-email';
+        // });
+
+        // Resend OTP
+        resendButton.addEventListener('click', function() {
+            if (!resendButton.disabled) {
+                // alert('Resend OTP functionality would go here');
+                timeLeft = 60;
+                resendButton.disabled = true;
+                resendButton.classList.add('disabled');
+                startTimer();
+            }
+        });
+    </script>
+</body>
+</html>

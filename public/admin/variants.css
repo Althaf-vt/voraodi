@@ -1,0 +1,89 @@
+.variants-container {
+  margin-bottom: 20px;
+}
+
+.variant-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.variant-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.variant-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.variant-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.variant-group label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #1a252f;
+  width: 80px;
+  text-align: left;
+}
+
+.variant-group input[type="number"] {
+  width: 100px;
+  padding: 8px;
+  border: 1px solid rgba(201, 160, 34, 0.2);
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #1a252f;
+  background-color: #f5f5e8;
+  transition: border-color 0.3s ease;
+}
+
+.variant-group input[type="number"]:focus {
+  outline: none;
+  border-color: #c9a022;
+}
+
+.variant-group input[type="number"]:disabled {
+  background-color: #f5f5e8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .variant-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .variant-field {
+    width: 100%;
+  }
+  .variant-group label {
+    font-size: 12px;
+    width: 70px;
+  }
+  .variant-group input[type="number"] {
+    width: 80px;
+    font-size: 12px;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .variant-group label {
+    font-size: 10px;
+    width: 60px;
+  }
+  .variant-group input[type="number"] {
+    width: 70px;
+    font-size: 10px;
+    padding: 5px;
+  }
+}

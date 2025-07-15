@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - Edit Address</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/user/editAddressStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css">
+    <link rel="stylesheet" href="/user/footerStyle.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="add-address-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2 class="sidebar-title">My Account</h2>
+            <ul class="sidebar-nav">
+                <li><a href="/userProfile">Profile</a></li>
+                <li><a href="/userAddress" class="active">Address</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/cart">Cart</a></li>
+                <li><a href="/wishlist">Wishlist</a></li>
+                <li><a href="/wallet">Wallet</a></li>
+                <li><a href="/coupons">Coupons</a></li>
+                <li><a href="/referrals">Referrals</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Edit Address Section -->
+        <div class="add-address-content">
+            <h1 class="add-address-title">Edit Address</h1>
+            <div class="add-address-card">
+                <form class="add-address-form" method="POST" action="/edit-address?id=<%= address.id %>">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" value="<%= address.name %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country</label>
+                            <input type="text" id="country" name="country" value="<%= address.country %>" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" id="state" name="state" value="<%= address.state %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" value="<%= address.city %>" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="street">Street</label>
+                            <input type="text" id="street" name="street" value="<%= address.street %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pincode">Pin Code</label>
+                            <input type="text" id="pincode" name="pincode" value="<%= address.pincode %>" maxlength="6" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" name="phone" value="<%= address.phone %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="altPhone">Alternate Phone</label>
+                            <input type="tel" id="altPhone" name="altPhone" value="<%= address.altPhone %>">
+                        </div>
+                    </div>
+                    <div class="form-message" id="form-message"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="action-button">Save Changes</button>
+                        <a href="/userAddress" class="action-button cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        // GSAP Animations
+        gsap.from(".sidebar", { 
+            opacity: 0, 
+            x: 50, 
+            duration: 1, 
+            ease: "power2.out" 
+        });
+        gsap.from(".add-address-content", { 
+            opacity: 0, 
+            x: -50, 
+            duration: 1, 
+            delay: 0.3, 
+            ease: "power2.out" 
+        });
+        gsap.from(".add-address-card, .back-button", { 
+            opacity: 0, 
+            y: 60, 
+            duration: 2, 
+            delay: 0.3, 
+            ease: "power2.out" 
+        });
+
+        // Form Validation and Message Display
+        const form = document.querySelector('.add-address-form');
+        const messageDiv = document.getElementById('form-message');
+
+        function showMessage(text, isError = true) {
+            messageDiv.textContent = text;
+            messageDiv.className = `form-message ${isError ? 'error' : 'success'}`;
+            gsap.fromTo(messageDiv, 
+                { opacity: 0, y: 10 }, 
+                { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
+            );
+            // Hide message after 3 seconds
+            setTimeout(() => {
+                gsap.to(messageDiv, { 
+                    opacity: 0, 
+                    y: 10, 
+                    duration: 0.5, 
+                    ease: "power2.in",
+                    onComplete: () => messageDiv.textContent = ''
+                });
+            }, 3000);
+        }
+
+        form.addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+            const country = document.getElementById('country').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const street = document.getElementById('street').value.trim();
+            const pin = document.getElementById('pincode').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const altPhone = document.getElementById('altPhone').value.trim();
+
+            const pinRegex = /^\d{6}$/;
+            const phoneRegex = /^\d{10}$/;
+
+            if (!pinRegex.test(pin)) {
+                e.preventDefault();
+                showMessage('Please enter a valid 6-digit pin code');
+                return;
+            }
+
+            if (!name || !country || !state || !city || !street || !pin || !phone) {
+                e.preventDefault();
+                showMessage('Please fill in all required fields');
+                return;
+            }
+
+            if (!phoneRegex.test(phone)) {
+                e.preventDefault();
+                showMessage('Please enter a valid 10-digit phone number');
+                return;
+            }
+
+            if (altPhone && !phoneRegex.test(altPhone)) {
+                e.preventDefault();
+                showMessage('Please enter a valid 10-digit alternate phone number or leave it empty');
+                return;
+            }
+
+            // Allow form to submit
+        });
+    </script>
+</body>
+</html>

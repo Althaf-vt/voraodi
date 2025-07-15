@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const {Schema} = mongoose;
-const {v4:uuidv4} = require(uuid);
+const { v4: uuidv4 } = require('uuid');
+
 
 
 const orderSchema = new Schema({
@@ -9,10 +10,22 @@ const orderSchema = new Schema({
         default:()=>uuidv4(),
         unique: true,
     },
+    userId:{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
     orderedItems: [{
         product: {
             type: Schema.Types.ObjectId,
             ref: "Product",
+            required: true
+        },
+        size: {
+            type: String,
+            required: true
+        },
+        sku: {
+            type: String,
             required: true
         },
         quantity: {
@@ -22,6 +35,20 @@ const orderSchema = new Schema({
         price: {
             type: Number,
             default: 0
+        },
+        status: {
+            type: String,
+            required: true,
+            enum: ['Pending','Processing','Shipped','Delivered','Cancelled','Return Request','Returned','Payment Failed']
+        },
+        returnStatus: {
+            type: String,
+            enum: [null, 'Requested','Returned','Rejected'],
+            default: null
+        },
+        returnReason: {
+            type: String,
+            default: null
         }
     }],
     totalPrice: {
@@ -37,9 +64,14 @@ const orderSchema = new Schema({
         required: true
     },
     address: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+        name :{type: String, required: true},
+        country :{type: String, required: true},
+        state :{type: String, required: true},
+        city :{type: String, required: true},
+        street :{type: String, required: true},
+        pincode :{type: Number, required: true},
+        phone :{type: String, required: true},
+        altPhone :{type: String, required: false},
     },
     invoiceDate: {
         type: Date
@@ -47,7 +79,7 @@ const orderSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ['Prnding','Processing','Shipped','Delivered','Cancelled','Return Request','Returned']
+        enum: ['Pending','Processing','Shipped','Delivered','Cancelled','Return Request','Returned','Payment Failed']
     },
     createtOn: {
         type: Date,
@@ -57,6 +89,15 @@ const orderSchema = new Schema({
     couponApplied: {
         type: Boolean,
         default: false
+    },
+    paymentMethod: {
+        type: String,
+        required: true
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Completed', 'Failed'],
+        default: 'Pending'
     }
 })
 

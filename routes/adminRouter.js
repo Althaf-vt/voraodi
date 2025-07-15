@@ -5,6 +5,7 @@ const adminController = require('../controllers/admin/adminController');
 const customerController = require('../controllers/admin/customerController');
 const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
+const orderController = require('../controllers/admin/orderController');
 const {userAuth,adminAuth} = require('../middlewares/auth');
 const Product = require('../models/productSchema');
 
@@ -25,7 +26,7 @@ router.get('/searchCustomer',adminAuth,customerController.seachCustomer)
 //     const {action,id} = req.query;
 
 //     if(action === 'block'){
-//        return customerController.customerBlocked(req,res);
+//        return customerController.customerBlocked(req,res);   
 //     }else{
 //        return customerController.customerUnblocked(req,res);
 //     }
@@ -58,7 +59,10 @@ router.get('/deleteProduct',adminAuth,productController.deleteProduct)
 router.get('/searchProduct',adminAuth,productController.searchProduct);
 
 
-
+//Order management 
+router.get('/orders',adminAuth, orderController.loadOrders);
+router.get('/orderDetails',adminAuth,orderController.orderDetails);
+router.post('/updateOrderStatus',adminAuth,orderController.updateOrderStatus)
 
 router.get('/pageError',adminController.pageError);
 

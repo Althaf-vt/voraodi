@@ -4,6 +4,7 @@ const User = require('../../models/userSchema');
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+// const { enabled } = require('../../server');
 
 const getAddProduct = async (req, res) => {
     try {
@@ -19,7 +20,10 @@ const getAddProduct = async (req, res) => {
 const addProduct = async (req, res) => {
     try {
         const product = req.body;
-        const productExists = await Product.findOne({ productName: product.productName });
+        console.log(req.body)
+        const productExists = await Product.findOne({ 
+            productName: { $regex: `^${product.productName}$`, $options: 'i' }
+        });
 
         if (!productExists) {
             const images = [];
@@ -48,6 +52,15 @@ const addProduct = async (req, res) => {
                 return res.status(400).json({ message: 'Invalid Category ID' });
             }
 
+            let variants = [];
+            if (typeof product.variantData === 'string') {
+                try {
+                    variants = JSON.parse(product.variantData);
+                } catch (err) {
+                    return res.status(400).json({ message: 'Invalid varients format' });
+                }
+            }
+
             const newProduct = new Product({
                 productName: product.productName,
                 description: product.description,
@@ -55,9 +68,8 @@ const addProduct = async (req, res) => {
                 regularPrice: product.regularPrice,
                 salePrice: product.salePrice,
                 createdOn: new Date(),
-                quantity: product.quantity,
-                size: product.size,
                 color: product.color,
+                variants: variants, //  added here
                 productImage: images,
                 status: "Available",
             });
@@ -85,14 +97,23 @@ const getAllProducts = async (req, res) => {
         .skip(skip)
         .limit(limit);
 
+        // 🔁 Add total quantity to each product
+        const enrichedProducts = productData.map(product => {
+        const totalQuantity = product.variants.reduce((sum, variant) => sum + (variant.quantity || 0), 0);
+        // Use `.toObject()` to convert the Mongoose doc to plain JS object so .category.name works in EJS
+        const plainProduct = product.toObject();   
+        return { ...plainProduct, totalQuantity };
+        });
+
         const totalProducts = await Product.countDocuments();
         const totalPages = Math.ceil(totalProducts / limit);
 
         const category = await Category.find({ isListed: true });
+        
 
         if (category) {
             return res.render('products', {
-                data: productData,
+                data: enrichedProducts,
                 currentPage: page,
                 totalPages: totalPages,
                 // category: category
@@ -172,9 +193,21 @@ const getEditProduct = async (req,res)=>{
         const id = req.query.id;
         const product = await Product.findOne({_id:id});
         const category = await Category.find({});
+
+        // map varients to a size based object like small , medium etc
+        const variantsMap = {};
+        if(product.variants && product.variants.length > 0){
+            product.variants.forEach(variant =>{
+                variantsMap[variant.size] = {
+                    quantity : variant.quantity,
+                    sku: variant.sku
+                }
+            });
+        }
         res.render('edit-product',{
             product: product,
-            cat: category
+            cat: category,
+            variantsMap: variantsMap 
         })
     } catch (error) {
         console.log(error);
@@ -196,6 +229,15 @@ const editProduct = async(req,res)=>{
             return res.status(400).json({error:'Product with this name already exists. Please try with another name'});
         }
 
+        let variants = [];
+        if(typeof data.variantData === 'string'){
+            try {
+                variants = JSON.parse(data.variantData);
+            } catch (error) {
+                return res.status(400).json({ message: 'Invalid varients format' });
+            }
+        }
+
         const images = [];
         if (req.files && req.files.length > 0) {
             for (let i = 0; i < req.files.length; i++) {
@@ -212,12 +254,11 @@ const editProduct = async(req,res)=>{
 
         const updateFields = {
             productName: data.productName,
-           description: data.description,
+            description: data.description,
             category: data.category,
             regularPrice: parseFloat(data.regularPrice),
             salePrice: parseFloat(data.salePrice),
-            quantity: parseInt(data.quantity),
-            // size: data.size,
+            variants : variants,
             color: data.color,
             productImage: [...existingImages, ...images] // Combine existing and new images
         }
@@ -229,8 +270,8 @@ const editProduct = async(req,res)=>{
             product.category.toString() !== updateFields.category ||
             parseFloat(product.regularPrice) !== updateFields.regularPrice ||
             parseFloat(product.salePrice) !== updateFields.salePrice ||
-            parseInt(product.quantity) !== updateFields.quantity ||
             product.color !== updateFields.color ||
+            JSON.stringify(product.variants) !== JSON.stringify(updateFields.variants) ||
             JSON.stringify(product.productImage) !== JSON.stringify(updateFields.productImage);
 
         if (!hasChanges) {
@@ -241,6 +282,7 @@ const editProduct = async(req,res)=>{
         }
 
         const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, { new: true });
+
         if (!updatedProduct) {
             return res.status(500).json({ status: false, error: 'Failed to update product in database' });
         }
@@ -280,6 +322,8 @@ const searchProduct = async(req,res)=>{
     try {
         const search = (req.body?.query || req.query?.query || "").trim();
 
+        console.log('search ==========', search)
+
         let searchResult = [];
 
         // const matchedCategories = await Category.find({
@@ -288,16 +332,18 @@ const searchProduct = async(req,res)=>{
 
 
         if (search === "") {
-            searchResult = await Product.find();
+            searchResult = await Product.find().populate('category');;
         }else{
             searchResult = await Product.find({
             productName:{$regex:".*"+search+".*",$options:"i"}
             // $or:[
             //     {productName:{$regex:".*"+search+".*",$options:"i"}},
             // ]    
-        })};
+            }).populate('category');
+        };
 
         searchResult.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+        
 
         let productsPerPage = 4;
         let currentPage = parseInt(req.query.page) || 1;
@@ -306,8 +352,16 @@ const searchProduct = async(req,res)=>{
         let totalPages = Math.ceil(searchResult.length/productsPerPage);
         const currentProducts = searchResult.slice(startIndex,endIndex);
 
+        // 🔁 Add total quantity to each product
+        const enrichedProducts = currentProducts.map(product => {
+        const totalQuantity = product.variants.reduce((sum, variant) => sum + (variant.quantity || 0), 0);
+        // Use `.toObject()` to convert the Mongoose doc to plain JS object so .category.name works in EJS
+        const plainProduct = product.toObject();   
+        return { ...plainProduct, totalQuantity };
+        });
+
         return res.render('products',{
-            data: currentProducts,
+            data: enrichedProducts,
             totalPages,
             currentPage,
             count: searchResult.length,

@@ -1,0 +1,320 @@
+/* Address Container */
+.address-container {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f5e8, #fffcf4);
+    padding: 80px 20px;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(135deg, #f5f5e8, #fffcf4);
+    padding: 30px 20px;
+    border-right: 2px solid #d4af37;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-title {
+    font-family: 'Cinzel', serif;
+    font-size: 24px;
+    color: #2f3a44;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+    white-space: nowrap;
+}
+
+.sidebar-title::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 2px;
+    background-color: #d4af37;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 20px;
+}
+
+.sidebar-nav a {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: #2f3a44;
+    text-decoration: none;
+    text-transform: uppercase;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    background: linear-gradient(135deg, #d4af37, #b8972e);
+    color: #2f3a44;
+    transform: translateX(10px);
+}
+
+/* Address Content */
+.address-content {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.address-title {
+    font-family: 'Cinzel', serif;
+    font-size: 36px;
+    color: #2f3a44;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    text-align: center;
+}
+
+.address-title::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 2px;
+    background-color: #d4af37;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.address-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.address-header .address-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.address-card-container {
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Address Card */
+.address-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 2px solid #d4af37;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    padding: 30px;
+    margin-bottom: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 1 1 calc(50% - 10px);
+    box-sizing: border-box;
+    max-width: calc(50% - 10px);
+}
+
+/* Address Details */
+.address-details {
+    text-align: left;
+}
+
+.address-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background: #f5f5e8;
+    border-radius: 5px;
+    border: 1px solid #d4af37;
+}
+
+.address-item label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: #2f3a44;
+    font-weight: 700;
+    text-transform: uppercase;
+    width: 100px;
+    white-space: nowrap;
+}
+
+.address-item span {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: #2f3a44;
+    flex: 1;
+    text-align: left;
+    padding-left: 20px;
+}
+
+/* No Address Section */
+.no-address {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.no-address-icon {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+.no-address p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    color: #2f3a44;
+    text-transform: uppercase;
+}
+
+/* Buttons */
+.edit-button, .add-address-button, .delete-button {
+    padding: 10px 30px;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.edit-button, .add-address-button {
+    background: linear-gradient(45deg, #d4af37, #b8972e);
+    color: #2f3a44;
+}
+
+.delete-button {
+    background: linear-gradient(45deg, #2f3a44, #3a4651);
+    color: #f5f5e8;
+    margin-left: 15px;
+}
+
+.add-address-button {
+    text-align: center;
+    max-width: 200px;
+}
+
+.edit-button::before, .add-address-button::before, .delete-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.edit-button:hover::before, .add-address-button::before, .delete-button:hover::before {
+    left: 100%;
+}
+
+.edit-button:hover, .add-address-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
+    background: linear-gradient(135deg, #006400, #228B22);
+    color: #f5f5e8;
+}
+
+.delete-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(211, 47, 47, 0.7);
+    background: linear-gradient(135deg, #ff4040, #d32f2f);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .address-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #d4af37;
+        padding: 20px;
+    }
+
+    .address-content {
+        padding: 20px;
+    }
+
+    .address-card {
+        padding: 20px;
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    .address-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .address-item label,
+    .address-item span {
+        width: 100%;
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .address-item::before {
+        content: ':';
+        margin: 0;
+    }
+
+    .edit-button, .delete-button {
+        align-self: center;
+    }
+
+    .delete-button {
+        margin-left: 0;
+        margin-top: 15px;
+    }
+
+    .address-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .address-header .address-title {
+        position: static;
+        transform: none;
+    }
+
+    .add-address-button {
+        margin: 0;
+    }
+}

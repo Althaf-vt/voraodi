@@ -637,3 +637,145 @@ body {
             width: 100%;
             text-align: center;
         }
+
+/* Variants Styles - Consistent with existing theme */
+
+/* Style variants container to stack rows vertically */
+.variants-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Style variant row to hold two variant fields horizontally */
+.variant-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Style variant field container */
+.variant-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 250px;
+}
+
+/* Style variant group (checkbox and input field) */
+.variant-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Style checkbox */
+.variant-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #c9a022; /* Gold accent to match theme */
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Style variant quantity input */
+.variant-group input[type="number"] {
+  padding: 12px;
+  border: 2px solid #c9a022; /* Gold border to match theme */
+  border-radius: 6px;
+  outline: none;
+  background-color: rgba(255, 255, 245, 0.9);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #1a252f;
+  width: 150px;
+  box-sizing: border-box;
+}
+
+/* Style disabled state for variant quantity input */
+.variant-group input[type="number"]:disabled {
+  cursor: not-allowed;
+}
+
+/* Style focus state for variant quantity input */
+.variant-group input[type="number"]:focus:not(:disabled) {
+  border-color: #004d00; /* Green border on focus to match theme */
+  box-shadow: 0 0 8px rgba(201, 160, 34, 0.6); /* Glow effect */
+}
+
+/* Style variant field label */
+.variant-field label {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f5f5e8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: left;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Subtle shadow to match theme */
+}
+
+/* Style variant quantity error message */
+.variant-field .error-message {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #ff4040; /* Red for errors to match theme */
+  text-align: left;
+  min-height: 18px;
+  margin-top: 4px;
+}
+
+/* Responsive design for tablets */
+@media (max-width: 1024px) {
+  .variant-field {
+    min-width: 220px;
+  }
+  .variant-group input[type="number"] {
+    width: 120px;
+  }
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+  .variant-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .variant-field {
+    min-width: 100%;
+  }
+  .variant-group input[type="number"] {
+    width: 100%;
+  }
+}
+
+/* Responsive design for small mobile devices */
+@media (max-width: 480px) {
+  .variant-field {
+    min-width: 100%;
+  }
+  .variant-group input[type="number"] {
+    padding: 10px;
+    font-size: 14px;
+    width: 100%;
+  }
+  .variant-field label {
+    font-size: 12px;
+  }
+  .variant-field .error-message {
+    font-size: 10px;
+  }
+}
+
+/* Apply fade-in animation to variant fields */
+.variant-field {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Staggered animation delays for variant fields */
+.variant-field:nth-child(1) { animation-delay: 0.5s; }
+.variant-field:nth-child(2) { animation-delay: 0.6s; }
+.variant-field:nth-child(3) { animation-delay: 0.7s; }
+.variant-field:nth-child(4) { animation-delay: 0.8s; }

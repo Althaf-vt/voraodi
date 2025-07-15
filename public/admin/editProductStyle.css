@@ -112,6 +112,25 @@ form {
   border-color: #c9a022;
 }
 
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(201, 160, 34, 0.2);
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #1a252f;
+  background-color: #f5f5e8;
+  transition: border-color 0.3s ease;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #c9a022;
+}
+
 .current-images {
   margin-top: 10px;
 }
@@ -171,31 +190,112 @@ form {
   transform: scale(1.05);
 }
 
+.image-container {
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.product-image, .new-image {
+  object-fit: cover;
+  position: relative;
+}
+
+.image-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.remove-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #ff0000;
+  color: #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.crop-icon {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  color: #000;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 3px;
+  padding: 2px;
+}
+
+.new-images-preview {
+  margin-top: 10px;
+}
+
+/* Error Message Styling */
+.error-message {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #ff4040;
+  text-align: left;
+  margin-top: 4px;
+  display: none;
+}
+
+/* Cropper Modal */
+#cropperModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+}
+
+.cropper-modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .product-management-header h1 {
     font-size: 36px;
   }
-
   .product-management-header .subtitle {
     font-size: 20px;
   }
-
   .product-management-header p {
     font-size: 14px;
   }
-
   .edit-product-section h2 {
     font-size: 30px;
   }
-
   .action-btn {
     padding: 8px 16px;
     font-size: 12px;
   }
-
   .form-group input,
-  .form-group select {
+  .form-group select,
+  .form-group textarea {
     font-size: 12px;
     padding: 8px;
   }
@@ -205,45 +305,40 @@ form {
   .product-management-header {
     height: 50vh;
   }
-
   .product-management-header h1 {
     font-size: 30px;
   }
-
   .product-management-header .subtitle {
     font-size: 18px;
   }
-
   .product-management-header p {
     font-size: 12px;
   }
-
   .edit-product-section h2 {
     font-size: 26px;
   }
-
   form {
     padding: 15px;
   }
-
   .form-group label {
     font-size: 12px;
   }
-
   .form-group input,
-  .form-group select {
+  .form-group select,
+  .form-group textarea {
     font-size: 12px;
     padding: 8px;
   }
-
   .action-btn {
     padding: 8px 16px;
     font-size: 12px;
   }
-
   .product-image {
     width: 50px;
     height: 50px;
+  }
+  .error-message {
+    font-size: 10px;
   }
 }
 
@@ -251,106 +346,37 @@ form {
   .product-management-header {
     height: 40vh;
   }
-
   .product-management-header h1 {
     font-size: 24px;
     letter-spacing: 2px;
   }
-
   .product-management-header .subtitle {
     font-size: 16px;
   }
-
   .product-management-header p {
     font-size: 10px;
   }
-
   .edit-product-section h2 {
     font-size: 22px;
   }
-
   .form-group label {
     font-size: 10px;
   }
-
   .form-group input,
-  .form-group select {
+  .form-group select,
+  .form-group textarea {
     font-size: 10px;
     padding: 6px;
   }
-
   .action-btn {
     padding: 6px 12px;
     font-size: 10px;
   }
-
   .product-image {
     width: 40px;
     height: 40px;
   }
-}
-.image-container {
-    position: relative;
-    display: inline-block;
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-.product-image, .new-image {
-    object-fit: cover;
-    position: relative;
-}
-.image-actions {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-.remove-icon {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #ff0000;
-    color: #fff;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    text-align: center;
-    line-height: 20px;
-    cursor: pointer;
-    font-size: 14px;
-}
-.crop-icon {
-    position: absolute;
-    bottom: 5px;
-    left: 5px;
-    color: #000;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 3px;
-    padding: 2px;
-}
-.new-images-preview {
-    margin-top: 10px;
-}
-
-.form-group textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid rgba(201, 160, 34, 0.2); /* Matching gold border with opacity */
-    border-radius: 4px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    color: #1a252f;
-    background-color: #f5f5e8; /* Matching background color */
-    transition: border-color 0.3s ease;
-    resize: vertical; /* Allow vertical resizing only */
-    min-height: 100px; /* Suitable height for description */
-}
-
-.form-group textarea:focus {
-    outline: none;
-    border-color: #c9a022; /* Matching focus border color */
+  .error-message {
+    font-size: 10px;
+  }
 }

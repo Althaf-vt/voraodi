@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - User Addresses</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/user/AddressStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css">
+    <link rel="stylesheet" href="/user/footerStyle.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="address-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2 class="sidebar-title">My Account</h2>
+            <ul class="sidebar-nav">
+                <li><a href="/userProfile">Profile</a></li>
+                <li><a href="/userAddress" class="active">Address</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/cart">Cart</a></li>
+                <li><a href="/wishlist">Wishlist</a></li>
+                <li><a href="/wallet">Wallet</a></li>
+                <li><a href="/coupons">Coupons</a></li>
+                <li><a href="/referrals">Referrals</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Address Section -->
+        <div class="address-content">
+            <div class="address-header">
+                <h1 class="address-title">My Addresses</h1>
+                <a href="/add-address" class="add-address-button">Add Address</a>
+            </div>
+            <div class="address-card-container">
+                <% if (userAddress && userAddress.length > 0) { %>
+                    <% userAddress.forEach(address => { %>
+                        <div class="address-card">
+                            <div class="address-details">
+                                <div class="address-item">
+                                    <label class="address-label">Name
+                                                  :
+                                    </label>
+                                    <span><%= address.name %></span>
+                                </div>
+                                <div class="address-item">
+                                    <label class="address-label">Address
+                                            :
+                                    </label>
+                                    <span><%= address.street %>, <%= address.city %>, <%= address.state %>,<%= address.country %>, <%= address.pincode %></span>
+                                </div>
+                                <div class="address-item">
+                                    <label class="address-label">Phone
+                                                 :
+                                    </label>
+                                    <span><%= address.phone %></span>
+                                </div>
+                                <div class="address-item">
+                                    <label class="address-label">Alt Phone
+                                          :
+                                    </label>
+                                    <span><%= address.altPhone %></span>
+                                </div>
+                                <a href="/edit-address?id=<%= address.id %>" class="edit-button">Edit</a>
+                                <a href="/delete-address?id=<%= address.id %>" class="delete-button">Delete</a>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="no-address">
+                        <!-- <img src="/user/images/no-address.svg" alt="No Addresses" class="no-address-icon"> -->
+                        <p>No Addresses Added</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        
+    </script>
+</body>
+</html>

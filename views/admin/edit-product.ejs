@@ -9,7 +9,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-  <link rel="stylesheet" href="/admin/editProductStyle.css?v=<%= new Date().getTime() %>">
+  <link rel="stylesheet" href="/admin/editProductStyle.css">
+  <link rel="stylesheet" href="/admin/variants.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -38,49 +39,106 @@
         <div class="form-group">
           <label for="productName">Product Name</label>
           <input type="text" id="productName" name="productName" value="<%= product.productName %>" required>
+          <div id="productName-error" class="error-message"></div>
         </div>
 
         <!-- Description field -->
         <div class="form-group">
           <label for="description">Description</label>
           <textarea id="description" name="description" rows="4" required><%= product.description || '' %></textarea>
+          <div id="description-error" class="error-message"></div>
         </div>
 
         <!-- Category -->
         <div class="form-group">
           <label for="category">Category</label>
           <select id="category" name="category" required>
-            <% for (let i = 0; i < cat.length; i ++){%>
-                <option value="<%=cat[i]._id%>" <%= product.category.toString() === cat[i]._id.toString() ? 'selected' : '' %>>
-                    <%=cat[i].name%>
+            <% for (let i = 0; i < cat.length; i++) { %>
+                <option value="<%= cat[i]._id %>" <%= product.category.toString() === cat[i]._id.toString() ? 'selected' : '' %>>
+                    <%= cat[i].name %>
                 </option>
-                <%}%>
+            <% } %>
           </select>
+          <div id="category-error" class="error-message"></div>
         </div>
 
         <!-- Color -->
         <div class="form-group">
           <label for="color">Color</label>
           <input type="text" id="color" name="color" value="<%= product.color || '' %>" required>
+          <div id="color-error" class="error-message"></div>
         </div>
 
         <!-- Regular Price -->
         <div class="form-group">
           <label for="regularPrice">Regular Price</label>
           <input type="number" id="regularPrice" name="regularPrice" value="<%= product.regularPrice %>" step="0.01" required>
+          <div id="regularPrice-error" class="error-message"></div>
         </div>
 
         <!-- Sale Price -->
         <div class="form-group">
           <label for="salePrice">Sale Price</label>
           <input type="number" id="salePrice" name="salePrice" value="<%= product.salePrice %>" step="0.01" required>
+          <div id="salePrice-error" class="error-message"></div>
         </div>
 
-        <!-- Quantity -->
-        <div class="form-group">
-          <label for="quantity">Quantity</label>
-          <input type="number" id="quantity" name="quantity" value="<%= product.quantity %>" required>
-        </div>
+        <!-- Variants Section -->
+<div class="form-group variants-container">
+  <!-- First Row: Small and Large -->
+  <div class="variant-row">
+    <div class="variant-field">
+      <div class="variant-group">
+        <% const small = variantsMap['S']; %>
+        <input type="checkbox" id="sizeSmall" name="variants[sizeSmall][enabled]" <%= small ? 'checked' : '' %>>
+        <label for="sizeSmall">Small</label>
+        <input type="number" id="quantitySmall" name="variants[sizeSmall][quantity]" min="0"
+          value="<%= small ? small.quantity : '' %>" <%= small ? '' : 'disabled' %> placeholder="Qty">
+          <input type="hidden" name="variants[sizeSmall][sku]" value="<%= small ? small.sku : '' %>">
+        <div id="quantitySmall-error" class="error-message"></div>
+      </div>
+    </div>
+
+    <div class="variant-field">
+      <div class="variant-group">
+        <% const large = variantsMap['L']; %>
+        <input type="checkbox" id="sizeLarge" name="variants[sizeLarge][enabled]" <%= large ? 'checked' : '' %>>
+        <label for="sizeLarge">Large</label>
+        <input type="number" id="quantityLarge" name="variants[sizeLarge][quantity]" min="0"
+          value="<%= large ? large.quantity : '' %>" <%= large ? '' : 'disabled' %> placeholder="Qty">
+          <input type="hidden" name="variants[sizeLarge][sku]" value="<%= large ? large.sku : '' %>">
+        <div id="quantityLarge-error" class="error-message"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second Row: Medium and Extra Large -->
+  <div class="variant-row">
+    <div class="variant-field">
+      <div class="variant-group">
+        <% const medium = variantsMap['M']; %>
+        <input type="checkbox" id="sizeMedium" name="variants[sizeMedium][enabled]" <%= medium ? 'checked' : '' %>>
+        <label for="sizeMedium">Medium</label>
+        <input type="number" id="quantityMedium" name="variants[sizeMedium][quantity]" min="0"
+          value="<%= medium ? medium.quantity : '' %>" <%= medium ? '' : 'disabled' %> placeholder="Qty">
+          <input type="hidden" name="variants[sizeMedium][sku]" value="<%= medium ? medium.sku : '' %>">
+        <div id="quantityMedium-error" class="error-message"></div>
+      </div>
+    </div>
+
+    <div class="variant-field">
+      <div class="variant-group">
+        <% const xl = variantsMap['XL']; %>
+        <input type="checkbox" id="sizeExtraLarge" name="variants[sizeExtraLarge][enabled]" <%= xl ? 'checked' : '' %>>
+        <label for="sizeExtraLarge">Extra Large</label>
+        <input type="number" id="quantityExtraLarge" name="variants[sizeExtraLarge][quantity]" min="0"
+          value="<%= xl ? xl.quantity : '' %>" <%= xl ? '' : 'disabled' %> placeholder="Qty">
+          <input type="hidden" name="variants[sizeExtraLarge][sku]" value="<%= xl ? xl.sku : '' %>">
+        <div id="quantityExtraLarge-error" class="error-message"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
         <!-- Product Images -->
         <div class="form-group">
@@ -127,29 +185,52 @@
 
 <script>
 function validateForm() {
-    console.log("validate form");
+    console.log("Validating form");
     clearErrorMessages();
-    const name = document.getElementsByName('productName')[0].value;
-    const price = document.getElementsByName('regularPrice')[0].value;
-    const saleprice = document.getElementsByName('salePrice')[0].value;
-    const color = document.getElementsByName('color')[0].value;
-    const category = document.getElementsByName('category')[0].value;
-    const quantity = document.getElementsByName('quantity')[0].value;
+    const name = document.getElementById('productName').value;
+    const description = document.getElementById('description').value;
+    const price = document.getElementById('regularPrice').value;
+    const salePrice = document.getElementById('salePrice').value;
+    const color = document.getElementById('color').value;
+    const category = document.getElementById('category').value;
     const existingImages = document.getElementsByName('existingImages');
     const totalImages = existingImages.length + selectedImages.length;
+    const variants = {
+        sizeSmall: { enabled: document.getElementById('sizeSmall').checked, quantity: document.getElementById('quantitySmall').value },
+        sizeMedium: { enabled: document.getElementById('sizeMedium').checked, quantity: document.getElementById('quantityMedium').value },
+        sizeLarge: { enabled: document.getElementById('sizeLarge').checked, quantity: document.getElementById('quantityLarge').value },
+        sizeExtraLarge: { enabled: document.getElementById('sizeExtraLarge').checked, quantity: document.getElementById('quantityExtraLarge').value }
+    };
     let isValid = true;
 
     if (name.trim() === "") {
         displayErrorMessage('productName-error', 'Please enter a product name.');
         isValid = false;
-    }
-
-    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+    } else if (!/^[a-zA-Z0-9\s'()\-|]+$/.test(name.trim())) {
+        displayErrorMessage('productName-error', 'Product name can include letters, numbers, spaces, apostrophes, hyphens, parentheses, and pipes.');
         isValid = false;
     }
-    if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+
+    if (description.trim() === "") {
+        displayErrorMessage('description-error', 'Please enter a description.');
+        isValid = false;
+    } else if (!/^[a-zA-Z0-9\s]+$/.test(description.trim())) {
+        displayErrorMessage('description-error', 'Description should contain only alphanumeric characters and spaces.');
+        isValid = false;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) <= 0) {
+        displayErrorMessage('regularPrice-error', 'Please enter a valid price greater than 0.');
+        isValid = false;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) <= 0) {
+        displayErrorMessage('salePrice-error', 'Please enter a valid sale price greater than 0.');
+        isValid = false;
+    }
+
+    if (parseFloat(salePrice) > parseFloat(price)) {
+        displayErrorMessage('regularPrice-error', 'Sale price cannot be greater than regular price.');
         isValid = false;
     }
 
@@ -158,14 +239,39 @@ function validateForm() {
         isValid = false;
     }
 
-    if (parseInt(quantity) < 0) {
-        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+    if (category === "") {
+        displayErrorMessage('category-error', 'Please select a category.');
         isValid = false;
     }
 
-    // Edited: Updated image validation to show a more prominent message using SweetAlert
+    // Validate variants
+    const anyVariantEnabled = Object.values(variants).some(variant => variant.enabled);
+    if (!anyVariantEnabled) {
+        Swal.fire({
+            toast: true,
+            icon: 'error',
+            title: 'Variant Required',
+            text: 'Please enable at least one size variant.',
+        });
+        isValid = false;
+    } else {
+        Object.keys(variants).forEach(size => {
+            if (variants[size].enabled) {
+                const quantity = variants[size].quantity;
+                if (quantity.trim() === '') {
+                    displayErrorMessage(`quantity${size.replace('size', '')}-error`, `Please enter a quantity for ${size.replace('size', '')}.`);
+                    isValid = false;
+                } else if (isNaN(quantity) || Number(quantity) < 0 || !Number.isInteger(Number(quantity))) {
+                    displayErrorMessage(`quantity${size.replace('size', '')}-error`, `Quantity for ${size.replace('size', '')} must be a non-negative integer.`);
+                    isValid = false;
+                }
+            }
+        });
+    }
+
     if (totalImages < 3) {
         Swal.fire({
+            toast: true,
             icon: 'error',
             title: 'Image Requirement Not Met',
             text: 'Minimum 3 images required.',
@@ -174,6 +280,7 @@ function validateForm() {
     }
     if (totalImages > 4) {
         Swal.fire({
+            toast: true,
             icon: 'error',
             title: 'Too Many Images',
             text: 'You can only upload a maximum of 4 images.',
@@ -207,23 +314,19 @@ function clearErrorMessages() {
 
 function deleteSingleImage(imageId, productId) {
     Swal.fire({
+        toast: true,
         title: 'Are you sure?',
-        text: "You won't be able to revert this, After update the product!",
+        text: "You won't be able to revert this after updating the product!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, delete it!',
         cancelButtonText: 'No, cancel!'
     }).then((result) => {
         if (result.isConfirmed) {
-            // 1. Remove image from UI
             const container = document.querySelector(`img[src="${imageId}"]`)?.closest('.image-container');
             if (container) container.remove();
-
-            // 2. Remove <input name="existingImages" value="...">
             const hiddenInput = container?.querySelector('input[name="existingImages"]');
             if (hiddenInput) hiddenInput.remove();
-
-            // 3. Add a new <input> to keep track of deletions
             const deleteListInput = document.createElement('input');
             deleteListInput.type = 'hidden';
             deleteListInput.name = 'deletedImages';
@@ -243,6 +346,7 @@ function handleFileSelect(event) {
     const totalImages = existingImages.length + selectedImages.length + files.length;
 
     if (totalImages > 4) {
+
         Swal.fire('Error', 'You can only upload a maximum of 4 images.', 'error');
         event.target.value = '';
         return;
@@ -318,19 +422,14 @@ function openCropper(file, index, isExisting = false) {
                 const existingImageContainer = document.getElementById(`image-container-${index}`);
                 const existingImage = existingImageContainer.querySelector('.product-image');
                 existingImage.src = URL.createObjectURL(croppedFile);
-                
-                // Remove old hidden input (existing image path)
                 const oldInput = existingImageContainer.querySelector('input[name="existingImages"]');
                 if (oldInput) oldInput.remove();
-
                 selectedImages.push(croppedFile);
                 updateFileInput();
-
-                // Add a new hidden field to include it in the form (optional)
                 const hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
                 hiddenInput.name = 'newCroppedImages';
-                hiddenInput.value = fileName; // just for form structure; actual file is in FormData
+                hiddenInput.value = fileName;
                 existingImageContainer.appendChild(hiddenInput);
             } else {
                 selectedImages[index] = croppedFile;
@@ -361,44 +460,103 @@ function updateFileInput() {
 
 document.getElementById('productImages').addEventListener('change', handleFileSelect);
 
+// Variants Toggle
+const sizes = ['Small', 'Medium', 'Large', 'ExtraLarge'];
+sizes.forEach(size => {
+    const checkbox = document.getElementById(`size${size}`);
+    const quantityInput = document.getElementById(`quantity${size}`);
+    
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            quantityInput.disabled = false;
+        } else {
+            quantityInput.disabled = true;
+            quantityInput.value = '';
+            document.getElementById(`quantity${size}-error`).innerText = '';
+            document.getElementById(`quantity${size}-error`).style.display = 'none';
+        }
+    });
+});
+
+
+
+
 // Form Submission Handling
-$('#editProductForm').on('submit', function(e) {
-    e.preventDefault();
+document.getElementById('editProductForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
     if (!validateForm()) return;
 
-    const formData = new FormData(this);
-    
-    $.ajax({
-        url: this.action,
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: (response) => {
-            if (response.status === true) {
-                Swal.fire({
+    const form = this;
+    const formData = new FormData(form);
+
+    // ✅ Append varients as JSON
+    const sizeMap = [
+        { key: 'Small', label: 'S' },
+        { key: 'Medium', label: 'M' },
+        { key: 'Large', label: 'L' },
+        { key: 'ExtraLarge', label: 'XL' }
+    ];
+
+    const varients = [];
+
+    sizeMap.forEach(size => {
+        const checkbox = document.getElementById(`size${size.key}`);
+        const quantityInput = document.getElementById(`quantity${size.key}`);
+        const skuInput = document.querySelector(`input[name="variants[size${size.key}][sku]"]`);
+
+        if (checkbox.checked) {
+            const quantity = parseInt(quantityInput.value);
+            const sku = skuInput ? skuInput.value : '';
+
+            if (!isNaN(quantity) && quantity >= 0) {
+              varients.push({
+                size: size.label,
+                sku: sku || `SKU-${Date.now()}-${Math.floor(Math.random() * 1000)}-${size.label}`, // fallback only if missing
+                quantity: quantity
+              });
+            }
+        }
+    });
+
+    formData.append('variantData', JSON.stringify(varients));
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.status === true) {
+            await Swal.fire({
+                toast: true,    
                 icon: 'success',
                 title: 'Product updated successfully',
-                // text: 'Redirecting in 2.5 seconds...',
                 timer: 2500,
-                timerProgressBar: true,
                 showConfirmButton: true,
                 confirmButtonText: 'Go Now',
                 willClose: () => {
                     window.location.href = '/admin/products';
                 }
             });
-
-            } else {
-                Swal.fire('!?', 'No changes detected.', 'info');
-            }
-        },
-        error: (error) => {
-            const errorMessage = error.responseJSON?.error || 'An error occurred while updating the product';
-            Swal.fire('Error', errorMessage, 'error');
-            console.error('Form submission error:', error);
+        } else {
+            await Swal.fire({
+                toast: true,
+                icon: 'info',
+                title: 'No changes detected',
+                text: result.message || 'Try updating some fields.',
+            });
         }
-    });
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        await Swal.fire({
+            toast: true,
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong while updating the product.',
+        });
+    }
 });
 </script>
 </body>

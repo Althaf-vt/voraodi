@@ -149,6 +149,7 @@
 
                     if (response.ok) {
                         Swal.fire({
+                            toast: true,
                             icon: 'success',
                             title: 'Success',
                             text: data.message || 'Category updated successfully',
@@ -162,6 +163,7 @@
 
                     } else {
                         Swal.fire({
+                            toast: true,
                             icon: 'error',
                             title: 'Oops...',
                             text: data.error || 'Failed to update category',
@@ -174,6 +176,7 @@
                 } catch (error) {
                     console.error('Form submission error:', error);
                     Swal.fire({
+                        toast: true,
                         icon: 'error',
                         title: 'Oops...',
                         text: 'Failed to update category',

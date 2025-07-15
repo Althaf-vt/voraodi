@@ -1,0 +1,428 @@
+/* Basic reset and global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1a252f, #2f3a44);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Order Detail Header */
+.order-detail-header {
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(rgba(26, 37, 47, 0.9), rgba(47, 58, 68, 0.9)), url(https://www.transparenttextures.com/patterns/black-linen.png);
+    color: #f5f5e8;
+    position: relative;
+    overflow: hidden;
+}
+
+.order-detail-header .text-container {
+    padding: 20px;
+}
+
+.order-detail-header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 42px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+}
+
+.order-detail-header .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: #c9a022;
+    margin-bottom: 10px;
+}
+
+.order-detail-header p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.back-button-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.back-btn {
+    background: linear-gradient(135deg, #c9a022, #a3821b);
+    color: #1a252f;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    color: #f5f5e8;
+    transform: translateY(-2px);
+}
+
+/* Main Content */
+.main-content {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* Card Styles */
+.order-summary-card,
+.shipping-address-card,
+.order-total-card,
+.item-card {
+    background: rgba(255, 255, 245, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.order-summary-card:hover,
+.shipping-address-card:hover,
+.order-total-card:hover,
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #1a252f, #2f3a44);
+    color: #f5f5e8;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* border-radius: 20px; */
+}
+
+.card-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.order-id {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #c9a022;
+}
+
+.card-content,
+.item-content {
+    padding: 25px;
+}
+
+/* Order Summary */
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #1a252f;
+}
+
+.total-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #c9a022;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-badge.delivered {
+    background-color: #004d00;
+    color: #f5f5e8;
+}
+
+.status-badge.pending {
+    background-color: #c9a022;
+    color: #1a252f;
+}
+
+.status-badge.cancelled {
+    background-color: #ff4040;
+    color: #f5f5e8;
+}
+
+/* Shipping Address */
+.address-details {
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
+    color: #1a252f;
+}
+
+.address-details p {
+    margin-bottom: 5px;
+}
+
+.address-details strong {
+    color: #c9a022;
+}
+
+/* Order Items */
+.order-items-section {
+    grid-column: 1 / -1;
+}
+
+.items-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.item-card {
+    width: 100%;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.product-image {
+    flex-shrink: 0;
+}
+
+.product-image img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.product-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.product-name {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a252f;
+}
+
+.product-sku,
+.product-size,
+.product-quantity,
+.product-price,
+.product-total {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #666;
+}
+
+.product-total {
+    font-weight: 600;
+    color: #c9a022;
+}
+
+/* Order Total */
+.total-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.total-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(201, 160, 34, 0.2);
+}
+
+.total-final {
+    border-top: 2px solid #c9a022;
+    border-bottom: none;
+    padding-top: 20px;
+    margin-top: 10px;
+}
+
+.total-final .label,
+.total-final .value {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a252f;
+}
+
+/* Action Buttons */
+.action-buttons {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.action-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #c9a022, #a3821b);
+    color: #1a252f;
+}
+
+.primary-btn:hover {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    color: #f5f5e8;
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background: linear-gradient(135deg, #767675, #4c4b49);
+    color: #f5f5e8;
+}
+
+.secondary-btn:hover {
+    background: linear-gradient(135deg, #1a252f, #2f3a44);
+    transform: translateY(-2px);
+}
+
+.danger-btn {
+    background: linear-gradient(135deg, #ff4040, #cc3333);
+    color: #f5f5e8;
+}
+
+.danger-btn:hover {
+    background: linear-gradient(135deg, #cc3333, #ff4040);
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .order-items-section {
+        grid-column: 1;
+    }
+    
+    .action-buttons {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .order-detail-header h1 {
+        font-size: 32px;
+    }
+    
+    .order-detail-header .subtitle {
+        font-size: 18px;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .order-detail-header {
+        height: 40vh;
+    }
+    
+    .order-detail-header h1 {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+    
+    .order-detail-header .subtitle {
+        font-size: 16px;
+    }
+    
+    .main-content {
+        padding: 20px 10px;
+    }
+    
+    .card-content,
+    .item-content {
+        padding: 20px;
+    }
+    
+    .product-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+}

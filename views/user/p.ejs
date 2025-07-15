@@ -1,0 +1,99 @@
+<!-- grok -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - User Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/user/profileStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css" />
+    <link rel="stylesheet" href="/user/footerStyle.css" />
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="profile-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2 class="sidebar-title">My Account</h2>
+            <ul class="sidebar-nav">
+                <li><a href="/profile" class="active">Profile</a></li>
+                <li><a href="/address">Address</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/wishlist">Wishlist</a></li>
+                <li><a href="/wallet">Wallet</a></li>
+                <li><a href="/coupons">Coupons</a></li>
+                <li><a href="/referrals">Referrals</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-content">
+            <h1 class="profile-title">My Profile</h1>
+            <div class="profile-card">
+                <div class="profile-image-container">
+                    <% if (user && user.profileImage) { %>
+                        <img src="<%= user.profileImage %>" alt="User Profile Image" class="profile-image">
+                    <% } else { %>
+                        <div class="profile-icon">👤</div>
+                    <% } %>
+                </div>
+                <div class="profile-details">
+                    <div class="profile-item">
+                        <label>Name:</label>
+                        <span><%= user ? user.name : 'Your Name' %></span>
+                        <a href="/edit-profile?name" class="edit-button">Edit</a>
+                    </div>
+                    <div class="profile-item">
+                        <label>Phone:</label>
+                        <span><%= user && user.phone ? user.phone : 'Not Provided' %></span>
+                        <a href="/edit-profile?phone" class="edit-button">Edit</a>
+                    </div>
+                    <div class="profile-item">
+                        <label>Email:</label>
+                        <span><%= user ? user.email : 'Not Provided' %></span>
+                        <a href="/change-email" class="edit-button">Edit</a>
+                    </div>
+                    <div class="profile-item change-password">
+                        <a href="/change-password" class="change-password-button">Change Password</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        // GSAP Animations
+        gsap.from(".sidebar", { 
+            opacity: 0, 
+            x: -50, 
+            duration: 1, 
+            ease: "power2.out" 
+        });
+        gsap.from(".profile-content", { 
+            opacity: 0, 
+            x: 50, 
+            duration: 1, 
+            delay: 0.3, 
+            ease: "power2.out" 
+        });
+        gsap.from(".profile-card", { 
+            opacity: 0, 
+            y: 30, 
+            duration: 1, 
+            delay: 0.6, 
+            scrollTrigger: {
+                trigger: ".profile-card",
+                start: "top 80%",
+                toggleActions: "play none none none"
+            }
+        });
+    </script>
+</body>
+</html>

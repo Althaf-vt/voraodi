@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - My Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/user/ordersStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css">
+    <link rel="stylesheet" href="/user/footerStyle.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="orders-container">
+        <!-- Sidebar: Amazon/Flipkart-inspired compact navigation -->
+        <div class="sidebar">
+            <button class="sidebar-toggle">☰ Menu</button>
+            <h2 class="sidebar-title">My Account</h2>
+            <ul class="sidebar-nav">
+                <li><a href="/userProfile">Profile</a></li>
+                <li><a href="/userAddress">Address</a></li>
+                <li><a href="/orders" class="active">Orders</a></li>
+                <li><a href="/cart">Cart</a></li>
+                <li><a href="/wishlist">Wishlist</a></li>
+                <li><a href="/wallet">Wallet</a></li>
+                <li><a href="/coupons">Coupons</a></li>
+                <li><a href="/referrals">Referrals</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="orders-content">
+            <div class="orders-header">
+                <h1 class="orders-title">My Orders</h1>
+            </div>
+            <div class="orders-card-container">
+                <% if (orders && orders.length > 0) { %>
+                    <% orders.forEach(order => { %>
+                        <div class="order-card">
+                            <div class="order-details">
+                                <div class="order-info">
+                                    <div class="order-item">
+                                        <span class="order-label">Order Id&nbsp;:</span>
+                                        <span class="order-value"><%= order.orderId %></span>
+                                    </div>
+                                    <div class="order-item">
+                                        <span class="order-label">Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</span>
+                                        <span class="order-value"><%= new Date(order.invoiceDate).toLocaleDateString() %></span>
+                                    </div>
+                                    <div class="order-item">
+                                        <span class="order-label">Total &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</span>
+                                        <span class="order-value">₹<%= order.totalPrice.toFixed(2) %></span>
+                                    </div>
+                                </div>
+                                <!-- Status and Quantity: Placed at end of row -->
+                                <div class="order-status-quantity">
+                                    <div class="order-item">
+                                        <span class="order-label"></span>
+                                        <span class="order-value"><%= order.status %></span>
+                                    </div>
+                                    <!-- Quantity of first item, if available -->
+                                    <% if (order.orderedItems && order.orderedItems.length > 0) { %>
+                                        <div class="item-quantity">
+                                            <span>Item  <%= order.orderedItems[0].quantity %></span>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <a href="/order-details?id=<%= order.orderId %>" class="view-details-button">View Details</a>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="no-orders">
+                        <p>No Orders Placed</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        // GSAP Animations
+        gsap.from(".orders-content", { 
+            opacity: 0, 
+            y: 50, 
+            duration: 1, 
+            ease: "power2.out" 
+        });
+        gsap.from(".order-card, .no-orders", { 
+            opacity: 0, 
+            y: 30, 
+            duration: 0.8, 
+            delay: 0.3, 
+            stagger: 0.2,
+            scrollTrigger: {
+                trigger: ".orders-card-container",
+                start: "top 80%",
+                toggleActions: "play none none none"
+            }
+        });
+
+        // Sidebar Toggle for Mobile
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const sidebarNav = document.querySelector('.sidebar-nav');
+        sidebarToggle.addEventListener('click', () => {
+            sidebarNav.classList.toggle('active');
+            gsap.fromTo(sidebarNav, 
+                { height: sidebarNav.classList.contains('active') ? 0 : 'auto', opacity: sidebarNav.classList.contains('active') ? 0 : 1 },
+                { height: sidebarNav.classList.contains('active') ? 'auto' : 0, opacity: sidebarNav.classList.contains('active') ? 1 : 0, duration: 0.5, ease: "power2.out" }
+            );
+        });
+    </script>
+</body>
+</html>

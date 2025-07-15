@@ -1,0 +1,484 @@
+<!-- grok -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - User Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/user/profileStyle.css">
+    <link rel="stylesheet" href="/user/headerStyle.css" />
+    <link rel="stylesheet" href="/user/footerStyle.css" />
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="profile-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2 class="sidebar-title">My Account</h2>
+            <ul class="sidebar-nav">
+                <li><a href="/userProfile" class="active">Profile</a></li>
+                <li><a href="/userAddress">Address</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/cart">Cart</a></li>
+                <li><a href="/wishlist">Wishlist</a></li>
+                <li><a href="/wallet">Wallet</a></li>
+                <li><a href="/coupons">Coupons</a></li>
+                <li><a href="/referrals">Referrals</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-content">
+            <h1 class="profile-title">Personal Info</h1>
+            <div class="profile-card">
+                <div class="profile-image-container">
+                <div class="profile-image-wrapper">
+                  <% if (user && user.image) { %>
+                    <img id="profilePic" src="<%= user.image %>" alt="User Profile Image" class="profile-image">
+                  <% } else { %>
+                    <div id="profilePic" class="profile-icon">👤</div>
+                  <% } %>
+                  
+                  <button type="button" class="image-edit-btn" onclick="triggerImagePick()" aria-label="Change picture">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  
+                  <input id="avatarInput" type="file" accept="image/*" hidden />
+                </div>
+              </div>
+                <div class="profile-details">
+                    <div class="profile-item">
+                        <label>Name:</label>
+                        <span><%= user ? user.name : 'Your Name' %></span>
+                        <a href="javascript:void(0)" class="edit-button" onclick="openModal('newName', '<%= user.name %>')" aria-label="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                    <div class="profile-item">
+                        <label>Phone:</label>
+                        <span><%= user && user.phone ? user.phone : 'Not Provided' %></span>
+                        <a href="javascript:void(0)" class="edit-button" onclick="openModal('newPhone', '<%= user.phone %>')" aria-label="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                    <div class="profile-item">
+                        <label>Email:</label>
+                        <span><%= user ? user.email : 'Not Provided' %></span>
+                        <a href="/change-email" class="edit-button" aria-label="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                    <div class="profile-item change-password" aria-label="Edit">
+                        <label>Password:</label>
+                        <span style="font-weight: bold ; white-space: pre">  •  •  •  •  •  •</span>
+                        <a href="/change-password" class="edit-button" aria-label="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <h2 id="modalTitle">Edit</h2>
+    <form id="editForm" onsubmit="return validateForm(event)">
+        <input type="text" id="editValue" name="value" required />
+         <div id="validationMessage" class="validation-message"></div>
+        <button type="submit" class="submit-btn">Save</button>
+    </form>
+  </div>
+</div>
+
+<!-- Image Crop Modal -->
+<div id="imageCropModal" class="modal">
+  <div class="modal-content crop-modal-content">
+    <span class="close-btn" onclick="closeCropModal()">&times;</span>
+    <h2 class="modal-title">Edit Profile Picture</h2>
+    
+    <div class="crop-container">
+      <div class="crop-preview-wrapper">
+        <img id="cropPreviewImg" class="crop-preview-img" style="display: none;" />
+        <div class="crop-overlay">
+          <div class="crop-circle" id="cropCircle">
+            <div class="crop-handle crop-handle-nw"></div>
+            <div class="crop-handle crop-handle-ne"></div>
+            <div class="crop-handle crop-handle-sw"></div>
+            <div class="crop-handle crop-handle-se"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="crop-result-preview">
+        <div class="result-preview-label">Preview:</div>
+        <canvas id="cropResultCanvas" width="150" height="150"></canvas>
+      </div>
+    </div>
+    
+    <div class="crop-actions">
+      <button class="submit-btn" onclick="saveCroppedImage()">Save</button>
+      <button class="submit-btn cancel-btn" onclick="closeCropModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+</body>
+</html>
+
+<script>
+function openModal(type, currentValue) {
+  const modal = document.getElementById('editModal');
+  const title = document.getElementById('modalTitle');
+  const input = document.getElementById('editValue');
+  const form = document.getElementById('editForm');
+
+  input.setAttribute('data-type', type); 
+
+  if (type === 'newName') {
+    title.textContent = 'Edit Name';
+    form.action = '/edit-profile/name';
+    input.name = 'newName';
+  } else if (type === 'newPhone') {
+    title.textContent = 'Edit Phone Number';
+    form.action = '/edit-profile/phone';
+    input.name = 'newPhone';
+  }
+
+  input.value = currentValue || '';
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('editModal').style.display = 'none';
+}
+
+
+let validationTimeout; // global variable
+
+async function validateForm(event) {
+    event.preventDefault();
+  const input = document.getElementById('editValue');
+  const type = input.getAttribute('data-type');
+  const value = input.value.trim();
+  const messageDiv = document.getElementById('validationMessage');
+  const form = document.getElementById('editForm');
+  const actionURL = form.action;
+
+  // Clear any previous timeout and message
+  clearTimeout(validationTimeout);
+  messageDiv.textContent = '';
+  messageDiv.classList.remove('show');
+
+  if (type === 'newPhone') {
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(value)) {
+      messageDiv.textContent = 'Please enter a valid phone number.';
+      messageDiv.classList.add('show');
+      validationTimeout = setTimeout(() => {
+        messageDiv.classList.remove('show');
+      }, 3000);
+      return false;
+    }
+  }
+
+  if (type === 'newName') {
+    const nameRegex = /^[A-Za-z ]+$/;
+
+    if (value.length < 2) {
+        messageDiv.textContent = 'Name must be at least 2 characters long.';
+        messageDiv.classList.add('show');
+        validationTimeout = setTimeout(() => {
+        messageDiv.classList.remove('show');
+        }, 3000);
+        return false;
+    }
+
+    if (!nameRegex.test(value)) {
+        messageDiv.textContent = 'Name can only contain letters and spaces.';
+        messageDiv.classList.add('show');
+        validationTimeout = setTimeout(() => {
+        messageDiv.classList.remove('show');
+        }, 3000);
+        return false;
+    }
+  }
+
+  const formData = {};
+  formData[input.name] = value;
+
+  fetch(actionURL,{
+    method:'PATCH',
+    headers:{
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(res => res.json())
+  .then(data =>{
+    if(data.success){
+
+
+        closeModal();
+        toast(data)
+    }else{
+        messageDiv.textContent = data.message || 'An error occurred.';
+        messageDiv.classList.add('show');
+        validationTimeout = setTimeout(() => {
+            messageDiv.classList.remove('show');
+        }, 3000);
+    }
+
+  }).catch(err => {
+    console.error(err);
+    messageDiv.textContent = 'Something went wrong.';
+    messageDiv.classList.add('show');
+    validationTimeout = setTimeout(() => {
+    messageDiv.classList.remove('show');
+    }, 3000);
+  })
+  return false;
+}
+
+// Image handling variables
+let currentImageFile = null;
+let cropData = { x: 0, y: 0, width: 150, height: 150 };
+let isDragging = false;
+let isResizing = false;
+let startX = 0;
+let startY = 0;
+let currentHandle = null;
+
+function triggerImagePick() {
+  document.getElementById('avatarInput').click();
+}
+
+document.getElementById('avatarInput').addEventListener('change', function () {
+  const file = this.files[0];
+  if (!file) return;
+  
+  currentImageFile = file;
+  openCropModal(file);
+});
+
+function openCropModal(file) {
+  const modal = document.getElementById('imageCropModal');
+  const previewImg = document.getElementById('cropPreviewImg');
+  const cropCircle = document.getElementById('cropCircle');
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    previewImg.src = e.target.result;
+    previewImg.style.display = 'block';
+    
+    previewImg.onload = function() {
+      // Set initial crop area to center of image
+      const imgWidth = previewImg.clientWidth;
+      const imgHeight = previewImg.clientHeight;
+      const cropSize = Math.min(imgWidth, imgHeight, 200);
+      
+      cropData = {
+        x: (imgWidth - cropSize) / 2,
+        y: (imgHeight - cropSize) / 2,
+        width: cropSize,
+        height: cropSize
+      };
+      
+      updateCropCircle();
+      updatePreview();
+    };
+  };
+  
+  reader.readAsDataURL(file);
+  modal.style.display = 'flex';
+  
+  // Add event listeners for crop functionality
+  setupCropHandlers();
+}
+
+function setupCropHandlers() {
+  const cropCircle = document.getElementById('cropCircle');
+  const handles = document.querySelectorAll('.crop-handle');
+  
+  // Circle drag functionality
+  cropCircle.addEventListener('mousedown', startDrag);
+  
+  // Handle resize functionality
+  handles.forEach(handle => {
+    handle.addEventListener('mousedown', startResize);
+  });
+  
+  document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseup', stopDragResize);
+}
+
+function startDrag(e) {
+  if (e.target.classList.contains('crop-handle')) return;
+  
+  isDragging = true;
+  startX = e.clientX - cropData.x;
+  startY = e.clientY - cropData.y;
+  e.preventDefault();
+}
+
+function startResize(e) {
+  isResizing = true;
+  currentHandle = e.target;
+  startX = e.clientX;
+  startY = e.clientY;
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+function handleMouseMove(e) {
+  if (isDragging) {
+    const previewImg = document.getElementById('cropPreviewImg');
+    const maxX = previewImg.clientWidth - cropData.width;
+    const maxY = previewImg.clientHeight - cropData.height;
+    
+    cropData.x = Math.max(0, Math.min(maxX, e.clientX - startX));
+    cropData.y = Math.max(0, Math.min(maxY, e.clientY - startY));
+    
+    updateCropCircle();
+    updatePreview();
+  }
+  
+  if (isResizing && currentHandle) {
+    const deltaX = e.clientX - startX;
+    const deltaY = e.clientY - startY;
+    const delta = Math.max(deltaX, deltaY);
+    
+    const previewImg = document.getElementById('cropPreviewImg');
+    const maxSize = Math.min(
+      previewImg.clientWidth - cropData.x,
+      previewImg.clientHeight - cropData.y,
+      300
+    );
+    
+    cropData.width = Math.max(100, Math.min(maxSize, cropData.width + delta));
+    cropData.height = cropData.width; // Keep it square
+    
+    startX = e.clientX;
+    startY = e.clientY;
+    
+    updateCropCircle();
+    updatePreview();
+  }
+}
+
+function stopDragResize() {
+  isDragging = false;
+  isResizing = false;
+  currentHandle = null;
+}
+
+function updateCropCircle() {
+  const cropCircle = document.getElementById('cropCircle');
+  cropCircle.style.left = cropData.x + 'px';
+  cropCircle.style.top = cropData.y + 'px';
+  cropCircle.style.width = cropData.width + 'px';
+  cropCircle.style.height = cropData.height + 'px';
+}
+
+function updatePreview() {
+  const canvas = document.getElementById('cropResultCanvas');
+  const ctx = canvas.getContext('2d');
+  const previewImg = document.getElementById('cropPreviewImg');
+  
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Create circular clip
+  ctx.beginPath();
+  ctx.arc(75, 75, 75, 0, 2 * Math.PI);
+  ctx.clip();
+  
+  // Calculate scale factors
+  const scaleX = previewImg.naturalWidth / previewImg.clientWidth;
+  const scaleY = previewImg.naturalHeight / previewImg.clientHeight;
+  
+  // Draw cropped image
+  ctx.drawImage(
+    previewImg,
+    cropData.x * scaleX,
+    cropData.y * scaleY,
+    cropData.width * scaleX,
+    cropData.height * scaleY,
+    0, 0,
+    canvas.width,
+    canvas.height
+  );
+}
+
+// save image
+function saveCroppedImage() {
+  const canvas = document.getElementById('cropResultCanvas');
+  
+  canvas.toBlob(function(blob) {
+    const formData = new FormData();
+    formData.append('avatar', blob, 'cropped-avatar.png');
+    
+    fetch('/edit-profile/image', { method: 'PATCH', body: formData })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          // Update the profile image
+          const profilePic = document.getElementById('profilePic');
+          const newImageUrl = canvas.toDataURL();
+          
+          if (profilePic.tagName === 'IMG') {
+            profilePic.src = newImageUrl;
+          } else {
+            // Convert icon to image
+            const newImg = document.createElement('img');
+            newImg.id = 'profilePic';
+            newImg.src = newImageUrl;
+            newImg.alt = 'User Profile Image';
+            newImg.className = 'profile-image';
+            profilePic.parentNode.replaceChild(newImg, profilePic);
+          }
+          
+          closeCropModal();
+          toast(res);
+        } else {
+          closeCropModal();
+          Swal.fire({ icon: 'error', text: res.message || 'Upload failed' });
+        }
+      })
+      .catch(() => Swal.fire({ icon: 'error', text: 'Something went wrong' }));
+  }, 'image/png');
+}
+
+function closeCropModal() {
+  const modal = document.getElementById('imageCropModal');
+  modal.style.display = 'none';
+  
+  // Reset file input
+  document.getElementById('avatarInput').value = '';
+  
+  // Remove event listeners
+  document.removeEventListener('mousemove', handleMouseMove);
+  document.removeEventListener('mouseup', stopDragResize);
+}
+
+// Close modal when clicking outside
+document.getElementById('imageCropModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeCropModal();
+  }
+});
+
+
+</script>

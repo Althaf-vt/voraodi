@@ -27,10 +27,21 @@ const productSchema = new Schema({
         type: Number,
         default: 0
     },
-    quantity: {
-        type: Number,
-        default: true
-    },
+    variants: [{
+        size:{
+            type: String,
+            required: true,
+            enum: ['S','M','L','XL']
+        },
+        sku:{
+            type: String,
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true
+        }
+    }],
     color: {
         type: String,
         required: true

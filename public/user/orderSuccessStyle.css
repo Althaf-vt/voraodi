@@ -1,0 +1,212 @@
+/* Order Confirmation Page Styles: Inspired by Amazon and Flipkart */
+/* Retain color theme (#d4af37, #2f3a44, #f5f5e8) and typography (Cinzel, Montserrat) */
+.confirmation-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f5e8, #fffcf4);
+    padding: 60px 20px; /* Compact padding for Amazon/Flipkart-like layout */
+}
+
+/* Main content container */
+.confirmation-content {
+    max-width: 1000px; /* Narrower for compactness */
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    border: 2px solid #d4af37;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 25px; /* Reduced from 30px for tighter layout */
+}
+
+/* Header: Centered with checkmark and delivery estimate */
+.confirmation-header {
+    text-align: center;
+    margin-bottom: 25px; /* Reduced from 30px */
+}
+
+.confirmation-icon {
+    font-size: 60px;
+    color: #006400;
+    margin-bottom: 15px;
+}
+
+.confirmation-title {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    color: #2f3a44;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.confirmation-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: #2f3a44;
+    margin-bottom: 15px;
+}
+
+.delivery-estimate {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #2f3a44;
+}
+
+.delivery-estimate span {
+    font-weight: 700;
+}
+
+/* Order Info: Single card for order details, address removed */
+.order-info {
+    background: #f5f5e8;
+    border-radius: 8px;
+    border: 1px solid #d4af37;
+    padding: 20px;
+    margin-bottom: 25px; /* Reduced from 30px */
+}
+
+.section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: #2f3a44;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #d4af37;
+    padding-bottom: 8px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+}
+
+.detail-label {
+    font-weight: 700;
+    color: #2f3a44;
+}
+
+.detail-value {
+    color: #2f3a44;
+    text-align: right;
+}
+
+/* Order Items: List with name at start, price/quantity at end, no image or sum */
+.order-items {
+    margin-bottom: 15px; /* Reduced from 20px */
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between; /* Name at start, price/quantity at end */
+    align-items: center;
+    padding: 10px; /* Reduced from 12px */
+    border: 1px solid #d4af37;
+    border-radius: 5px;
+    margin-bottom: 8px; /* Reduced from 10px */
+    background: #fffcf4;
+}
+
+.item-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #2f3a44;
+    margin: 0; /* Remove default margin */
+}
+
+.item-price {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #2f3a44;
+    white-space: nowrap; /* Prevent wrapping of price/quantity */
+}
+
+/* Action Buttons: Centered and prominent */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px; /* Reduced from 30px */
+}
+
+.btn {
+    padding: 10px 25px;
+    border-radius: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #d4af37, #b8972e);
+    color: #2f3a44;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #b8972e, #d4af37);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+.btn-secondary {
+    background: #2f3a44;
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: #1a2026;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(47, 58, 68, 0.4);
+}
+
+/* Responsive Design: Stack vertically on mobile */
+@media (max-width: 768px) {
+    .confirmation-container {
+        padding: 20px;
+    }
+    
+    .confirmation-content {
+        padding: 20px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    .confirmation-icon {
+        font-size: 50px;
+    }
+    
+    .confirmation-title {
+        font-size: 28px;
+    }
+    
+    .confirmation-subtitle, .delivery-estimate {
+        font-size: 14px;
+    }
+    
+    .order-item {
+        flex-direction: column; /* Stack name and price/quantity on mobile */
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .item-price {
+        text-align: left; /* Align left on mobile for readability */
+    }
+}

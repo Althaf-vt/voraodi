@@ -1,5 +1,8 @@
 
 <link rel="stylesheet" href="/user/headerStyle.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="/re-use/toast.js"></script>
 
 <nav>
     <div class="logo-container">
@@ -14,7 +17,7 @@
     </ul>
     <div class="nav-buttons">
         <button aria-label="Add to Wishlist">♡</button>
-        <button aria-label="View Cart">🛒</button>
+        <a href="/cart"><button aria-label="View Cart">🛒</button></a>
         <div class="user-profile-container">
             <button class="user-profile" aria-label="User Profile">🧑</button>
             <div class="user-dropdown">
@@ -29,3 +32,45 @@
         </div>
     </div>
 </nav>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get('success');
+
+if(success){
+    Toastify({
+    text: success || "Success!",
+    duration: 3000,
+    close: true,
+    gravity: "top", 
+    position: "right", 
+    backgroundColor: "#28a745",
+    stopOnFocus: true,
+    style: {
+        borderRadius: "12px",
+        transform: "translateX(100%)",
+        opacity: "0",
+        transition: "transform 0.5s ease, opacity 0.5s ease"
+    },
+    callback: function () {
+        const toast = document.querySelector(".toastify");
+        if (toast) {
+        toast.style.transform = "translateX(-100%)";
+        toast.style.opacity = "0";
+        }
+    }
+    }).showToast();
+
+    setTimeout(() => {
+    const toast = document.querySelector(".toastify");
+    if (toast) {
+        toast.style.transform = "translateX(0)";
+        toast.style.opacity = "1";
+    }
+    }, 100); // delay to trigger entry animation
+
+}
+window.history.replaceState({},document.title, window.location.pathname);
+
+
+
+</script>
