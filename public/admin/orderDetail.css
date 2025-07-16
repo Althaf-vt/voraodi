@@ -149,6 +149,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    align-items: flex-start;
 }
 
 .label {
@@ -175,12 +176,16 @@ body {
 
 /* Status Badge */
 .status-badge {
-    padding: 6px 12px;
+    display: inline-block;
+    padding: 4px 8px; /* Better padding than 1px */
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
+    white-space: nowrap;
+    text-align: center;
+    width: fit-content; /* Ensure it only takes needed width */
 }
 
 .status-badge.delivered {
@@ -195,6 +200,14 @@ body {
 
 .status-badge.cancelled {
     background-color: #ff4040;
+    color: #f5f5e8;
+}
+.status-badge.return-request {
+    background-color: rgb(13, 117, 158);
+    color: #f5f5e8;
+}
+.status-badge.returned {
+    background-color: rgb(0, 75, 105);
     color: #f5f5e8;
 }
 
@@ -425,4 +438,133 @@ body {
         text-align: center;
         gap: 10px;
     }
+}
+/* Return Request Buttons for single product */
+.return-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(201, 160, 34, 0.2);
+}
+
+.return-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.approve-btn {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    color: #f5f5e8;
+}
+
+.approve-btn:hover {
+    background: linear-gradient(135deg, #1a661a, #004d00);
+    transform: translateY(-1px);
+}
+
+.reject-btn {
+    background: linear-gradient(135deg, #ff4040, #cc3333);
+    color: #f5f5e8;
+}
+
+.reject-btn:hover {
+    background: linear-gradient(135deg, #cc3333, #ff4040);
+    transform: translateY(-1px);
+}
+
+.product-return-buttons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.product-return-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 3px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.product-return-btn.approve-btn {
+  background: linear-gradient(135deg, #004d00, #1a661a);
+  color: #f5f5e8;
+}
+
+.product-return-btn.approve-btn:hover {
+  background: linear-gradient(135deg, #1a661a, #004d00);
+  transform: translateY(-1px);
+}
+
+.product-return-btn.reject-btn {
+  background: linear-gradient(135deg, #ff4040, #cc3333);
+  color: #f5f5e8;
+}
+
+.product-return-btn.reject-btn:hover {
+  background: linear-gradient(135deg, #cc3333, #ff4040);
+  transform: translateY(-1px);
+}
+
+/* Product staus badge */
+.product-status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+.product-status-badge.delivered {
+    background-color: #004d00;
+    color: #f5f5e8;
+}
+
+.product-status-badge.pending {
+    background-color: #c9a022;
+    color: #1a252f;
+}
+
+.product-status-badge.cancelled {
+    background-color: #ff4040;
+    color: #f5f5e8;
+}
+
+.product-status-badge.return-request {
+    background-color: #0d759e;
+    color: #f5f5e8;
+}
+
+.product-status-badge.processing {
+    background-color: #8b5a2b;
+    color: #f5f5e8;
+}
+
+.product-status-badge.shipped {
+    background-color: #4a90e2;
+    color: #f5f5e8;
+}
+.product-status-badge.returned {
+    background-color: rgb(0, 75, 105);
+    color: #f5f5e8;
 }

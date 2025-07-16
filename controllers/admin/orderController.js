@@ -24,6 +24,7 @@ const loadOrders = async(req,res)=>{
             paymentMethod: order.paymentMethod,
             totalAmount: order.totalPrice,
             status: order.status,
+            returnStatus: order.returnStatus
             // viewLink: `/admin/orders/orderDetails/${order.orderId}`
         }));
 
@@ -58,7 +59,8 @@ const orderDetails = async(req,res)=>{
             size : item.size,
             quantity: item.quantity,
             price: item.price,
-            rProduct: item.returnStatus,
+            status: item.status,
+            returnStatus: item.returnStatus,
             Reason: item.returnReason 
         }))
 
@@ -87,6 +89,7 @@ const updateOrderStatus = async(req,res)=>{
         }
 
         const updateStatus = order.status = status;
+        order.orderedItems.map(item=> item.status = status);
 
         if(!updateStatus){
             console.log('status not updated');
@@ -104,8 +107,86 @@ const updateOrderStatus = async(req,res)=>{
     }
 }
 
+const approveReturnOrder = async(req,res)=>{
+    try {
+        console.log('Body : ',req.body)
+        const {orderId} = req.body;
+        console.log('orderId : ',orderId)
+        const order = await Order.findOne({orderId:orderId});
+
+        if(!order){
+            console.log('Order not found');
+            return res.status(400).json({success:false,message:'Order not found'});
+        }
+
+        order.status = 'Returned';
+        order.returnStatus = 'Returned';
+        
+        order.orderedItems.map(item => item.status = 'Returned');
+        order.orderedItems.map(item => item.returnStatus = 'Returned');
+        
+
+        await order.save()
+        console.log('approved & saved');
+
+        const items = order.orderedItems;
+        
+        console.log('items: ',items)
+
+
+        for(const item of items){
+            const product = await Product.findById(item.product);
+
+            if(product){
+                const variant = product.variants.find(v=> v.sku === item.sku);
+
+                if(variant){
+                    variant.quantity += item.quantity;
+
+                    await product.save()
+                }else{
+                    console.log(`Variant with SKU ${item.sku} not found in product ${product._id}`);
+                }
+            }else{
+                console.warn(`Product not found with id ${item.product}`);
+            }
+        }
+
+        return res.status(200).json({success:true,message:'Request approved'});
+
+    } catch (error) {
+        console.log('Error in Approving return order',error);
+        return res.status(500).json({success:false,message:'Internal Server Error'});
+    }
+}
+
+const rejectReturnOrder = async(req,res)=>{
+    try {
+        const {orderId} = req.body;
+        const order = await Order.findOne({orderId:orderId});
+
+        if(!order){
+            console.log('Order not found');
+            return res.status(400).json({success:false, message:'Order not found'});
+        }
+
+        order.returnStatus = 'Rejected';
+        order.orderedItems.map(item => item.returnStatus = 'Rejected');
+
+        order.save();
+
+        return res.status(200).json({success:true, message:'Request rejected'});
+
+    } catch (error) {
+        console.log('Error in Reject return Order');
+        return res.status(500).json({success:false, message:'Internal Server Error'});
+    }
+}
+
 module.exports ={
     loadOrders,
     orderDetails,
-    updateOrderStatus
+    updateOrderStatus,
+    approveReturnOrder,
+    rejectReturnOrder,
 }

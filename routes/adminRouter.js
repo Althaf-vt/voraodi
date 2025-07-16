@@ -62,7 +62,9 @@ router.get('/searchProduct',adminAuth,productController.searchProduct);
 //Order management 
 router.get('/orders',adminAuth, orderController.loadOrders);
 router.get('/orderDetails',adminAuth,orderController.orderDetails);
-router.post('/updateOrderStatus',adminAuth,orderController.updateOrderStatus)
+router.post('/updateOrderStatus',adminAuth,orderController.updateOrderStatus);
+router.post('/approveReturnOrder',adminAuth,orderController.approveReturnOrder)
+router.post('/rejectReturnOrder',adminAuth,orderController.rejectReturnOrder)
 
 router.get('/pageError',adminController.pageError);
 

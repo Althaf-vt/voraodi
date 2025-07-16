@@ -5,20 +5,24 @@ const Product = require('../../models/productSchema');
 
 const orderDetailpage = async(req,res)=>{
     try {
-        const orderId = req.query.id;
-        console.log(orderId, "jdjfidnifndniudnxin")
-        const user = req.session.user;
+        const orderId = req.params.id;
+        const userId = req.session.user;
+
+        const user = await User.findOne({_id:userId})
+        console.log("orderId : ",orderId)
+        
     
         const order = await Order.findOne({orderId:orderId})
         .populate('orderedItems.product')
 
         return res.render('orderDetails',{
             order,
+            user
         });
 
 
     } catch (error) {
-        
+        console.log('Catch in orderdetail',error)
     }
 }
 
@@ -128,9 +132,86 @@ const cancelOrder = async (req,res)=>{
     }
 }
 
+// const returnItem = async(req,res)=>{
+//     try {
+//         const {orderId,sku,reason} = req.body;
+//         const user = req.session.user;
+
+//         // const order = await 
+//     } catch (error) {
+        
+//     }
+// }
+const returnItem = async(req,res)=>{
+    try {
+        const {orderId,sku,reason} = req.body;
+        const userId = req.session.user;
+
+        const order = await Order.findOne({orderId:orderId})
+        console.log(orderId)
+        if(!order){
+            console.log('Order not found')
+            return res.status(400).json({success:false,message:'Order not found'});
+        }
+
+        const item = order.orderedItems.find((item)=> item.sku === sku);
+
+        if(!item){
+            console.log('Item not found');
+            return res.status(400).json({success:false,message:'Item not found'})
+        }
+
+        console.log('Reason : ',reason)
+
+        item.status = 'Return Request';
+        item.returnStatus = 'Requested';
+        item.returnReason = reason;
+
+        await order.save();
+
+        console.log('Done',item)
+
+        return res.status(200).json({success:true,message:'Return request submitted'})
+    } catch (error) {
+        console.log('Error in Return item',error);
+        return res.status(500).json({success:false, message:'Internal Server Error'});
+    }
+}
+
+const returnOrder = async(req,res)=>{
+    try {
+        const {orderId,reason} = req.body;
+        const user = req.session.user;
+
+        const order = await Order.findOne({orderId:orderId});
+
+        if(!order){
+            console.log('Order not found');
+            return res.status(400).json({success:false, message:'Order not found'});
+        }
+        
+        order.orderedItems.forEach(item =>{
+            item.status = 'Return Request'
+        })
+
+        order.status = 'Return Request';
+        order.returnStatus = 'Requested';
+        order.returnReason = reason;
+
+        await order.save();
+
+        return res.status(200).json({success:true, message:'Return request submitted'})
+    } catch (error) {
+        console.log('Error in Return order : ',error);
+        return res.status(500).json({success:false,message:'Internal Server Error'});
+    }
+}
+
 
 module.exports = {
     orderDetailpage,
     cancelItem,
-    cancelOrder
+    cancelOrder,
+    returnItem,
+    returnOrder
 }

@@ -106,9 +106,11 @@ router.post('/cart/remove-item',userAuth,profileController.removeItem);
 
 // Orders
 router.get('/orders',userAuth,profileController.orderPage);
-router.get('/order-details',userAuth,orderController.orderDetailpage);
-router.post('/cancel-item',orderController.cancelItem);
-router.post('/cancel-order',orderController.cancelOrder);
+router.get('/order-details/:id',userAuth,orderController.orderDetailpage);
+router.post('/cancel-item',userAuth,orderController.cancelItem);
+router.post('/cancel-order',userAuth,orderController.cancelOrder);
+router.post('/return-item',userAuth,orderController.returnItem);
+router.post('/return-order',userAuth,orderController.returnOrder);
 
 
 // Checkout

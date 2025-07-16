@@ -55,36 +55,40 @@
           <tbody>
             <!-- Replace the existing table row in your HTML file -->
             <% if (orders && orders.length > 0) { %>
-            <% for(let i = 0; i < orders.length; i++) { %>
-                <tr id="order-<%= orders[i]._id %>">
-                <td><%= orders[i].orderId %></td>
-                <td><%= orders[i].username %></td>
-                <td><%= orders[i].orderedDate%></td>
-                <td><%= orders[i].totalAmount %></td>
-                <td><%= orders[i].paymentMethod %></td>
-                <td>
-                    <select class="status-select status-<%= orders[i].status ? orders[i].status.toLowerCase() : 'pending' %>" 
-                            onchange="updateOrderStatus('<%= orders[i].orderId %>', this.value)">
-                    <% if (orders[i].status !== 'Pending') { %>
-                        <option value="Pending">Pending</option>
-                    <% } %>
-                    <option value="Processing" <%= orders[i].status === 'Processing' ? 'selected' : '' %>>Processing</option>
-                    <option value="Shipped" <%= orders[i].status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-                    <option value="Delivered" <%= orders[i].status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+    <% orders.forEach(order => { %>
+        <tr id="order-<%= order._id %>">
+            <td><%= order.orderId %></td>
+            <td><%= order.username %></td>
+            <td><%= order.orderedDate %></td>
+            <td><%= order.totalAmount %></td>
+            <td><%= order.paymentMethod %></td>
+            <td>
+                <% if (order.returnStatus === 'Returned' || order.returnStatus === 'Rejected') { %>
+                    <span class="return-status-span"><%= order.returnStatus %></span>
+                <% } else { %>
+                    <select class="status-select status-<%= order.status ? order.status.toLowerCase() : 'pending' %>" 
+                            onchange="updateOrderStatus('<%= order.orderId %>', this.value)">
+                        <% if (order.status !== 'Pending') { %>
+                            <option value="Pending">Pending</option>
+                        <% } %>
+                        <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                        <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                        <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
                     </select>
-                </td>
-                <td>
-                    <button class="action-btn view-btn" aria-label="View Order Details">
-                    <a href="/admin/orderDetails?orderId=<%=orders[i].orderId%>">View Details</a>
-                    </button>
-                </td>
-                </tr>
-            <% } %>
-            <% } else { %>
-            <tr>
-                <td colspan="7">No orders found.</td>
-            </tr>
-            <% } %>
+                <% } %>
+            </td>
+            <td>
+                <button class="action-btn view-btn" aria-label="View Order Details">
+                    <a href="/admin/orderDetails?orderId=<%= order.orderId %>">View Details</a>
+                </button>
+            </td>
+        </tr>
+    <% }) %>
+<% } else { %>
+    <tr>
+        <td colspan="7">No orders found.</td>
+    </tr>
+<% } %>
           </tbody>
         </table>
       </div>
