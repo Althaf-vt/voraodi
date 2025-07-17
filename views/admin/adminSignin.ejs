@@ -34,33 +34,19 @@
       <p class="link">Contact the VOGUE Council for access issues.</p>
     </div>
   </section>
-
-  <script>
-    // // Typewriter Effect
-    // const text = "Admin Command Access"; // Plain text for typing
-    // let i = 0;
-    // function typeWriter() {
-    //   if (i < text.length) {
-    //     document.getElementById("typewriter").innerHTML = text.substring(0, i + 1).replace("Access", "<br>Access");
-    //     i++;
-    //     setTimeout(typeWriter, 100);
-    //   } else {
-    //     document.getElementById("typewriter").innerHTML = "Admin Command<br>Access"; // Ensure final text has break
-    //   }
-    // }
-
-    // Animations
-    // gsap.from(".auth-container", { opacity: 0, y: 50, duration: 1, delay: 0.5 });
-    // gsap.from(".subtitle", { opacity: 0, y: 20, duration: 1, delay: 1 });
-    // gsap.from(".form-field", { opacity: 0, y: 20, stagger: 0.2, duration: 1, delay: 1.5 });
-    // gsap.from(".submit-btn", { opacity: 0, scale: 0.9, duration: 1, delay: 2 });
-
-    // Initialize
-    // window.onload = function() {
-    //   document.getElementById("typewriter").innerHTML = ""; // Clear initial content
-    //   typeWriter();
-    // };
-  </script>
+<script>
+  // Auto-hide the alert message after 5 seconds
+  document.addEventListener("DOMContentLoaded", () => {
+    const alertBox = document.querySelector('.alert');
+    if (alertBox) {
+      setTimeout(() => {
+        alertBox.style.opacity = '0';
+        alertBox.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => alertBox.remove(), 500); // fully remove from DOM
+      }, 3000); // 5 seconds
+    }
+  });
+</script>
   <script src="/admin/admin-signin.js"></script>
 </body>
 </html>

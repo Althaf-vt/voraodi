@@ -59,7 +59,7 @@ const adminAuth = (req,res,next) =>{
 
         })
         .catch(err=>{
-        console.log('Error in AdminAuth middleware',error);
+        console.log('Error in AdminAuth middleware',err);
         res.status(500).send("Inter Server Error");
         })
     }else{
