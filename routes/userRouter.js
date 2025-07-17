@@ -115,6 +115,7 @@ router.post('/return-order',userAuth,orderController.returnOrder);
 
 // Checkout
 router.get('/checkout',userAuth,checkoutController.loadCheckout);
+router.post('/cart/check-stock',userAuth,checkoutController.checkStock)
 router.post('/place-order',userAuth,checkoutController.orderDone)
 
 

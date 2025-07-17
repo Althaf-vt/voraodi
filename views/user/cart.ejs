@@ -97,10 +97,17 @@
                                 </span>
                             </div>
                         </div>
-                        <a href="/checkout" class="checkout-button">Proceed to Checkout</a>
+                        <a onclick="checkout()" class="checkout-button">Proceed to Checkout</a>
                     </div>
                 <% } %>
             </div>
+        </div>
+    </div>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Checking Stock...</div>
         </div>
     </div>
 
@@ -173,9 +180,6 @@
                     return
                 }
                 }
-                
-                
-                
 
                 try {
                     const response = await fetch(`/cart/update-quantity?id=${id}&action=${action}`, {
@@ -248,6 +252,75 @@
             document.querySelector('.cart-summary').remove();
         }
     }
+
+    //checkout
+    async function checkout() {
+    // Show loading
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    loadingOverlay.classList.add('active');
+    
+    // Start timer for minimum 2 seconds
+    const startTime = Date.now();
+    
+    try {
+        // Check stock availability
+        const response = await fetch('/cart/check-stock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        // Calculate remaining time to ensure 2 seconds minimum
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, 2000 - elapsedTime);
+        
+        // Wait for remaining time if needed
+        if (remainingTime > 0) {
+            await new Promise(resolve => setTimeout(resolve, remainingTime));
+        }
+        
+        loadingOverlay.classList.remove('active');
+        
+        if (response.ok && data.stockAvailable) {
+            window.location.href = '/checkout';
+        } else {
+            Swal.fire({
+    title: '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
+    text: data.message || 'Some items are out of stock. Please update your cart.',
+    icon: '',
+    timer: 3000,
+    showConfirmButton: false,
+    customClass: {
+        popup: 'compact-swal-popup',
+        title: 'compact-swal-title',
+        content: 'compact-swal-content'
+    }
+});
+        }
+    } catch (error) {
+        // Calculate remaining time for error case too
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, 2000 - elapsedTime);
+        
+        if (remainingTime > 0) {
+            await new Promise(resolve => setTimeout(resolve, remainingTime));
+        }
+        
+        loadingOverlay.classList.remove('active');
+        
+        console.error('Error checking stock:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            icon: 'error',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
 </script>
 </body>
 </html>

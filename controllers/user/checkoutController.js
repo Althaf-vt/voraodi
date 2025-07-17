@@ -6,10 +6,54 @@ const Coupon = require('../../models/couponSchema');
 const Product = require('../../models/productSchema');
 
 
+const checkStock = async(req,res)=>{
+    try {
+        const userId = req.session.user;
+        const userCart = await Cart.findOne({userId:userId});
+
+        for(const item of userCart.items){
+            const product = await Product.findById(item.productId).populate('category');
+
+            if(!product){
+                console.log(`Product not found for ID : ${item.productId}`);
+            }
+            if(product.isBlocked === true){
+                console.log('Product is Blocked');
+                return res.status(400).json({success:false,message:`The product"${product.productName}" is currently unavailable. Please update your cart.`});
+            }
+            if(product.category.isListed === false){
+                return res.status(400).json({success:false, message:`The "${product.category.name}" category is currently unavailable. Please update your cart.`})
+            }
+
+            const variant = product.variants.find(v=> v.sku === item.sku);
+
+            if(!variant){
+                console.log(`Variant not found for product : ${product.productName}`);
+            }
+
+            if(item.quantity > variant.quantity){
+                return res.status(400).json({
+                    success:false,
+                    stockAvailable: false,
+                    message: `Insufficient stock for ${product.productName} (Size: ${item.size}) - Available Qty: ${variant.quantity}, Requested Qty: ${item.quantity}`
+                })
+            } 
+        }
+
+        return res.status(200).json({success:true,stockAvailable: true,});
+
+    } catch (error) {
+        console.error("Stock check error:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
 const loadCheckout = async(req,res)=>{
     try {
         const userId = req.session.user;
+
         const user = await User.findById(userId);
+       
         const userCart = await Cart.findOne({userId}).populate('items.productId');
         const userAddressData = await Address.findOne({userId});
 
@@ -148,6 +192,7 @@ const orderDone = async (req,res)=>{
 }
 
 module.exports ={
+    checkStock,
     loadCheckout,
-    orderDone
+    orderDone,
 }

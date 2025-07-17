@@ -350,3 +350,106 @@
         margin: 0;
     }
 }
+
+
+/* Loading Animation */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(47, 58, 68, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    border: 2px solid #d4af37;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 250px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f5f5e8;
+    border-top: 4px solid #d4af37;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: #2f3a44;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Compact SweetAlert Styling */
+.compact-swal-popup {
+    background: #fff !important;
+    border: 2px solid #d4af37 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    min-width: 280px !important;
+    max-width: 380px !important;
+    padding: 20px !important;
+}
+
+.compact-swal-title {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 14px !important;
+    color: #2f3a44 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 10px !important;
+}
+
+.compact-swal-content {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 12px !important;
+    color: #2f3a44 !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+}
+
+/* SweetAlert backdrop to match loading overlay */
+.swal2-backdrop-show {
+    background: rgba(47, 58, 68, 0.8) !important;
+}
+
+/* Remove default padding and margins */
+.compact-swal-popup .swal2-html-container {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.compact-swal-popup .swal2-title {
+    margin: 0 0 10px 0 !important;
+    padding: 0 !important;
+}

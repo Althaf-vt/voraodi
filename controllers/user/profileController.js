@@ -726,9 +726,6 @@ const loadCart = async(req,res)=>{
 
         const userCart = await Cart.findOne({userId:userId}).populate('items.productId');
 
-        console.log('===== ',userCart)
-
-        
             return res.render('cart',{
                 user:userData,
                 cartItems: userCart?.items || [],
