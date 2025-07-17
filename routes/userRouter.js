@@ -111,6 +111,7 @@ router.post('/cancel-item',userAuth,orderController.cancelItem);
 router.post('/cancel-order',userAuth,orderController.cancelOrder);
 router.post('/return-item',userAuth,orderController.returnItem);
 router.post('/return-order',userAuth,orderController.returnOrder);
+router.get('/invoice',userAuth,orderController.invoice)
 
 
 // Checkout

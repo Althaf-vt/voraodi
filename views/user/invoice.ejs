@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - Order #<%= order.orderId %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/user/invoice.css">
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-container">
+            
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="company-info">
+                <img class="company-logo" src="/images/voraodi.png" alt="">
+                <div class="company-details">
+                    <div class="company-address">
+                        <p><strong>Phone:</strong> <%= admin.phone %></p>
+                        <p><strong>Email:</strong> <%= admin.email %></p>
+                        <p><strong>since:</strong> 01-01-1001</p>
+                    </div>
+                </div>
+            </div>
+            <div class="invoice-meta">
+                <button onclick="window.print()" class="print-icon-btn" title="Download">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m720-120 160-160-56-56-64 64v-167h-80v167l-64-64-56 56 160 160ZM560 0v-80h320V0H560ZM240-160q-33 0-56.5-23.5T160-240v-560q0-33 23.5-56.5T240-880h280l240 240v121h-80v-81H480v-200H240v560h240v80H240Zm0-80v-560 560Z"/></svg>            </button>
+                <h2 class="invoice-title">INVOICE</h2>
+                <div class="invoice-details">
+                    <p><strong>Invoice #:</strong> INV-<%= order.orderId %></p>
+                    <p><strong>Order ID:</strong> <%= order.orderId %></p>
+                    <p><strong>Invoice Date:</strong> <%= order.invoiceDate ? new Date(order.invoiceDate).toLocaleDateString() : new Date().toLocaleDateString() %></p>
+                    <p><strong>Order Date:</strong> <%= new Date(order.createdOn).toLocaleDateString() %></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="customer-section">
+            <div class="bill-to">
+                <h3 class="section-title">Bill To:</h3>
+                <div class="customer-details">
+                    <p><strong><%= order.address.name %></strong></p>
+                    <p><%= order.address.street %></p>
+                    <p><%= order.address.city %>, <%= order.address.state %></p>
+                    <p><%= order.address.country %> - <%= order.address.pincode %></p>
+                    <p>Phone: <%= order.address.phone %></p>
+                    <% if (order.address.altPhone) { %>
+                        <p>Alt Phone: <%= order.address.altPhone %></p>
+                    <% } %>
+                </div>
+            </div>
+            <div class="order-info">
+                <h3 class="section-title">Order Information:</h3>
+                <div class="order-details">
+                    <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                    <p><strong>Payment Status:</strong> <span class="status <%= order.paymentStatus.toLowerCase() %>"><%= order.paymentStatus %></span></p>
+                    <p><strong>Order Status:</strong> <span class="status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></span></p>
+                    <% if (order.couponApplied) { %>
+                        <p><strong>Coupon Applied:</strong> <span class="coupon-badge">Yes</span></p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="items-section">
+            <h3 class="section-title">Ordered Items</h3>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Size</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% order.orderedItems.forEach(item => { %>
+                        <tr>
+                            <td class="product-cell">
+                                <div class="product-info">
+                                    <% if (item.product && item.product.productImage && item.product.productImage.length > 0) { %>
+                                        <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>" class="product-image">
+                                    <% } %>
+                                    <div class="product-details">
+                                        <span class="product-name"><%= item.product ? item.product.productName : 'Product Name' %></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><%= item.sku %></td>
+                            <td><%= item.size %></td>
+                            <td><%= item.quantity %></td>
+                            <td>₹<%= item.price.toFixed(2) %></td>
+                            <td>₹<%= (item.price * item.quantity).toFixed(2) %></td>
+                            <td><span class="status <%= item.status.toLowerCase().replace(/\s+/g, '-') %>"><%= item.status %></span></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="summary-content">
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal:</span>
+                    <span class="summary-value">₹<%= order.totalPrice.toFixed(2) %></span>
+                </div>
+                <% if (order.discount > 0) { %>
+                    <div class="summary-row discount">
+                        <span class="summary-label">Discount:</span>
+                        <span class="summary-value">-₹<%= order.discount.toFixed(2) %></span>
+                    </div>
+                <% } %>
+                <div class="summary-row total">
+                    <span class="summary-label">Total Amount:</span>
+                    <span class="summary-value">₹<%= order.finalAmount.toFixed(2) %></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <div class="footer-section">
+                <h4>Terms & Conditions:</h4>
+                <ul>
+                    <li>Payment is due within 30 days of invoice date</li>
+                    <li>Returns are accepted within 7 days of delivery</li>
+                    <li>Products must be in original condition for returns</li>
+                    <li>Shipping charges are non-refundable</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Information:</h4>
+                <p>For any queries regarding this invoice, please contact:</p>
+                <p>Email: support@company.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Print functionality
+        function printInvoice() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

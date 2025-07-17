@@ -90,7 +90,7 @@ const orderSchema = new Schema({
         type: String,
         default: null
     },
-    createtOn: {
+    createdOn: {
         type: Date,
         default: Date.now,
         required: true

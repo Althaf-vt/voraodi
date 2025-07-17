@@ -1,0 +1,541 @@
+/* Invoice Styles - Matching Order Details Theme */
+/* Color theme: #d4af37 (gold), #2f3a44 (dark blue), #f5f5e8 (light cream) */
+/* Typography: Cinzel (serif), Montserrat (sans-serif) */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #f5f5e8, #fffcf4);
+    color: #2f3a44;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.invoice-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header Section */
+.invoice-header {
+    background: linear-gradient(135deg, #d4af37, #b8972e);
+    color: #2f3a44;
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 3px solid #2f3a44;
+}
+
+.company-info img {
+    margin-top: -7px;
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 0;
+    
+}
+
+.company-details {
+    /* color: #260b26; */
+    line-height: 1.6;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+}
+.company-details p{
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.invoice-meta {
+    text-align: right;
+}
+
+.invoice-title {
+    font-family: 'Cinzel', serif;
+    color: #260b26;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.invoice-details p {
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.invoice-details strong {
+    font-weight: 700;
+}
+
+/* Customer Section */
+.customer-section {
+    padding: 30px 40px;
+    background: #f5f5e8;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    border-bottom: 1px solid #d4af37;
+}
+
+.bill-to,
+.order-info {
+    flex: 1;
+}
+
+.section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #2f3a44;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #d4af37;
+    padding-bottom: 5px;
+}
+
+.customer-details p,
+.order-details p {
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.customer-details strong,
+.order-details strong {
+    font-weight: 600;
+}
+
+/* Status Badges */
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status.pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status.processing {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.status.shipped {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status.delivered {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status.return-request {
+    background: #fce4ec;
+    color: #880e4f;
+    border: 1px solid #f8bbd9;
+}
+
+.status.returned {
+    background: #e3f2fd;
+    color: #0d47a1;
+    border: 1px solid #bbdefb;
+}
+
+.status.payment-failed {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status.completed {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status.failed {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.coupon-badge {
+    background: linear-gradient(45deg, #d4af37, #b8972e);
+    color: #2f3a44;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Items Section */
+.items-section {
+    padding: 30px 40px;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.items-table thead {
+    background: #2f3a44;
+    color: #fff;
+}
+
+.items-table th {
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 12px;
+}
+
+.items-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+}
+
+.items-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.product-cell {
+    max-width: 200px;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.product-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #d4af37;
+}
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-weight: 600;
+    color: #2f3a44;
+    margin-bottom: 2px;
+}
+
+.product-description {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Summary Section */
+.summary-section {
+    padding: 30px 40px;
+    background: #f5f5e8;
+    border-top: 1px solid #d4af37;
+}
+
+.summary-content {
+    max-width: 300px;
+    margin-left: auto;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+.summary-row.discount {
+    color: #28a745;
+}
+
+.summary-row.total {
+    border-top: 2px solid #d4af37;
+    border-bottom: 2px solid #d4af37;
+    padding: 15px 0;
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.summary-label {
+    font-weight: 600;
+}
+
+.summary-value {
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Footer Section */
+.invoice-footer {
+    padding: 30px 40px;
+    background: #2f3a44;
+    color: #f5f5e8;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.footer-section {
+    flex: 1;
+}
+
+.footer-section h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #d4af37;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section li {
+    margin-bottom: 5px;
+    font-size: 13px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.footer-section li::before {
+    content: "•";
+    color: #d4af37;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.footer-section p {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* Print Icon Button */
+.print-icon-btn {
+    position: absolute;
+    top: 35px;
+    right: 225px;
+    width: 45px;
+    height: 45px;
+    background: transparent;
+    color: #2f3a44;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    z-index: 10;
+}
+
+.invoice-container {
+    position: relative;
+}
+
+@media print {
+    .print-icon-btn {
+        display: none;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .invoice-header {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .invoice-meta {
+        text-align: left;
+    }
+    
+    .invoice-title {
+        font-size: 28px;
+    }
+    
+    .company-name {
+        font-size: 24px;
+    }
+    
+    .customer-section {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .items-section {
+        padding: 20px;
+    }
+    
+    .items-table {
+        font-size: 12px;
+    }
+    
+    .items-table th,
+    .items-table td {
+        padding: 8px 6px;
+    }
+    
+    .product-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .product-image {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .summary-section {
+        padding: 20px;
+    }
+    
+    .invoice-footer {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .print-section {
+        padding: 15px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .items-table {
+        font-size: 10px;
+    }
+    
+    .items-table th,
+    .items-table td {
+        padding: 6px 4px;
+    }
+    
+    .product-name {
+        font-size: 11px;
+    }
+    
+    .product-description {
+        font-size: 10px;
+    }
+    
+    .summary-row {
+        font-size: 12px;
+    }
+    
+    .summary-row.total {
+        font-size: 14px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .invoice-container {
+        box-shadow: none;
+        border-radius: 0;
+    }
+    
+    .print-section {
+        display: none;
+    }
+    
+    .invoice-header {
+        background: #d4af37 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .invoice-footer {
+        background: #2f3a44 !important;
+        color: #f5f5e8 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .customer-section,
+    .summary-section {
+        background: #f5f5e8 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .items-table thead {
+        background: #2f3a44 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .status {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+}

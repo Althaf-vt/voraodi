@@ -9,7 +9,6 @@ const orderDetailpage = async(req,res)=>{
         const userId = req.session.user;
 
         const user = await User.findOne({_id:userId})
-        console.log("orderId : ",orderId)
         
     
         const order = await Order.findOne({orderId:orderId})
@@ -17,7 +16,8 @@ const orderDetailpage = async(req,res)=>{
 
         return res.render('orderDetails',{
             order,
-            user
+            user,
+            message : null
         });
 
 
@@ -29,7 +29,6 @@ const orderDetailpage = async(req,res)=>{
 const cancelItem = async(req,res)=>{
     try {
         const {orderId,sku} = req.body;
-        console.log('Cancel Request Payload:', req.body); //  log input
 
         const findOrder = await Order.findOne({orderId:orderId});
 
@@ -39,7 +38,7 @@ const cancelItem = async(req,res)=>{
         }
 
         const item = findOrder.orderedItems.find((item)=> item.sku === sku);
-        console.log("Found item index:", item); //  log match index
+        console.log("Found item index:", item);
 
         if(!item){
             console.log('Item with SKU not found')
@@ -66,7 +65,7 @@ const cancelItem = async(req,res)=>{
 
         // Find the variant by SKU and increment its quantity
         const variant = product.variants.find(variant => variant.sku === sku);
-        console.log("Variant matched:", variant); // ✅ log variant
+        console.log("Variant matched:", variant); //  log variant
         if(!variant){
             console.log('varient not found in product Schema');
             return res.status(500).json({success: false, message:"Product variant not found"})
@@ -94,7 +93,6 @@ const cancelOrder = async (req,res)=>{
         const {orderId} = req.body;
         
         const order = await Order.findOne({orderId:orderId});
-        console.log('order',order)
 
         if(!order){
             console.log('Order not found');
@@ -123,7 +121,6 @@ const cancelOrder = async (req,res)=>{
 
         order.status = 'Cancelled';
         await order.save();
-        console.log('cancelled');
 
         return res.status(200).json({success: true, message: 'Order Cancelled successfully'});
     } catch (error) {
@@ -148,7 +145,6 @@ const returnItem = async(req,res)=>{
         const userId = req.session.user;
 
         const order = await Order.findOne({orderId:orderId})
-        console.log(orderId)
         if(!order){
             console.log('Order not found')
             return res.status(400).json({success:false,message:'Order not found'});
@@ -161,15 +157,12 @@ const returnItem = async(req,res)=>{
             return res.status(400).json({success:false,message:'Item not found'})
         }
 
-        console.log('Reason : ',reason)
 
         item.status = 'Return Request';
         item.returnStatus = 'Requested';
         item.returnReason = reason;
 
         await order.save();
-
-        console.log('Done',item)
 
         return res.status(200).json({success:true,message:'Return request submitted'})
     } catch (error) {
@@ -208,10 +201,36 @@ const returnOrder = async(req,res)=>{
 }
 
 
+const invoice = async(req,res)=>{
+    try {
+        const orderId = req.query.id;
+        const user = req.session.user;
+
+        const admin = await User.findOne({isAdmin:true});
+        const order = await Order.findOne({orderId:orderId}).populate('orderedItems.product');
+
+         if(!order){
+            console.log('Order not found')
+            return res.redirect('/pageNotFound');
+         }
+
+        return res.render('invoice',{
+            order,
+            user,
+            admin
+        })
+    } catch (error) {
+        console.log("Error while rendering invoice",error);
+        return res.redirect('/pageNotFound');
+    }
+}
+
+
 module.exports = {
     orderDetailpage,
     cancelItem,
     cancelOrder,
     returnItem,
-    returnOrder
+    returnOrder,
+    invoice
 }

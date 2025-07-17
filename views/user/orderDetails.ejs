@@ -17,6 +17,10 @@
 <body>
     <%- include('../../views/partials/user/header') %>
 
+    <div class="message-container" id="messageContainer">
+    <% if(message) %><%= message %>
+</div>
+
     <div class="order-details-container">
         <!-- Sidebar: Amazon/Flipkart-inspired compact navigation -->
         <div class="sidebar">
@@ -39,12 +43,12 @@
         <div class="order-details-content">
             <div class="order-details-header">
                 <h1 class="order-details-title">Order Details</h1>
-                <p class="order-details-subtitle">Order #<%= order.orderId %> | Placed on <%= new Date(order.createdAt).toLocaleDateString() %></p>
+                <p class="order-details-subtitle"><strong>Order ID :</strong> <%= order.orderId %> <br> <strong>Placed on :</strong> <%= new Date(order.createdOn).toLocaleDateString() %></p>
             </div>
 
             <!-- Order Tracking: Amazon/Flipkart-inspired simple design -->
 <div class="tracking-section">
-    <h2 class="section-title">Order Tracking</h2>
+    <h2 class="section-title"><strong>Order Tracking</strong></h2>
     <div class="tracking-bar" style="--progress: <%= 
         order.status === 'Ordered' ? 25 : 
         order.status === 'Confirmed' ? 25 : 
@@ -112,7 +116,7 @@
             <!-- Order Info: Details and Address -->
             <div class="order-info">
                 <div class="order-info-left">
-                    <h2 class="section-title">Order Information</h2>
+                    <h2 class="section-title"><strong>Order Information</strong></h2>
                     <div class="detail-item">
                         <span class="detail-label">Order Number:</span>
                         <span class="detail-value"><%= order.orderId %></span>
@@ -135,7 +139,7 @@
                     </div>
                 </div>
                 <div class="order-info-right">
-                    <h2 class="section-title">Delivery Address</h2>
+                    <h2 class="section-title"><strong>Delivery Address</strong></h2>
                     <div class="detail-item">
                         <span class="detail-label">Name:</span>
                         <span class="detail-value"><%= order.address.name %></span>
@@ -163,7 +167,7 @@
 
             <!-- Ordered Items -->
             <div class="ordered-items">
-                <h2 class="section-title">Ordered Items</h2>
+                <h2 class="section-title"><strong>Ordered Items</strong></h2>
 
                 <table class="ordered-items-table">
                     <thead>
@@ -196,7 +200,6 @@
 
                                 <!-- Unit Price -->
                                 <td>₹<%= item.product.salePrice.toFixed(2) %></td>
-
                                 <!-- Total Price -->
                                 <td>₹<%= (item.product.salePrice * item.quantity).toFixed(2) %></td>
 
@@ -238,7 +241,7 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <a href="/download-invoice?id=<%= order.id %>" class="btn btn-primary">Download Invoice</a>
+                <a href="/invoice?id=<%= order.orderId%>" class="btn btn-primary">Invoice</a>
                 <% if (order.status !== 'Delivered' && order.status !== 'Cancelled' && order.status !== 'Return Request' && order.status !== 'Returned' && order.returnStatus !== 'Rejected') { %>
                     <button 
                         class="cancel-order-form btn btn-secondary" 
@@ -550,4 +553,85 @@ document.getElementById('returnModal').addEventListener('click', function(e) {
         closeReturnModal();
     }
 });
+
+
+// Show message notification
+function showMessage(message, type = 'error', duration = 5000) {
+    const container = document.getElementById('messageContainer');
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message-notification ${type}`;
+    messageDiv.innerHTML = `
+        <div class="message-header">
+            <h4 class="message-title">${type.charAt(0).toUpperCase() + type.slice(1)}</h4>
+            <button class="message-close" onclick="closeMessage(this)">&times;</button>
+        </div>
+        <p class="message-text">${message}</p>
+    `;
+    
+    container.appendChild(messageDiv);
+    
+    // Trigger show animation
+    setTimeout(() => {
+        messageDiv.classList.add('show');
+    }, 10);
+    
+    // Auto remove after duration
+    setTimeout(() => {
+        closeMessage(messageDiv.querySelector('.message-close'));
+    }, duration);
+}
+
+// Close message notification
+function closeMessage(button) {
+    const messageDiv = button.closest('.message-notification');
+    messageDiv.classList.remove('show');
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 300);
+}
+
+
+
+
+function showMessage(message, type = 'error', duration = 3000) {
+    const container = document.getElementById('messageContainer');
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message-notification ${type}`;
+    messageDiv.innerHTML = `
+        <div class="message-header">
+            <h4 class="message-title">${type.charAt(0).toUpperCase() + type.slice(1)}</h4>
+            <button class="message-close" onclick="closeMessage(this)">&times;</button>
+        </div>
+        <p class="message-text">${message}</p>
+    `;
+    
+    container.appendChild(messageDiv);
+    
+    // Trigger show animation
+    setTimeout(() => {
+        messageDiv.classList.add('show');
+    }, 10);
+    
+    // Auto remove after duration
+    setTimeout(() => {
+        closeMessage(messageDiv.querySelector('.message-close'));
+    }, duration);
+}
+
+// Close message notification
+function closeMessage(button) {
+    const messageDiv = button.closest('.message-notification');
+    messageDiv.classList.remove('show');
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 300);
+}
+
+// Usage examples:
+// showMessage('Order cancelled successfully!', 'success');
+// showMessage('Something went wrong!', 'error');
+// showMessage('Please check your details', 'warning');
+// showMessage('Your order is being processed', 'info');
 </script>
