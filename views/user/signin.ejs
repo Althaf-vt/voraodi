@@ -64,5 +64,17 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="/user/google-signin.js"></script>
   <script src="/user/signin.js"></script>
+
+  <!-- Message div timer -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const alertBox = document.querySelector('.alert.alert-danger');
+    if (alertBox) {
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 3000); 
+    }
+  });
+</script>
 </body>
 </html>

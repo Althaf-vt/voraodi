@@ -43,7 +43,7 @@
         </div>
         <div class="form-field">
           <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" name="phone" pattern="\+?[1-9]\d{1,14}" placeholder="+1234567890">
+          <input type="tel" id="phone" name="phone" pattern="\+?[1-9]\d{1,14}">
           <span class="error-message" data-field="phone"></span>
         </div>
           <% if(locals.message && message.length>0){ %>
@@ -66,89 +66,116 @@
   <%- include('../../views/partials/user/footer') %>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="/user/google-signin.js"></script>
+
+
+   
+
   <script>
-    document.getElementById('signup-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      clearErrors();
-      let isValid = validateForm();
+  document.getElementById('signup-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const isValid = validateForm();
+    if (isValid) this.submit();
+  });
 
-      if (isValid) {
-        this.submit();
-      }
-    });
+  function isInvalidPhone(phone) {
+    return (
+      /^(\d)\1{9}$/.test(phone) ||     
+      phone === '1234567890' || 
+      phone === '0123456789' || 
+      !/^[6-9]\d{9}$/.test(phone)
+    );
+  }
 
-    function validateForm() {
-      let isValid = true;
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirm-password').value;
-      const phone = document.getElementById('phone').value.trim();
+  function validateName() {
+    const name = document.getElementById('name').value.trim();
+    if (name.length < 4) {
+      showError('name', 'Name must be at least 4 characters long');
+    } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(name)) {
+      showError('name', 'Name can only contain letters and single spaces between words');
+    } else {
+      clearError('name');
+    }
+  }
 
-      // Name validation
-      if (name.length < 4) {
-        showError('name', 'Name must be at least 2 characters long');
-        isValid = false;
-      } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(name)) {
-        showError('name', 'Name can only contain letters and single spaces between words');
-        isValid = false;
-      }
+  function validateEmail() {
+    const email = document.getElementById('email').value.trim();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      showError('email', 'Please enter a valid email address');
+    } else {
+      clearError('email');
+    }
+  }
 
-      // Email validation
-      const emailRegex = /^[^\.s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        showError('email', 'Please enter a valid email address');
-        isValid = false;
-      }
+  function validatePassword() {
+    const password = document.getElementById('password').value;
+    if (password.length < 8) {
+      showError('password', 'Password must be at least 8 characters long');
+    } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+      showError('password', 'Password must contain at least one uppercase letter, one lowercase letter, and one number');
+    } else {
+      clearError('password');
+    }
+  }
 
-      // Password validation
-      if (password.length < 8) {
-        showError('password', 'Password must be at least 8 characters long');
-        isValid = false;
-      } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
-        showError('password', 'Password must contain at least one uppercase letter, one lowercase letter, and one number');
-        isValid = false;
-      }
-
-      // Confirm password validation
-      if (password !== confirmPassword) {
+  function validateConfirmPassword() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+    if(confirmPassword.length >0){
+        if (password !== confirmPassword) {
         showError('confirm-password', 'Passwords do not match');
-        isValid = false;
+      } else {
+        clearError('confirm-password');
       }
-
-      // Phone validation
-      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-      if (phone && !phoneRegex.test(phone)) {
-        showError('phone', 'Please enter a valid phone number (e.g., +1234567890)');
-        isValid = false;
-      }
-
-      return isValid;
+    }else if(confirmPassword.length == 0){
+        clearError('confirm-password');
     }
+  }
 
-    function showError(fieldId, message) {
-      const errorElement = document.querySelector(`.error-message[data-field="${fieldId}"]`);
-      errorElement.textContent = message;
-      errorElement.style.display = 'block';
+  function validatePhone() {
+    const phone = document.getElementById('phone').value.trim();
+    if (isInvalidPhone(phone)) {
+      showError('phone', 'Invalid phone number');
+    } else {
+      clearError('phone');
     }
+  }
 
-    function clearErrors() {
-      const errorElements = document.querySelectorAll('.error-message');
-      errorElements.forEach(element => {
-        element.textContent = '';
-        element.style.display = 'none';
-      });
-    }
+  function showError(fieldId, message) {
+    const errorElement = document.querySelector(`.error-message[data-field="${fieldId}"]`);
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+  }
 
-    // Real-time validation on input (commented out as in original)
-    /*
-    document.querySelectorAll('#signup-form input').forEach(input => {
-      input.addEventListener('input', function() {
-        clearErrors();
-        validateForm();
-      });
+  function clearError(fieldId) {
+    const errorElement = document.querySelector(`.error-message[data-field="${fieldId}"]`);
+    errorElement.textContent = '';
+    errorElement.style.display = 'none';
+  }
+
+  function validateForm() {
+    validateName();
+    validateEmail();
+    validatePassword();
+    validateConfirmPassword();
+    validatePhone();
+
+    const errors = document.querySelectorAll('.error-message');
+    return [...errors].every(el => el.textContent === '');
+  }
+
+  // Real-time validation listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('name').addEventListener('input', validateName);
+    document.getElementById('email').addEventListener('input', validateEmail);
+    document.getElementById('password').addEventListener('input', () => {
+      validatePassword();
+      validateConfirmPassword();
     });
-    */
-  </script>
+    document.getElementById('confirm-password').addEventListener('input', validateConfirmPassword);
+    document.getElementById('phone').addEventListener('input', validatePhone);
+  });
+</script>
+
 </body>
 </html>
