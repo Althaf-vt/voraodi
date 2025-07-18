@@ -196,7 +196,7 @@
       }
       console.log('variantId==============---',sku)
 
-      fetch(`addToCart?id=${productId}&sku=${sku}&quantity=${quantity}`)
+      fetch(`/addToCart?id=${productId}&sku=${sku}&quantity=${quantity}`)
       
       
         .then(response => response.json())

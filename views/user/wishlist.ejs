@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - My Wishlist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/user/wishlist.css">
+    <link rel="stylesheet" href="/user/headerStyle.css">
+    <link rel="stylesheet" href="/user/footerStyle.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="wishlist-container">
+        <div class="wishlist-content">
+            <div class="wishlist-header">
+                <h1 class="wishlist-title">My Wishlist</h1>
+                <% if (wishlistItems && wishlistItems.length > 0) { %>
+                    <div class="wishlist-count">
+                        <span><%= wishlistItems.length %> <%= wishlistItems.length === 1 ? 'item' : 'items' %></span>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (wishlistItems && wishlistItems.length > 0) { %>
+                <div class="wishlist-items">
+                    <% wishlistItems.forEach(item => { %>
+                        <% if (item.productId) { %>
+                            <div class="wishlist-item-row" 
+                                data-item-id="<%= item.id %>" 
+                                data-product-id="<%= item.productId._id %>" 
+                                data-variants='<%- JSON.stringify(item.productId.variants) %>'>
+                                <div class="wishlist-item-image">
+                                    <img src="<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>" />
+                                </div>
+                                
+                                <div class="wishlist-item-details">
+                                <h3 class="wishlist-item-name"><%= item.productId.productName %></h3>
+                                    <p class="wishlist-item-category"><%= item.productId.categoryId?.categoryName || 'Fashion' %></p>
+                                    <div class="wishlist-item-price">
+                                        <span class="current-price">₹<%= item.productId.salePrice %></span>
+                                        <% if (item.productId.regularPrice > item.productId.salePrice) { %>
+                                            <span class="original-price">₹<%= item.productId.regularPrice %></span>
+                                            <span class="discount-percentage">
+                                                <%= Math.round(((item.productId.regularPrice - item.productId.salePrice) / item.productId.regularPrice) * 100) %>% off
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+
+                                
+                                
+                                <div class="wishlist-item-actions">
+                                    <div class="tooltip">
+                                        <a href="/productDetails/<%= item.productId._id %>">
+                                            <button class="action-btn quick-view-btn" >
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+                                        </a>
+                                        <span class="tooltiptext">Detailed View</span>
+                                    </div>
+
+                                    <div class="tooltip">
+                                        <button class="action-btn add-to-cart-btn" onclick="addToCart('<%= item.productId._id %>')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="8" cy="21" r="1"></circle>
+                                                <circle cx="19" cy="21" r="1"></circle>
+                                                <path d="m2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43h-15.79"></path>
+                                            </svg>
+                                        </button>
+                                        <span class="tooltiptext">Add to Cart</span>
+                                    </div>
+
+                                    <div class="tooltip">
+                                        <button class="action-btn remove-btn" onclick="removeFromWishlist('<%= item.id %>')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3,6 5,6 21,6"></polyline>
+                                                <path d="m19,6v14a2,2 0,0 1,-2,2H7a2,2 0,0 1,-2,-2V6m3,0V4a2,2 0,0 1,2,-2h4a2,2 0,0 1,2,2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        </button>
+                                        <span class="tooltiptext">Remove</span>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-wishlist">
+                    <div class="empty-wishlist-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </div>
+                    <h2>Your Wishlist is Empty</h2>
+                    <p>Save your favorite items to your wishlist and shop them later!</p>
+                    <a href="/products" class="continue-shopping-btn">Continue Shopping</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Variant modal -->
+     <div class="size-modal-overlay" id="sizeModalOverlay">
+        <div class="size-modal">
+            <div class="size-modal-header">
+                <h3>Select Size</h3>
+                <button class="close-modal" onclick="closeSizeModal()">×</button>
+            </div>
+            <div class="size-modal-content">
+                <div class="product-info">
+                    <img id="modalProductImage" src="" alt="">
+                    <div class="product-details">
+                        <h4 id="modalProductName"></h4>
+                        <p id="modalProductPrice"></p>
+                    </div>
+                </div>
+                <div class="size-options">
+                    <div class="size-grid">
+                        <button class="size-btn" data-size="XS">XS</button>
+                        <button class="size-btn" data-size="S">S</button>
+                        <button class="size-btn" data-size="M">M</button>
+                        <button class="size-btn" data-size="L">L</button>
+                        <button class="size-btn" data-size="XL">XL</button>
+                        <button class="size-btn" data-size="XXL">XXL</button>
+                    </div>
+                </div>
+            </div>
+            <div class="size-modal-footer">
+                <button class="confirm-add-to-cart" onclick="confirmAddToCart()">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="loading-modal-overlay" id="loadingModal">
+        <div class="loading-modal">
+            <div class="loading-spinner"></div>
+            <h3>Adding to Cart</h3>
+            <p>Checking stock....</p>
+        </div>
+    </div>
+
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        // Placeholder functions for button actions
+        function removeFromWishlist(itemId) {
+            console.log('Remove from wishlist:', itemId);
+            // Add your remove functionality here
+        }
+
+        function quickView(productId) {
+            console.log('Quick view:', productId);
+            // Add your quick view functionality here
+        }
+
+        // Show loading modal
+        function showLoadingModal() {
+            document.getElementById('loadingModal').classList.add('active');
+        }
+
+        // Hide loading modal
+        function hideLoadingModal() {
+            document.getElementById('loadingModal').classList.remove('active');
+        }
+
+        // variant modal 
+        let currentProductId = null;
+let selectedSize = null;
+
+    function addToCart(productId) {
+        currentProductId = productId;
+
+        const btn = document.querySelector(`.add-to-cart-btn[onclick="addToCart('${productId}')"]`);
+        const itemRow = document.querySelector(`.wishlist-item-row[data-product-id="${currentProductId}"]`);
+        
+        const productImage = itemRow.querySelector('.wishlist-item-image img').src;
+        const productName = itemRow.querySelector('.wishlist-item-name').textContent;
+        const productPrice = itemRow.querySelector('.current-price').textContent;
+        
+        const variants = JSON.parse(itemRow.dataset.variants);
+
+        // Populate modal with product info
+        document.getElementById('modalProductImage').src = productImage;
+        document.getElementById('modalProductName').textContent = productName;
+        document.getElementById('modalProductPrice').textContent = productPrice;
+
+        // Generate size buttons dynamically based on available quantity
+        const sizeGrid = document.querySelector('.size-grid');
+        sizeGrid.innerHTML = ''; // Clear old buttons
+
+        const availableVariants = variants.filter(variant => variant.quantity > 0);
+
+        if (availableVariants.length === 0) {
+            sizeGrid.innerHTML = '<p class="no-sizes-msg">No sizes available</p>';
+        } else {
+            availableVariants.forEach(variant => {
+                const button = document.createElement('button');
+                button.classList.add('size-btn');
+                button.dataset.size = variant.size;
+                button.textContent = variant.size;
+                sizeGrid.appendChild(button);
+            });
+        }
+
+        // Reset selection
+        selectedSize = null;
+        updateConfirmButton();
+
+        // Show modal
+        document.getElementById('sizeModalOverlay').classList.add('active');
+    }
+
+    function closeSizeModal() {
+        document.getElementById('sizeModalOverlay').classList.remove('active');
+        // currentProductId = null;
+        // selectedSize = null;
+    }
+
+    // Handle size selection
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('size-btn')) {
+            // Remove selected class from all buttons
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked button
+            e.target.classList.add('selected');
+            selectedSize = e.target.dataset.size;
+            
+            // Update confirm button state
+            updateConfirmButton();
+        }
+    });
+
+    function updateConfirmButton() {
+        const confirmBtn = document.querySelector('.confirm-add-to-cart');
+        if (selectedSize) {
+            confirmBtn.disabled = false;
+        } else {
+            confirmBtn.disabled = true;
+        }
+    }
+
+    async function confirmAddToCart() {
+        if (!selectedSize || !currentProductId) return;
+
+        const itemRow = document.querySelector(`.wishlist-item-row[data-product-id="${currentProductId}"]`);
+
+        const variants = JSON.parse(itemRow.dataset.variants);
+        const selectedVariant = variants.find(v => v.size === selectedSize);
+
+        if (!selectedVariant) {
+            Swal.fire({
+                toast: true,
+                icon: 'error',
+                title: 'Size Error',
+                text: 'Selected size is invalid.',
+                confirmButtonColor: '#d4af37'
+            });
+            return;
+        }
+
+        // // Close size modal first
+        closeSizeModal();
+        
+        // Show loading modal
+        showLoadingModal();
+
+        try {
+            // Add 2 second delay before making API calls
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const checkRes = await fetch('/check-qty', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    productId: currentProductId,
+                    size: selectedSize
+                })
+            });
+
+            const checkData = await checkRes.json();
+
+            if (checkData.success) {
+                const response = await fetch('/wishlist/addTocart', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        productId: currentProductId,
+                        size: selectedSize
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading modal
+                hideLoadingModal();
+                
+                if (data.success) {
+                    closeSizeModal()
+                    toast(data);
+                } else {
+                    closeSizeModal()
+                    toast(data, 'error');
+                }
+            } else {
+                closeSizeModal()
+                // Hide loading modal
+                hideLoadingModal();
+                toast(checkData);
+            }
+        } catch (error) {
+            closeSizeModal()
+            console.error('Error adding to cart:', error);
+            // Hide loading modal
+            hideLoadingModal();
+            Swal.fire('Error', 'Something went wrong. Please try again later', 'error');
+        }
+    }
+
+// REMOVE CONFIRMATION FUNCTION
+// Replace your existing removeFromWishlist function with this:
+
+function removeFromWishlist(itemId) {
+    const itemRow = document.querySelector(`[data-item-id="${itemId}"]`);
+    const productName = itemRow.querySelector('.wishlist-item-name').textContent;
+    
+    Swal.fire({
+        toast:true,
+        title: '',
+        text: `Are you sure you want to remove "${productName}" from your wishlist?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Remove',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#ff6b6b',
+        cancelButtonColor: '#d4af37',
+        background: '#fff',
+        color: '#2f3a44',
+        customClass: {
+            popup: 'swal-custom-popup',
+            title: 'swal-custom-title',
+            content: 'swal-custom-content'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            showLoading();
+            
+            // Here you would typically make an AJAX call to remove the item
+            // For now, we'll just simulate the removal
+            setTimeout(() => {
+                hideLoading();
+                
+                // Remove the item from DOM
+                itemRow.remove();
+                
+                // Update wishlist count
+                const countElement = document.querySelector('.wishlist-count span');
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent);
+                    const newCount = currentCount - 1;
+                    countElement.textContent = `${newCount} ${newCount === 1 ? 'item' : 'items'}`;
+                    
+                    // If no items left, show empty state
+                    if (newCount === 0) {
+                        document.querySelector('.wishlist-items').style.display = 'none';
+                        document.querySelector('.wishlist-count').style.display = 'none';
+                        // You might want to show the empty wishlist state here
+                    }
+                }
+                
+                Swal.fire({
+                    title: 'Removed!',
+                    text: 'Item has been removed from your wishlist.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#d4af37',
+                    background: '#fff',
+                    color: '#2f3a44'
+                });
+            }, 1000);
+        }
+    });
+}
+
+// Add custom SweetAlert styles
+const swalStyles = `
+<style>
+.swal-custom-popup {
+    font-family: 'Montserrat', sans-serif !important;
+    border: 2px solid #d4af37 !important;
+    border-radius: 15px !important;
+}
+
+.swal-custom-title {
+    font-family: 'Cinzel', serif !important;
+    color: #2f3a44 !important;
+    font-size: 24px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.swal-custom-content {
+    font-family: 'Montserrat', sans-serif !important;
+    color: #2f3a44 !important;
+    font-size: 16px !important;
+}
+</style>
+`;
+
+// Inject custom styles
+document.head.insertAdjacentHTML('beforeend', swalStyles);
+
+// Close modal when clicking outside
+document.getElementById('sizeModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeSizeModal();
+    }
+});
+
+    </script>
+</body>
+</html>

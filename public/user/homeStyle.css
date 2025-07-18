@@ -625,3 +625,91 @@
   left: 100%;
 }
 
+
+/* Quick View Modal */
+.quick-view-modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.quick-view-content {
+    background: #fffef4;
+    margin: 10% auto;
+    padding: 30px;
+    border: 2px solid #d4af37;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.modal-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+}
+
+.view-details {
+    background-color: #d4af37;
+    color: #2f3a44;
+}
+
+.close-btn {
+    background-color: #666;
+    color: #fff;
+}
+
+.quick-view-btn {
+    padding: 8px 15px;
+    background: linear-gradient(45deg, #d4af37, #b8972e);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+.quick-view-btn i {
+    margin-right: 5px;
+}
+
+.quick-view-btn:hover {
+    background: linear-gradient(135deg, #006400, #228B22);
+}
+
+.quick-view-img {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}

@@ -1,6 +1,7 @@
 const Product = require('../../models/productSchema');
 const Category = require('../../models/categorySchema');
 const User = require('../../models/userSchema');
+const Wishlist = require('../../models/whishlistSchema');
 
 
 
@@ -8,7 +9,7 @@ const productDetails = async(req,res)=>{
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
-        const productId = req.query.id;
+        const productId = req.params.id;
         const product = await Product.findById(productId).populate('category');
         const findCategory = product.category;
         const categoryOffer = findCategory ?.categoryOffer || 0;
@@ -59,7 +60,51 @@ const quickView = async(req,res)=>{
     }
 }
 
+const addToWishlist = async(req,res)=>{
+    try {
+        const {productId} = req.body;
+        const userId = req.session.user;
+
+        const findProduct = await Product.findOne({_id:productId,isBlocked:false});
+
+        let wishlist = await Wishlist.findOne({userId:userId});
+
+        if(!wishlist){
+            wishlist = new Wishlist({
+                userId,
+                products: [{
+                    productId: findProduct._id,
+                    addedOn: new Date(),
+                }]
+            });
+        }else{
+            const alreadyInWishlist = wishlist.products.some(p => 
+                p.productId.toString() === findProduct._id.toString()
+            );
+
+            if(alreadyInWishlist){
+                return res.status(400).json({success:false, message:'Product already in wishlist'});
+            }
+
+            wishlist.products.push({
+                productId: findProduct._id,
+                addedOn: new Date()
+            });
+        }
+
+        await wishlist.save();
+
+        return res.status(200).json({success:true, message:'Product added successfull'});
+
+
+    } catch (error) {
+        console.log("error when Adding to wishlist",error);
+        return res.status(500).json({success:false,message:'Internal Server Error'})
+    }
+}
+
 module.exports = {
     productDetails,
-    quickView
+    quickView,
+    addToWishlist
 }

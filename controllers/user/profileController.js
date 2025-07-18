@@ -744,25 +744,19 @@ const addToCart = async(req,res)=>{
         const productId = req.query.id;
         const sku = req.query.sku;
         const quantity = parseInt(req.query.quantity, 10);
-
-        // console.log('Product Id : ',productId)
-        console.log('SKU : ',sku)
-        // console.log('quantity : ',quantity);
         
-
         // isBlock? // Get product and find variant
         const findProduct = await Product.findById(productId);
 
         if (!findProduct) {
-        return res.status(404).json({ success: false, message: 'Product not found.' });
+        return res.status(400).json({ success: false, message: 'Product not found.' });
         }
 
         if (findProduct.isBlock) {
-        return res.status(403).json({ success: false, message: 'This product has been blocked by the admin.' });
+        return res.status(400).json({ success: false, message: 'This product has been blocked by the admin.' });
         }
 
         const selectedVariant = findProduct.variants.find(v => v.sku === sku);
-        console.log('selectedVariant:',selectedVariant)
 
         if(!selectedVariant){
             return res.status(400).json({success: false, message: 'Invalid Variant selected'});
@@ -773,35 +767,29 @@ const addToCart = async(req,res)=>{
             return res.status(400).json({success: false, message: 'Requested quantity exceeds stock'});
         }
 
-        
-
         let userCart = await Cart.findOne({userId});
-        console.log('userCart:',userCart)
 
         if(!userCart){
             // create new cart
             userCart = new Cart({
                 userId,
                 items:[]
-            });
-            
+            });   
         }
 
-        //Check if same product + sku already in cart
+        //Check if same product and sku already in cart
         const itemIndex = userCart.items.findIndex(item => item.productId.equals(productId) && item.sku === sku);
-        console.log('itemIndex:',itemIndex)
   
         if(itemIndex > -1){
-             //  Product already exists in cart → update quantity
+            //  Product already in cart. update qty
+            const item = userCart.items[itemIndex];
+            item.quantity += quantity;
 
-             const item = userCart.items[itemIndex];
-             item.quantity += quantity;
+            if(item.quantity > selectedVariant.quantity){
+            return res.status(400).json({success: false, message:'Exceeds available stock'});
+            }
 
-             if(item.quantity > selectedVariant.quantity){
-                return res.status(400).json({success: false, message:'Exceeds available stock'});
-             }
-
-             item.totalPrice = item.quantity * item.price;
+            item.totalPrice = item.quantity * item.price;
 
         }else{
             // Product not in cart → add to items
@@ -816,9 +804,7 @@ const addToCart = async(req,res)=>{
         }
         await userCart.save();
 
-        // res.redirect()
         return res.status(200).json({ success: true, message: 'Product added to cart' });
-
 
     } catch (error) {
         console.error('Error adding to cart:', error);
@@ -832,8 +818,6 @@ const updateQty = async(req,res)=>{
         const itemId = req.query.id;
         const action = req.query.action;
 
-        console.log('in qty fn');
-
         if(!userId || !itemId || !['increase','decrease'].includes(action)){
             return res.status(400).json({success: false, message: 'Invalid request'});
         }
@@ -843,10 +827,8 @@ const updateQty = async(req,res)=>{
         if(!userCart){
             return res.status(404).json({success: false, message: 'Cart not found'});
         }
-        console.log(itemId)
 
         const itemObjectId = new mongoose.Types.ObjectId(itemId);
-        console.log(itemObjectId)
         const itemIndex = userCart.items.findIndex(item => item._id.equals(itemObjectId));
         if(itemIndex === -1){
             return res.status(404).json({success: false, message: 'Product not found in cart'});
@@ -903,7 +885,6 @@ const removeItem = async(req,res)=>{
 
         const userCart = await Cart.findOne({userId});
         
-
         if(!userCart){
             return res.status(404).json({success: false, message:"Cart not found"});
         }
@@ -927,7 +908,6 @@ const removeItem = async(req,res)=>{
 
 const orderPage = async(req,res)=>{
     try {
-
         const orders = await Order.find()
         
         res.render('order',{

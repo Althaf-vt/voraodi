@@ -4,6 +4,7 @@ const passport = require('../config/passport');
 const userController = require('../controllers/user/userController');
 const profileController = require('../controllers/user/profileController');
 const productController = require('../controllers/user/productController');
+const wishlistController = require('../controllers/user/wishlistController');
 const checkoutController = require('../controllers/user/checkoutController');
 const orderController = require('../controllers/user/orderController');
 const multer = require('../middlewares/profileMulter');
@@ -13,14 +14,7 @@ const { userAuth } = require('../middlewares/auth');
 // Home Page & Shopping page
 router.get('/',userController.loadHomepage);
 router.get('/shop',userController.loadShoppingPage);
-// router.get('/filter',userController.filterProduct)
-// router.get('/filterPrice',userController.filterByPrice);
-// router.get('/searchProducts',userController.searchProducts);
-// router.get('/sortProducts',userController.sortProducts);
-router.get('/quickView',productController.quickView)
-// router.get('/shop/filter',userController.getFilteredProducts);
-
-
+router.get('/quickView',productController.quickView);
 
 // Signup
 router.get('/signup',userController.loadSignup);
@@ -66,16 +60,13 @@ router.get('/handle-auth-failure', (req, res) => {
 
 });
 
-
 // Profile Management
 router.get('/forgot-password',profileController.getForgotPassword);
-// router.post('/forgot-password',profileController.forgotEmailValid);
 router.post('/forgot-email-valid',profileController.forgotEmailValid);
 router.post('/verify-passForgot-otp',profileController.verifyForgotPassOtp);
 router.post('/resend-forgot-otp',profileController.resendOtp);
 router.get('/reset-password',profileController.getResetPassword);
 router.post('/reset-password',profileController.NewPassword);
-//userAucth add
 router.get('/userProfile',userAuth,profileController.userProfile);
 router.get('/change-email',userAuth,profileController.changeEmail);
 router.post('/change-email',userAuth,profileController.changeEmailValid);
@@ -104,6 +95,12 @@ router.get('/addToCart',userAuth,profileController.addToCart);
 router.post('/cart/update-quantity',userAuth,profileController.updateQty);
 router.post('/cart/remove-item',userAuth,profileController.removeItem);
 
+// Wishlist
+router.post('/addToWishlist',userAuth,productController.addToWishlist);
+router.get('/wishlist',userAuth,wishlistController.loadWishlist);
+router.post('/check-qty',userAuth,wishlistController.checkStock);
+router.post('/wishlist/addTocart',userAuth,wishlistController.addToCart)
+
 // Orders
 router.get('/orders',userAuth,profileController.orderPage);
 router.get('/order-details/:id',userAuth,orderController.orderDetailpage);
@@ -111,7 +108,7 @@ router.post('/cancel-item',userAuth,orderController.cancelItem);
 router.post('/cancel-order',userAuth,orderController.cancelOrder);
 router.post('/return-item',userAuth,orderController.returnItem);
 router.post('/return-order',userAuth,orderController.returnOrder);
-router.get('/invoice',userAuth,orderController.invoice)
+router.get('/invoice',userAuth,orderController.invoice);
 
 
 // Checkout
@@ -121,7 +118,7 @@ router.post('/place-order',userAuth,checkoutController.orderDone)
 
 
 // Product Management 
-router.get('/productDetails',productController.productDetails);
+router.get('/productDetails/:id',productController.productDetails);
 
 router.get('/logout',userController.logout);
 router.get('/pageNotFound',userController.pageNotFound);
