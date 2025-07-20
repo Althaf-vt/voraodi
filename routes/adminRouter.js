@@ -6,6 +6,7 @@ const customerController = require('../controllers/admin/customerController');
 const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
 const orderController = require('../controllers/admin/orderController');
+const couponController = require('../controllers/admin/couponController');
 const {userAuth,adminAuth} = require('../middlewares/auth');
 const Product = require('../models/productSchema');
 
@@ -64,7 +65,14 @@ router.get('/orders',adminAuth, orderController.loadOrders);
 router.get('/orderDetails',adminAuth,orderController.orderDetails);
 router.post('/updateOrderStatus',adminAuth,orderController.updateOrderStatus);
 router.post('/approveReturnOrder',adminAuth,orderController.approveReturnOrder)
-router.post('/rejectReturnOrder',adminAuth,orderController.rejectReturnOrder)
+router.post('/rejectReturnOrder',adminAuth,orderController.rejectReturnOrder);
+
+// Coupon management
+router.get('/coupons',adminAuth,couponController.getAllCoupons);
+router.get('/add-coupon',adminAuth,couponController.getAddCoupon);
+router.post('/add-coupon',adminAuth,couponController.addCoupon);
+router.get('/getCoupon/:id',adminAuth,couponController.getEditCoupon);
+router.patch('/edit-coupon',adminAuth,couponController.editCoupon)
 
 router.get('/pageError',adminController.pageError);
 

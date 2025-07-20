@@ -188,15 +188,24 @@
       
       if (!sku) {
         Swal.fire({
+          toast:true,
+          position:'top-end',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
           icon: 'error',
           title: 'Please select a size',
-          text: 'You need to select a size before adding to cart'
+          // text: 'You need to select a size before adding to cart'
         });
         return;
       }
       console.log('variantId==============---',sku)
 
-      fetch(`/addToCart?id=${productId}&sku=${sku}&quantity=${quantity}`)
+      fetch(`/addToCart?id=${productId}&sku=${sku}&quantity=${quantity}`,{
+        headers:{
+          'Accept':'application/json'
+        }
+      })
       
       
         .then(response => response.json())
@@ -204,18 +213,23 @@
           if(data.success){
             Swal.fire({
               toast: true,
+              position:'top-end',
               icon: 'success',
               title: 'Added!',
-              text: data.message,
+              text: data.message || "Product added to cart",
               showConfirmButton: false,
-              timer: 1500
+              timer: 2000,
+              timerProgressBar: true,
             });
           } else {
             Swal.fire({
               toast: true,
+              position:'top-end',
               icon: 'error',
-              title: 'Oops...',
-              text: data.message || 'Failed to add to cart'
+              text: data.message || 'Failed to add to cart',
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
             });
           }
         })
@@ -223,8 +237,11 @@
           console.error('Add to Cart error', error);
           Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: 'Something went wrong while adding to cart.'
+            position:'top-end',
+            text: 'Something went wrong while adding to cart.',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
           });
         });
     }

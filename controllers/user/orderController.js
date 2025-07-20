@@ -118,6 +118,9 @@ const cancelOrder = async (req,res)=>{
         }
 
 
+        for(let item of order.orderedItems){
+            item.status = 'Cancelled';
+        }
 
         order.status = 'Cancelled';
         await order.save();

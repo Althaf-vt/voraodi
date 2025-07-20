@@ -76,7 +76,6 @@ const loadCheckout = async(req,res)=>{
 
 const orderDone = async (req,res)=>{
     try {
-        console.log('Received body:', req.body);
         const { userId, addressId, paymentMethod, couponCode } = req.body;
 
         const userAddressDoc = await Address.findOne({userId});

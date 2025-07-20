@@ -7,7 +7,13 @@ const userAuth = async (req, res, next) => {
         const userId = req.session.user || (req.user && req.user._id);
 
         if (!userId) {
-            return res.redirect('/signin');
+            if (req.headers.accept.includes('application/json')) {
+                // from fetch
+                return res.status(401).json({ success: false, message: 'Please login to continue.' });
+            } else {
+                // Normal 
+                return res.redirect('/signin');
+            }
         }
 
         const userData = await User.findById(userId);
@@ -17,12 +23,20 @@ const userAuth = async (req, res, next) => {
             req.currentUser = userData;
             next();
         } else {
-            return res.redirect('/signin');
+            if (req.headers.accept.includes('application/json')) {
+                return res.status(403).json({ success: false, message: 'Your account is blocked.' });
+            } else {
+                return res.redirect('/signin');
+            }
         }
 
     } catch (error) {
         console.log('Error in user auth middleware:', error);
-        res.status(500).send('Internal Server Error');
+         if (req.headers.accept.includes('application/json')) {
+            res.status(500).json({ success: false, message: 'Internal Server Error' });
+        } else {
+            res.status(500).send('Internal Server Error');
+        }
     }
 };
 

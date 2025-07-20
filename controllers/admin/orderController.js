@@ -20,7 +20,7 @@ const loadOrders = async(req,res)=>{
         const formattedData =  orderData.map(order =>({
             orderId: order.orderId,
             username: order.userId?.name || 'Account Deleted',
-            orderedDate: order.createtOn.toLocaleDateString('en-IN',options),
+            orderedDate: order.createdOn.toLocaleDateString(),
             paymentMethod: order.paymentMethod,
             totalAmount: order.totalPrice,
             status: order.status,

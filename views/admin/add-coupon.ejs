@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOGUE - Add New Coupon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+  <link rel="stylesheet" href="/admin/addCouponStyle.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <!-- Include the Header (Navbar and Sidebar) -->
+  <%- include('../../views/partials/admin/header') %>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-content">
+    <!-- Add Coupon Header -->
+    <div class="add-coupon-header">
+      <div class="text-container">
+        <h1 id="typewriter">Add New Coupon</h1>
+        <div class="subtitle">Create Exclusive Offers</div>
+        <p>Design & Deliver with Excellence</p>
+      </div>
+    </div>
+
+    <!-- Add Coupon Form Section -->
+    <div class="add-coupon-section">
+      <div class="form-container">
+        <div class="form-header">
+          <h2>Coupon Details</h2>
+          <p>Fill in the information to create a new coupon</p>
+        </div>
+
+        <form id="addCouponForm" class="coupon-form">
+          <div class="form-grid">
+            <!-- Coupon Name -->
+            <div class="form-group">
+              <label for="name" class="form-label">Coupon Name <span class="required">*</span></label>
+              <input type="text" id="name" name="name" class="form-input" placeholder="Enter coupon name" required>
+              <div class="field-hint">A descriptive name for the coupon</div>
+            </div>
+
+            <!-- Coupon Code -->
+            <div class="form-group">
+              <label for="code" class="form-label">Coupon Code <span class="required">*</span></label>
+              <input type="text" id="code" name="code" class="form-input" placeholder="Enter coupon code" required>
+              <div class="field-hint">Unique code that users will enter (auto-converted to uppercase)</div>
+            </div>
+
+            <!-- Expire Date -->
+            <div class="form-group">
+              <label for="expireOn" class="form-label">Expiry Date <span class="required">*</span></label>
+              <input type="date" id="expireOn" name="expireOn" class="form-input" required>
+              <div class="field-hint">When this coupon will expire</div>
+            </div>
+
+            <!-- Offer Price -->
+            <div class="form-group">
+              <label for="offerPrice" class="form-label">Discount Amount (₹) <span class="required">*</span></label>
+              <input type="number" id="offerPrice" name="amount" class="form-input" min="1" placeholder="Enter discount amount" required>
+              <div class="field-hint">Fixed discount amount in rupees</div>
+            </div>
+          </div>
+
+          <!-- Two Fields in One Row -->
+          <div class="two-field-row">
+            <!-- Minimum Price -->
+            <div class="form-group">
+              <label for="minimumPrice" class="form-label">Minimum Cart Value (₹) <span class="required">*</span></label>
+              <input type="number" id="minimumPrice" name="minimumPrice" class="form-input" min="1" placeholder="Enter minimum cart value" required>
+              <div class="field-hint">Minimum order value required to use this coupon</div>
+            </div>
+
+            <!-- Max Usage -->
+            <div class="form-group">
+              <label for="maxUsage" class="form-label">Max Usage Count</label>
+              <input type="number" id="maxUsage" name="maxUsage" class="form-input" min="1" placeholder="Enter threshold" >
+              <div class="field-hint">Maximum number of times this coupon can be used (1 = unlimited)</div>
+            </div>
+          </div>
+
+          <!-- Checkboxes Section -->
+          <div class="checkbox-section">
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="isPublic" name="isPublic" class="form-checkbox">
+                <label for="isPublic" class="checkbox-label">
+                  <span class="checkbox-custom"></span>
+                  Public Coupon
+                </label>
+                <div class="field-hint">Make this coupon visible to all users</div>
+              </div>
+
+              <div class="checkbox-item">
+                <input type="checkbox" id="hasRewardThreshold" name="hasRewardThreshold" class="form-checkbox">
+                <label for="hasRewardThreshold" class="checkbox-label">
+                  <span class="checkbox-custom"></span>
+                  Reward Threshold
+                </label>
+                <div class="field-hint">Enable reward threshold for this coupon</div>
+                <div class="threshold-input-container" style="display: none;">
+                  <input type="number" id="rewardThreshold" name="rewardThreshold" class="threshold-input" min="1" placeholder="Enter threshold amount">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="window.location.href='/admin/coupons'">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">
+              Create Coupon
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Checkbox mutual exclusion logic
+    document.getElementById('isPublic').addEventListener('change', function() {
+      const rewardThresholdCheckbox = document.getElementById('hasRewardThreshold');
+      const thresholdContainer = document.querySelector('.threshold-input-container');
+      
+      if (this.checked) {
+        rewardThresholdCheckbox.checked = false;
+        rewardThresholdCheckbox.disabled = true;
+        thresholdContainer.style.display = 'none';
+        document.getElementById('rewardThreshold').value = '';
+      } else {
+        rewardThresholdCheckbox.disabled = false;
+      }
+    });
+
+    document.getElementById('hasRewardThreshold').addEventListener('change', function() {
+      const publicCheckbox = document.getElementById('isPublic');
+      const thresholdContainer = document.querySelector('.threshold-input-container');
+      
+      if (this.checked) {
+        publicCheckbox.checked = false;
+        publicCheckbox.disabled = true;
+        thresholdContainer.style.display = 'block';
+      } else {
+        publicCheckbox.disabled = false;
+        thresholdContainer.style.display = 'none';
+        document.getElementById('rewardThreshold').value = '';
+      }
+    });
+
+    // Form validation and submission
+    document.getElementById('addCouponForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const data = {};
+      
+      // Convert FormData to object
+      for (let [key, value] of formData.entries()) {
+        if (key === 'isPublic' || key === 'hasRewardThreshold') {
+          data[key] = true;
+        } else {
+          data[key] = value;
+        }
+      }
+      
+      // Set default values for unchecked checkboxes
+      if (!data.isPublic) data.isPublic = false;
+      if (!data.hasRewardThreshold) {
+        data.hasRewardThreshold = false;
+        data.rewardThreshold = '';
+      }
+      
+      // If reward threshold is checked but no value provided, set to 0
+      if (data.hasRewardThreshold && !data.rewardThreshold) {
+        data.rewardThreshold = 0;
+      }
+      // Ensure maxUsage gets set if left blank (1 = unlimited by your definition)
+      if (!data.maxUsage || parseInt(data.maxUsage) <= 0) {
+        data.maxUsage = 1;
+      }
+
+      
+      // Basic validation
+      if (parseInt(data.offerPrice) >= parseInt(data.minimumPrice)) {
+        Swal.fire('Error!', 'Discount amount should be less than minimum cart value', 'error');
+        return;
+      }
+      
+      if (new Date(data.expireOn) <= new Date()) {
+        Swal.fire('Error!', 'Expiry date should be in the future', 'error');
+        return;
+      }
+
+      // Validate max usage
+      if (data.maxUsage && parseInt(data.maxUsage) < 0) {
+        Swal.fire('Error!', 'Max usage count cannot be negative', 'error');
+        return;
+      }
+
+      // Validate reward threshold
+      if (data.hasRewardThreshold && data.rewardThreshold && parseInt(data.rewardThreshold) < 0) {
+        Swal.fire('Error!', 'Reward threshold cannot be negative', 'error');
+        return;
+      }
+
+
+      fetch('/admin/add-coupon',{
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.success){
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: 'Coupon added',
+                text: data.success || 'Coupon added successfully',
+                position: 'top-end', // toast-style position (usually top-end)
+                showConfirmButton: false, //  no confirm button for toast
+                timer: 2000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'premium-toast',
+                    title: 'premium-title'
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            }).then(()=>{
+                window.location.href = '/admin/coupons'
+            })
+        }else{
+            Swal.fire({
+                toast: true,
+                icon: 'error',
+                title: data.message || 'Something went wrong',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'premium-toast',
+                    title: 'premium-title'
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            })
+        }
+      })
+      .catch(err => {
+        Swal.fire({
+            title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
+            text: 'Something went wrong, Please try again later',
+            timer: 1500,
+            showConfirmButton: false
+        })
+      })
+    });
+
+    // Auto-format coupon code to uppercase
+    document.getElementById('code').addEventListener('input', function(e) {
+      e.target.value = e.target.value.toUpperCase();
+    });
+
+    // Set minimum date to today
+    document.getElementById('expireOn').setAttribute('min', new Date().toISOString().split('T')[0]);
+  </script>
+</body>
+</html>

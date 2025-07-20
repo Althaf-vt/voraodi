@@ -206,8 +206,8 @@ function validateForm() {
     if (name.trim() === "") {
         displayErrorMessage('productName-error', 'Please enter a product name.');
         isValid = false;
-    } else if (!/^[a-zA-Z0-9\s'()\-|]+$/.test(name.trim())) {
-        displayErrorMessage('productName-error', 'Product name can include letters, numbers, spaces, apostrophes, hyphens, parentheses, and pipes.');
+    } else if (!/^[a-zA-Z0-9\s'()\-|&]+$/.test(name.trim())) {
+        displayErrorMessage('productName-error', 'Product name can include letters, numbers, spaces, apostrophes, hyphens, parentheses, pipes, and ampersands.');
         isValid = false;
     }
 
