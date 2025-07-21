@@ -60,17 +60,92 @@ const loadCheckout = async(req,res)=>{
         const cartItems = userCart ? userCart.items : [];
         const userAddress = userAddressData ? userAddressData.address : [];
 
+        const subtotal = userCart.items.reduce((total, item) => {
+            return item.productId ? total + item.productId.salePrice * item.quantity : total;
+        },0);
+
+        userCart.deliveryCharge = subtotal >= 3000 ? 0 : 50;
+
+        const total = subtotal + userCart.deliveryCharge;
+        
+        await userCart.save();
+
+        const coupons = await Coupon.find({isListed:true,isPublic:true});
+
+        const availableCoupons = coupons.filter(c => !c.usedBy.includes(userId));
+
 
         return res.render('checkout',{
             user,
             userAddress,
             cartItems,
-
+            availableCoupons,
+            subtotal,
+            total,
+            deliveryCharge: userCart.deliveryCharge
         });
 
     } catch (error) {
         console.log('Error in loading checkout page',error);
         res.redirect('/pageNotFound');
+    }
+}
+
+const applyCoupon = async(req,res) => {
+    try {
+        const {couponCode,userId} = req.body;
+
+        const coupon = await Coupon.findOne({code: couponCode,isListed:true,});
+
+        if(!coupon){
+            return res.status(400).json({success:false,message:'This Coupon is currenly unavailable'});
+        }
+
+        if(coupon.expireOn < new Date()){
+            return res.status(400).json({success:false,message:"Coupon has expired"});
+        }
+
+        if(coupon.usedBy.length >= coupon.maxUsage){
+            return res.status(400).json({ success:false,message:"Coupon usage limit reaches"});
+        }
+
+        const isUsed = coupon.usedBy.includes(userId)
+        if(isUsed){
+            return res.status(400).json({ success:false,message:"Coupon already used by this user"});
+        }
+
+        const userCart = await Cart.findOne({userId}).populate('items.productId');
+
+        if(!userCart || userCart.items.length === 0){
+            return res.status(400).json({success:false,message:'No items in cart'});
+        }
+
+        const subtotal = userCart.items.reduce((total, item) => {
+            return item.productId ? total + item.productId.salePrice * item.quantity : total;
+        },0);
+
+        if(subtotal >= 3000){
+            userCart.deliveryCharge = 0;
+        }
+
+        const discount = Math.min(coupon.amount, subtotal); // avoid discount being more than subtotal
+
+         const total = subtotal - discount + userCart.deliveryCharge;
+
+        return res.status(200).json({
+            success:true,
+            message:'Coupon applied successfully',
+            coupon,
+            newTotals: {
+                discount,
+                subtotal,
+                deliveryCharge: userCart.deliveryCharge,
+                total
+            }
+        });
+    } catch (error) {
+        console.log("Error in apply coupon : ",error);
+        return res.status(500).json({success:false,message:'Internal Server Error'});
     }
 }
 
@@ -94,27 +169,16 @@ const orderDone = async (req,res)=>{
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ success: false, message: 'Cart is empty' });
         }
-
-        // calculate price
-        const orderedItems = cart.items.map(item =>({
-            product : item.productId._id,
-            quantity: item.quantity,
-            price: item.productId.salePrice,
-            sku: item.sku,
-            size: item.size,
-            status: 'Pending' 
-        }));
-
-        const totalPrice = orderedItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
-        const deliveryCharge = orderedItems.reduce((sum,item) => sum + item.quantity * 40, 0);
         
+        const totalPrice = cart.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+
         //coupon handling
         let discount = 0;
 
         let couponApplied = false;
 
         if(couponCode){
-            const coupon = await Coupon.findOne({name: couponCode, isList: true});
+            const coupon = await Coupon.findOne({code: couponCode, isListed: true});
             if(!coupon){
                 return res.status(400).json({ success: false, message: 'Invalid or inactive coupon' });
             }
@@ -124,7 +188,7 @@ const orderDone = async (req,res)=>{
                 return res.status(400).json({success: false, message: 'Coupon has expired'});
             }
 
-            if(coupon.userId.includes(userId)){
+            if(coupon.usedBy.includes(userId)){
                 return res.status(400).json({ success: false, message: 'You have already used this coupon' });
             }
 
@@ -132,20 +196,37 @@ const orderDone = async (req,res)=>{
                 return res.status(400).json({success: false, message: `Minimum order amount ₹${coupon.minimumPrice} required to use this coupon`})
             }
 
-            discount = coupon.offerPrice;
+            discount = coupon.amount;
             couponApplied = true;
 
-            coupon.userId.push(userId);
+            coupon.usedBy.push(userId);
             await coupon.save();
         }
 
-        const finalAmount = totalPrice - discount;
+        const couponAmountToEach = discount/cart.items.length;
+        
 
-        // console.log(clonedAddress);
+         const orderedItems = cart.items.map(item => {
+            const discountedPrice = item.productId.salePrice - couponAmountToEach;
+            return {
+                product: item.productId._id,
+                quantity: item.quantity,
+                price: discountedPrice < 0 ? 0 : discountedPrice,
+                sku: item.sku,
+                size: item.size,
+                status: 'Pending'
+            };
+        });
+
+        const recalculatedTotal = orderedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+        const deliveryCharge = totalPrice >= 3000 ? 0 : 50;
+        
+        const finalAmount = recalculatedTotal + deliveryCharge;
 
         const newOrder = new Order({
             orderedItems,
-            totalPrice : totalPrice + deliveryCharge,
+            totalPrice: totalPrice, // Original total before discounts
             discount,
             finalAmount,
             address: clonedAddress,
@@ -154,7 +235,8 @@ const orderDone = async (req,res)=>{
             couponApplied,
             paymentMethod,
             userId: userId,
-        })
+            deliveryCharge: deliveryCharge,
+        });
         await newOrder.save();
 
 
@@ -194,4 +276,5 @@ module.exports ={
     checkStock,
     loadCheckout,
     orderDone,
+    applyCoupon,
 }

@@ -107,6 +107,10 @@ const orderSchema = new Schema({
         type: String,
         enum: ['Pending', 'Completed', 'Failed'],
         default: 'Pending'
+    },
+    deliveryCharge: {
+        type: Number,
+        default: 50,
     }
 })
 

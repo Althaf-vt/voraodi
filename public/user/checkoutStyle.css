@@ -198,7 +198,7 @@
 
 .address-card:hover {
     background: #fffcf4;
-    transform: scale(1.02);
+    /* transform: scale(1.02); */
 }
 
 .address-card input[type="radio"] {
@@ -285,8 +285,6 @@
 }
 
 .add-address-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
     background: linear-gradient(135deg, #006400, #228B22);
     color: #f5f5e8;
 }
@@ -616,4 +614,243 @@
         border: 1px solid #87CEEB;
         border-radius: 5px;
     }
+}
+
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 15px;
+    border: 3px solid #d4af37;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 2px solid #d4af37;
+    background: linear-gradient(135deg, #f5f5e8, #fffcf4);
+}
+
+.modal-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 24px;
+    color: #2f3a44;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 30px;
+    color: #2f3a44;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #d4af37;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #2f3a44;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 2px solid #d4af37;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #2f3a44;
+    background: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #006400;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    padding: 0 30px 30px 30px;
+    justify-content: center;
+}
+
+.save-btn, .cancel-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.save-btn {
+    background: linear-gradient(45deg, #d4af37, #b8972e);
+    color: #2f3a44;
+}
+
+.save-btn:hover {
+    background: linear-gradient(135deg, #006400, #228B22);
+    color: #f5f5e8;
+}
+
+.cancel-btn {
+    background: #6c757d;
+    color: #fff;
+}
+
+.cancel-btn:hover {
+    background: #5a6268;
+}
+
+/* Edit Button for Address Cards */
+.address-card {
+    position: relative;
+}
+
+.edit-address-btn {
+    position: absolute;
+    top: 10px;
+    right: 40px;
+    background: linear-gradient(45deg, #d4af37, #b8972e);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #2f3a44;
+}
+
+.edit-address-btn:hover {
+    background: linear-gradient(135deg, #006400, #228B22);
+    color: #f5f5e8;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+    
+    .modal-header {
+        padding: 15px 20px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+        padding: 0 20px 20px 20px;
+    }
+    
+    .save-btn, .cancel-btn {
+        width: 100%;
+    }
+}
+
+/* form message */
+
+.form-message {
+    margin: 10px 0;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.form-message.Error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.form-message.valid {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.error-message {
+    color: #d32f2f;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    margin-top: 5px;
+    height: 16px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.error-message.show {
+    max-height: 50px;
+    opacity: 1;
+}
+
+.form-group input.error {
+    border-color: #d32f2f !important;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
 }

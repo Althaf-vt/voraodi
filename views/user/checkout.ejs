@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/re-use/toast.js"></script>
     <link rel="stylesheet" href="/user/checkoutStyle.css">
     <link rel="stylesheet" href="/user/headerStyle.css">
     <link rel="stylesheet" href="/user/footerStyle.css">
@@ -96,17 +98,22 @@
                                                     </div>
                                                 <% } %>
                                             </label>
+                                            <button type="button" class="edit-address-btn" onclick="openEditModal('<%= address._id %>', '<%= address.name %>', '<%= address.street %>', '<%= address.city %>', '<%= address.state %>', '<%= address.country %>', '<%= address.pincode %>', '<%= address.phone %>', '<%= address.altPhone %>')">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                                </svg>
+                                            </button>
                                         </div>
                                     <% }) %>
                                 </div>
-                                <a href="/add-address" class="add-address-button">Add New Address</a>
+                                <button type="button" class="add-address-button" onclick="openAddModal()">Add New Address</button>
                             <% } else { %>
                                 <div class="no-address">
                                     <p>No Addresses Available. Please add an address to proceed.</p>
-                                    <a href="/add-address" class="add-address-button">Add New Address</a>
+                                    <button type="button" class="add-address-button" onclick="openAddModal()">Add New Address</button>
                                 </div>
                             <% } %>
-                            <div class="form-message" id="form-message"></div>
+                            <!-- <div class="form-message" id="form-message"></div> -->
                         </div>
                     </div>
                 </div>
@@ -115,17 +122,6 @@
                 <div class="order-summary">
                     <h3 class="section-title">Order Summary</h3>
                     <% if (cartItems && cartItems.length > 0) { %>
-                        <% 
-                            const subtotal = cartItems.reduce((total, item) => {
-                                return item.productId ? total + (item.productId.salePrice * item.quantity) : total;
-                            }, 0);
-                            
-                            const deliveryCharge = cartItems.reduce((total, item) => {
-                                return item.productId ? total + (item.quantity * 40) : total;
-                            }, 0);
-
-                            const total = subtotal + deliveryCharge;
-                        %>
                         <div class="summary-details">
                             <div class="summary-item">
                                 <span>Subtotal (<%= cartItems.reduce((total, item) => total + item.quantity, 0) %> items):</span>
@@ -155,22 +151,22 @@
                             <h4 class="coupon-title">Apply Coupon</h4>
                             <button type="button" class="show-coupons-button" onclick="toggleCoupons()">Show Coupons ▼</button>
                             <div class="coupon-input">
-                                <input type="text" id="coupon-code" placeholder="Enter coupon code">
+                                <input type="text" id="coupon-code" placeholder="Enter coupon code" value="">
                                 <button type="button" class="apply-coupon-button">Apply</button>
                             </div>
                             <div class="coupon-list" id="coupon-list" style="display: none;">
-                                <%# if (availableCoupons && availableCoupons.length > 0) { %>
-                                    <%# availableCoupons.forEach(coupon => { %>
-                                        <div class="coupon-option">
-                                            <input type="radio" id="coupon-<%#= coupon.code %>" name="coupon" value="<%#= coupon.code %>">
-                                            <label for="coupon-<%#= coupon.code %>">
-                                                <%#= coupon.code %> - <%#= coupon.discount %>% off (Max ₹<%#= coupon.maxDiscount %>)
-                                            </label>
-                                        </div>
-                                    <%# }) %>
-                                <%# } else { %>
+                                <% if (availableCoupons && availableCoupons.length > 0) { %>
+                                    <% availableCoupons.forEach(coupon => { %>
+                                    <div class="coupon-option">
+                                        <input type="radio" id="coupon-<%= coupon.code %>" name="coupon" value="<%= coupon.code %>">
+                                        <label for="coupon-<%= coupon.code %>">
+                                        <%= coupon.code %> - ₹<%= coupon.amount %> off
+                                        </label>
+                                    </div>
+                                    <% }) %>
+                                <% } else { %>
                                     <p style="font-size: 12px; color: #666; text-align: center;">No coupons available</p>
-                                <%# } %>
+                                <% } %>
                             </div>
                         </div>
                         
@@ -210,17 +206,322 @@
 
     <%- include('../../views/partials/user/footer') %>
 
-<form id="hidden-order-form" action="/place-order" method="POST" style="display: none;">
-    <input type="hidden" name="userId" value="<%= user._id %>">
-    <input type="hidden" name="addressId" id="hidden-address-id">
-    <input type="hidden" name="paymentMethod" id="hidden-payment-method">
-    <input type="hidden" name="couponCode" id="hidden-coupon-code">
-</form>
+    <form id="hidden-order-form" action="/place-order" method="POST" style="display: none;">
+        <input type="hidden" name="userId" value="<%= user._id %>">
+        <input type="hidden" name="addressId" id="hidden-address-id">
+        <input type="hidden" name="paymentMethod" id="hidden-payment-method">
+        <input type="hidden" name="couponCode" id="hidden-coupon-code">
+    </form>
+
+
+    <!-- Address Modal -->
+    <div id="addressModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Address</h2>
+                <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="form-message" class="form-message"></div>
+            <form id="addressForm">
+                <input type="hidden" id="addressId" value="">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">NAME</label>
+                        <input type="text" id="name" name="name" required>
+                        <div class="error-message" id="name-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">COUNTRY</label>
+                        <input type="text" id="country" name="country" required>
+                        <div class="error-message" id="country-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">STATE</label>
+                        <input type="text" id="state" name="state" required>
+                        <div class="error-message" id="state-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">CITY</label>
+                        <input type="text" id="city" name="city" required>
+                        <div class="error-message" id="city-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="street">STREET</label>
+                        <input type="text" id="street" name="street" required>
+                        <div class="error-message" id="street-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pincode">PIN CODE</label>
+                        <input type="text" id="pincode" name="pincode" required>
+                        <div class="error-message" id="pincode-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">PHONE</label>
+                        <input type="text" id="phone" name="phone" required>
+                        <div class="error-message" id="phone-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="altPhone">ALT PHONE</label>
+                        <input type="text" id="altPhone" name="altPhone">
+                        <div class="error-message" id="altPhone-error"></div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">SAVE</button>
+                    <button type="button" class="cancel-btn" onclick="closeModal()">CANCEL</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  
 
 </body>
 </html>
 
 <script>
+
+    // Enhanced validation functions
+    function isValidName(name) {
+        return /^[a-zA-Z\s]{2,50}$/.test(name.trim());
+    }
+
+    function isValidField(field) {
+        return field.trim().length >= 2;
+    }
+
+    function isValidPhone(phone) {
+        phone = phone.trim();
+        // Basic validation first
+        if (!/^[6-9]\d{9}$/.test(phone)) return false;
+        
+        // Check for invalid patterns
+        const invalidPatterns = [
+            /^(\d)\1{9}$/, // All same digits
+            '1234567890',
+            '0123456789',
+            '9876543210'
+        ];
+        
+        return !invalidPatterns.some(pattern => 
+            typeof pattern === 'string' ? phone === pattern : pattern.test(phone)
+        );
+    }
+
+    function isValidPin(pin) {
+        pin = pin.trim();
+        // Basic 6-digit validation
+        if (!/^[1-9]\d{5}$/.test(pin)) return false;
+        
+        // Check for sequential numbers (ascending or descending)
+        const isSequential = (str) => {
+            let ascending = true;
+            let descending = true;
+            for (let i = 1; i < str.length; i++) {
+                if (parseInt(str[i]) !== parseInt(str[i-1]) + 1) ascending = false;
+                if (parseInt(str[i]) !== parseInt(str[i-1]) - 1) descending = false;
+            }
+            return ascending || descending;
+        };
+        
+        // Check for invalid patterns
+        const invalidPatterns = [
+            /^(\d)\1{5}$/, // All same digits
+            isSequential // Just pass the function reference
+        ];
+        
+        return !invalidPatterns.some(pattern => 
+            typeof pattern === 'function' ? pattern(pin) : pattern.test(pin)
+        );
+    }
+
+    // Modal Functions
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'ADD ADDRESS';
+        document.getElementById('addressForm').reset();
+        document.getElementById('addressId').value = '';
+        document.getElementById('addressModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function openEditModal(id, name, street, city, state, country, pincode, phone, altPhone) {
+        document.getElementById('modalTitle').textContent = 'EDIT ADDRESS';
+        document.getElementById('addressId').value = id;
+        document.getElementById('name').value = name;
+        document.getElementById('street').value = street;
+        document.getElementById('city').value = city;
+        document.getElementById('state').value = state;
+        document.getElementById('country').value = country;
+        document.getElementById('pincode').value = pincode;
+        document.getElementById('phone').value = phone;
+        document.getElementById('altPhone').value = altPhone || '';
+        document.getElementById('addressModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('addressModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Helper function to show error for a specific field with auto-hide timer
+    function showFieldError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        
+        // Clear any existing timer for this field
+        if (errorElement.timer) {
+            clearTimeout(errorElement.timer);
+        }
+        
+        field.classList.add('error');
+        errorElement.textContent = message;
+        errorElement.classList.add('show');
+        
+        // Set timer to hide the error after 5 seconds (5000 milliseconds)
+        errorElement.timer = setTimeout(() => {
+            errorElement.classList.remove('show');
+            field.classList.remove('error');
+        }, 5000);
+        
+        // Scroll to the first error field
+        if (!document.querySelector('.form-group input.error:first-of-type')) {
+            field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // Helper function to clear all errors immediately
+    function clearAllErrors() {
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.classList.remove('show');
+            el.textContent = '';
+            if (el.timer) {
+                clearTimeout(el.timer);
+            }
+        });
+        document.querySelectorAll('.form-group input').forEach(input => {
+            input.classList.remove('error');
+        });
+    }
+
+    // Form Submit Handler
+    document.getElementById('addressForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        clearAllErrors();
+        
+        // Get form values
+        const name = document.getElementById('name').value;
+        const country = document.getElementById('country').value;
+        const state = document.getElementById('state').value;
+        const city = document.getElementById('city').value;
+        const street = document.getElementById('street').value;
+        const pincode = document.getElementById('pincode').value;
+        const phone = document.getElementById('phone').value;
+        const altPhone = document.getElementById('altPhone').value;
+
+        // Validate fields
+        let isValid = true;
+
+        if (!isValidName(name)) {
+            showFieldError('name', 'Please enter a valid name (2-50 characters, letters only)');
+            isValid = false;
+        }
+
+        if (!isValidField(country)) {
+            showFieldError('country', 'Please enter a valid country');
+            isValid = false;
+        }
+
+        if (!isValidField(state)) {
+            showFieldError('state', 'Please enter a valid state');
+            isValid = false;
+        }
+
+        if (!isValidField(city)) {
+            showFieldError('city', 'Please enter a valid city');
+            isValid = false;
+        }
+
+        if (!isValidField(street)) {
+            showFieldError('street', 'Please enter a valid street address');
+            isValid = false;
+        }
+
+        if (!isValidPin(pincode)) {
+            showFieldError('pincode', 'Please enter a valid 6-digit PIN code (no sequences or repetitions)');
+            isValid = false;
+        }
+
+        if (!isValidPhone(phone)) {
+            showFieldError('phone', 'Please enter a valid 10-digit phone number starting with 6-9');
+            isValid = false;
+        }
+
+        if (altPhone && !isValidPhone(altPhone)) {
+            showFieldError('altPhone', 'Please enter a valid alternate phone number or leave it empty');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return;
+        }
+
+        // If validation passes, proceed with form submission
+        const formData = {
+            name: name.trim(),
+            country: country.trim(),
+            state: state.trim(),
+            city: city.trim(),
+            street: street.trim(),
+            pincode: pincode.trim(),
+            phone: phone.trim(),
+            altPhone: altPhone.trim()
+        };
+
+        const addressId = document.getElementById('addressId').value;
+        const url = addressId ? `/edit-address/${addressId}` : '/add-address';
+        const method = addressId ? 'PATCH' : 'POST';
+
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                closeModal();
+                toast(data);
+            } else {
+                toast(data, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toast({
+                success: false, 
+                message: 'Something went wrong. Please try again later'
+            }, 'error');
+        });
+    });
+
+    // Add real-time validation as users type (optional but recommended)
+    document.querySelectorAll('#addressForm input').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('error');
+            document.getElementById(`${this.id}-error`).classList.remove('show');
+        });
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('addressModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+
+    
 
         function placeOrder(userId) {
             const selectedAddressInput = document.querySelector('input[name="addressId"]:checked');
@@ -262,34 +563,72 @@
         }
 
         // Apply Coupon Functionality
-        document.querySelector('.apply-coupon-button').addEventListener('click', function() {
-            const couponCode = document.getElementById('coupon-code').value.trim();
-            const selectedCoupon = document.querySelector('input[name="coupon"]:checked');
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[name="coupon"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('coupon-code').value = this.value;
+                });
+            });
             
-            if (couponCode || (selectedCoupon && selectedCoupon.value)) {
-                // In a real app, you would send this to your backend
-                const codeToApply = couponCode || selectedCoupon.value;
-                showMessage(`Coupon "${codeToApply}" applied successfully!`, false);
-                
-                // Simulate updating the order summary
-                setTimeout(() => {
-                    // This would be replaced with actual data from your backend
-                    document.querySelector('.summary-item:nth-child(3) span:last-child').textContent = '-₹50.00';
-                    const subtotal = parseFloat(document.querySelector('.summary-item:nth-child(1) span:last-child').textContent.replace('₹', ''));
-                    const delivery = parseFloat(document.querySelector('.summary-item:nth-child(4) span:last-child').textContent.replace('₹', ''));
-                    const newTotal = subtotal + delivery - 50;
-                    document.querySelector('.summary-item.total span:last-child').textContent = `₹${newTotal.toFixed(2)}`;
-                    document.querySelector('.place-order-button').innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
-                        </svg>
-                        Place Order • ₹${newTotal.toFixed(2)}
-                    `;
-                }, 500);
-            } else {
-                showMessage('Please enter or select a coupon code');
+            const applyButton = document.querySelector('.apply-coupon-button');
+    
+            if (applyButton) {
+                applyButton.addEventListener('click', function() {
+                    
+                    const couponCode = document.getElementById('coupon-code').value.trim();
+                    const selectedCoupon = document.querySelector('input[name="coupon"]:checked');
+                    
+                    if (couponCode || (selectedCoupon && selectedCoupon.value)) {
+                        const codeToApply = couponCode || selectedCoupon.value;
+                        
+                        // Send AJAX request to backend to validate and apply coupon
+                        fetch('/apply-coupon', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                couponCode: codeToApply,
+                                userId: '<%= user._id %>'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Data : ",data); 
+                            if (data.success) {
+                                document.getElementById('coupon-code').value = codeToApply; // ✅ This sets the input field
+                                showMessage(`Coupon "${codeToApply}" applied successfully!`, false);
+                                // Update the UI with the new totals from backend
+                                if (data.newTotals) {
+                                    const summaryItems = document.querySelectorAll('.summary-item span:last-child');
+                                    summaryItems[0].textContent = `₹${data.newTotals.subtotal.toFixed(2)}`;           // Subtotal
+                                    summaryItems[1].textContent = `-₹0.00`;                                           // Savings
+                                    summaryItems[2].textContent = `-₹${data.newTotals.discount.toFixed(2)}`;          // Coupon Discount
+                                    summaryItems[3].textContent = `₹${data.newTotals.deliveryCharge.toFixed(2)}`;     // Delivery
+                                    summaryItems[4].textContent = `₹${data.newTotals.total.toFixed(2)}`;              // Total
+
+                                    // Update place order button text
+                                    document.querySelector('.place-order-button').innerHTML = `
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                        </svg>
+                                        Place Order • ₹${data.newTotals.total.toFixed(2)}
+                                    `;
+                                }
+                            } else {
+                                showMessage(data.message || 'Invalid coupon code');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error applying coupon:', error);
+                            showMessage('Error applying coupon. Please try again.');
+                        });
+                    } else {
+                        showMessage('Please enter or select a coupon code');
+                    }
+                });
             }
         });
 

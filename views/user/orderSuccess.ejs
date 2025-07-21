@@ -35,15 +35,19 @@
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Total Amount:</span>
-                    <span class="detail-value">₹<%= order.orderedItems.reduce((total, item) => total + (item.product.salePrice * item.quantity), 0).toFixed(2) %></span>
+                    <span class="detail-value">₹<%= order.totalPrice.toFixed(2) %></span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Discount:</span>
                     <span class="detail-value">₹<%= order.discount %>.00</span>
                 </div>
                 <div class="detail-item">
+                    <span class="detail-label">Delivery Charge</span>
+                    <span class="detail-value">₹<%= order.deliveryCharge.toFixed(2) %></span>
+                </div>
+                <div class="detail-item">
                     <span class="detail-label">Final Amount:</span>
-                    <span class="detail-value">₹<%= order.totalPrice.toFixed(2) %></span>
+                    <span class="detail-value">₹<%= order.finalAmount.toFixed(2) %></span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Payment Method:</span>

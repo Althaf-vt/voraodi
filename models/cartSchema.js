@@ -42,7 +42,11 @@ const cartSchema = new Schema({
             type: String,
             default: "none"
         },
-    }]
+    }],
+    deliveryCharge: {
+        type: Number,
+        default: 50,
+    }
 })
 
 

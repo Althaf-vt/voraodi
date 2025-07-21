@@ -83,10 +83,10 @@ router.patch('/edit-profile/image',userAuth,multer.single('avatar'),profileContr
 
 // Address Management
 router.get('/userAddress',userAuth,profileController.addresses)
-router.get('/add-address',userAuth,profileController.addAddress);
+// router.get('/add-address',userAuth,profileController.addAddress);
 router.post('/add-address',userAuth,profileController.postAddAddress);
-router.get('/get-address',userAuth,profileController.getEditAddress);
-router.patch('/edit-address',userAuth,profileController.editAddress);
+router.get('/get-address/:id',userAuth,profileController.getEditAddress);
+router.patch('/edit-address/:id',userAuth,profileController.editAddress);
 router.delete('/delete-address',userAuth,profileController.deleteAddress);
 
 //Cart
@@ -113,12 +113,17 @@ router.get('/invoice',userAuth,orderController.invoice);
 
 // Checkout
 router.get('/checkout',userAuth,checkoutController.loadCheckout);
+router.post('/apply-coupon',userAuth,checkoutController.applyCoupon)
 router.post('/cart/check-stock',userAuth,checkoutController.checkStock)
-router.post('/place-order',userAuth,checkoutController.orderDone)
+router.post('/place-order',userAuth,checkoutController.orderDone);
+
 
 
 // Product Management 
 router.get('/productDetails/:id',productController.productDetails);
+
+// Coupons
+router.get('/coupons',userAuth,profileController.getCoupons)
 
 router.get('/logout',userController.logout);
 router.get('/pageNotFound',userController.pageNotFound);

@@ -7,11 +7,13 @@ const Cart = require('../../models/cartSchema');
 const loadWishlist = async(req,res)=>{
     try {
         const userId = req.session.user;
+        const user = await User.findOne({_id:userId})
 
         let wishlist = await Wishlist.findOne({userId:userId}).populate('products.productId');
 
         return res.render('wishlist',{
-            wishlistItems: wishlist ? wishlist.products : []
+            wishlistItems: wishlist ? wishlist.products : [],
+            user
         })
 
     } catch (error) {
@@ -55,7 +57,6 @@ const checkStock = async (req, res) => {
 const addToCart = async(req,res)=>{
     try {
         const userId = req.session.user;
-        console.log(req.body)
         const {productId,size} = req.body;
 
         const product = await Product.findOne({_id:productId,isBlocked:false});
@@ -72,8 +73,6 @@ const addToCart = async(req,res)=>{
                 items: []
             })
         }
-
-        console.log("======product Variant========= :",productVariant)
 
         // check if product + size in already in cart
         const itemIndex = cart.items.findIndex(item => item.productId.equals(productId) && item.size === size);
@@ -99,13 +98,12 @@ const addToCart = async(req,res)=>{
                 size: size,
                 quantity: 1,
                 price: product.salePrice,
-                totalPrice: product.salePrice,   
+                totalPrice: product.salePrice,  
+                user, 
             })
         }
 
         await cart.save();
-
-        console.log('Saved');
 
         const wishlist = await Wishlist.findOne({userId:userId})
         if(wishlist){
@@ -113,7 +111,6 @@ const addToCart = async(req,res)=>{
                 {userId},
                 {$pull:{products:{productId:productId}}}
             );
-            console.log('removed');
         }else{
             return res.status(400).json({success:false,message:"Wishlist not found"})
         }

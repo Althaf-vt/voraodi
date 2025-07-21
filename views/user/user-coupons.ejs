@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGUE - My Coupons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/user/user-coupons.css">
+    <link rel="stylesheet" href="/user/headerStyle.css">
+    <link rel="stylesheet" href="/user/footerStyle.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="coupon-container">
+        <div class="coupon-content">
+            <div class="coupon-header">
+                <h1 class="coupon-title">My Coupons</h1>
+                <% if (coupons && coupons.length > 0) { %>
+                    <div class="coupon-count">
+                        <span><%= coupons.length %> <%= coupons.length === 1 ? 'coupon' : 'coupons' %> available</span>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (coupons && coupons.length > 0) { %>
+                <div class="coupon-grid">
+                    <% coupons.forEach((coupon, index) => { %>
+                        <% 
+                            const now = new Date();
+                            const expireDate = new Date(coupon.expireOn);
+                            const isExpired = expireDate < now;
+                            const daysLeft = Math.ceil((expireDate - now) / (1000 * 60 * 60 * 24));
+                            const isExpiringSoon = daysLeft <= 3 && daysLeft > 0;
+                            const usageLeft = coupon.maxUsage - (coupon.usedBy ? coupon.usedBy.length : 0);
+                            
+                            // Color scheme rotation
+                            const colorSchemes = ['gold', 'green', 'blue', 'purple'];
+                            const colorScheme = colorSchemes[index % 4];
+                        %>
+                        
+                        <div class="coupon-card <%= colorScheme %> <%= isExpired ? 'expired' : '' %> <%= isExpiringSoon ? 'expiring-soon' : '' %>">
+                            <!-- Coupon Header -->
+                            <div class="coupon-header-section">
+                                <div class="coupon-amount">₹<%= coupon.amount %></div>
+                                <div class="coupon-off">OFF</div>
+                                <div class="coupon-status">
+                                    <% if (isExpired) { %>
+                                        <span class="status-badge expired-badge">Expired</span>
+                                    <% } else if (isExpiringSoon) { %>
+                                        <span class="status-badge expiring-badge"><%= daysLeft %> days left</span>
+                                    <% } else { %>
+                                        <span class="status-badge active-badge">Active</span>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <!-- Coupon Body -->
+                            <div class="coupon-body">
+                                <h3 class="coupon-name"><%= coupon.name %></h3>
+                                
+                                <div class="coupon-code-section">
+                                    <div class="coupon-code-wrapper">
+                                        <span class="coupon-code" id="code-<%= coupon._id %>"><%= coupon.code %></span>
+                                        <button class="copy-btn" onclick="copyCouponCode('<%= coupon.code %>', '<%= coupon._id %>')" 
+                                                <% if (isExpired) { %>disabled<% } %>>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path d="m5,9v-5a2,2 0,0 1,2-2h5"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="coupon-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Min Purchase:</span>
+                                        <span class="detail-value">₹<%= coupon.minimumPrice %></span>
+                                    </div>
+                                    
+                                    <div class="detail-row">
+                                        <span class="detail-label">Valid Until:</span>
+                                        <span class="detail-value">
+                                            <%= new Date(coupon.expireOn).toLocaleDateString('en-IN', { 
+                                                day: 'numeric', 
+                                                month: 'short', 
+                                                year: 'numeric' 
+                                            }) %>
+                                        </span>
+                                    </div>
+
+                                    <div class="detail-row">
+                                        <span class="detail-label">Uses Left:</span>
+                                        <span class="detail-value"><%= usageLeft %>/<%= coupon.maxUsage %></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Coupon Footer -->
+                            <div class="coupon-footer">
+                                <% if (!isExpired) { %>
+                                    <a href="/shop" class="shop-btn">Shop Now</a>
+                                <% } else { %>
+                                    <button class="shop-btn expired" disabled>Expired</button>
+                                <% } %>
+                            </div>
+
+                            <!-- Decorative Elements -->
+                            <div class="coupon-decoration">
+                                <div class="coupon-circle left"></div>
+                                <div class="coupon-circle right"></div>
+                                <div class="coupon-dashes">
+                                    <% for(let i = 0; i < 12; i++) { %>
+                                        <div class="dash"></div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-coupons">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <h2>No Coupons Available</h2>
+                    <p>You don't have any coupons yet. Shop more to unlock exclusive discounts!</p>
+                    <a href="/shop" class="continue-shopping-btn">Start Shopping</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        function copyCouponCode(code, couponId) {
+            navigator.clipboard.writeText(code).then(function() {
+                // Visual feedback
+                const button = document.querySelector(`button[onclick="copyCouponCode('${code}', '${couponId}')"]`);
+                const originalSVG = button.innerHTML;
+                
+                // Change to checkmark
+                button.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                `;
+                button.style.background = '#4CAF50';
+                
+                // Show toast notification
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'colored-toast'
+                    }
+                });
+                
+                Toast.fire({
+                    icon: 'success',
+                    title: `Coupon code "${code}" copied to clipboard!`
+                });
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalSVG;
+                    button.style.background = '';
+                }, 2000);
+                
+            }).catch(function(err) {
+                console.error('Failed to copy: ', err);
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    icon: 'error',
+                    title: 'Failed to copy code'
+                });
+            });
+        }
+
+        // Initialize page animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate coupon cards on scroll
+            const couponCards = document.querySelectorAll('.coupon-card');
+            
+            couponCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

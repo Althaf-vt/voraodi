@@ -191,14 +191,12 @@ function openEditModal()   { modal.classList.remove('hidden'); }
 function closeEditModal()  { modal.classList.add('hidden');  form.reset(); msg.textContent=''; }
 backdrop.addEventListener('click', closeEditModal);
 
-/* ---------- get → populate ---------- */
 async function editAddress(id){
   try{
-    const res = await fetch(`/get-address?id=${encodeURIComponent(id)}`);   // <‑‑ ID in query string
-    console.log('Fetched get modal')
+    const res = await fetch(`/get-address/${id}`);
     const data = await res.json();
     if(!data.success){
-        Swal.fire({toast:true,icon:'error',title:'Could not fetch address',text:data.message||'sdhwj '});
+        Swal.fire({toast:true,icon:'error',title:'Could not fetch address',text:data.message});
     }
 
     console.log('data success')
@@ -206,7 +204,7 @@ async function editAddress(id){
       const input = form.elements.namedItem(k);
       if(input) input.value = v ?? '';
     });
-    form.dataset.id = id;            // stash the id so we can read it on submit
+    form.dataset.id = id; 
     openEditModal();
   }catch(err){
     console.error(err);
@@ -214,7 +212,6 @@ async function editAddress(id){
   }
 }
 
-/* ---------- patch → save ---------- */
 form.addEventListener('submit', async e=>{
   e.preventDefault();
 
@@ -222,10 +219,10 @@ form.addEventListener('submit', async e=>{
   const body = Object.fromEntries(new FormData(form).entries());
 
   try{
-    const res   = await fetch(`/edit-address?id=${encodeURIComponent(id)}`,{  
+    const res   = await fetch(`/edit-address/${id}`,{  
       method : 'PATCH',
       headers: {'Content-Type':'application/json'},
-      body   : JSON.stringify(body)                      // body contains the fields
+      body   : JSON.stringify(body)
     });
     const data = await res.json();
     if(!data.success) throw new Error(data.message);

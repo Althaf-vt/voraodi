@@ -15,6 +15,7 @@ const { generate } = require('mongoose/lib/types/objectid');
 const { response, link } = require('../../server');
 const Product = require('../../models/productSchema');
 const mongoose = require("mongoose");
+const Coupon = require('../../models/couponSchema');
 
 
 
@@ -540,16 +541,16 @@ const addresses = async(req,res)=>{
     }
 }
 
-const addAddress = async(req,res)=>{
-    try {
+// const addAddress = async(req,res)=>{
+//     try {
         
-        const user = req.session.user;
-        return res.render('add-address',{user:user});
-    } catch (error) {
-        console.log("Error in loading add address",error);
-        return res.redirect('/pageNotFound');
-    }
-}
+//         const user = req.session.user;
+//         return res.render('add-address',{user:user});
+//     } catch (error) {
+//         console.log("Error in loading add address",error);
+//         return res.redirect('/pageNotFound');
+//     }
+// }
 
 const postAddAddress = async(req,res)=>{
     try {
@@ -571,48 +572,18 @@ const postAddAddress = async(req,res)=>{
             await userAddress.save();
         }
 
-        res.redirect('/userAddress');
+        return res.status(200).json({success:true,message:'Address added successful'});
 
     } catch (error) {
-        console.log("Error while adding address",error);
-        res.redirect('/pageNotFound');
+        console.log("Error while adding address : ",error);
+        return res.status(500).json({success:false,message:'Internal Server Error'});
     }
 }
-
-// const getEditAddress = async(req,res)=>{
-//     try {
-//         const addressId = req.query.id;
-//         const user = req.session.user;
-
-//         const currentAddress = await Address.findOne({
-//             "address._id" : addressId
-//         });
-
-//         if(!currentAddress){
-//             console.warn('Address not found');
-//             return res.status(400).json({success:false,message:'Address not found'});
-//         }
-
-//         const addressData = currentAddress.address.find((item)=>{
-//             return item._id.toString() === addressId.toString();
-//         });
-
-//         if(!addressData){
-//             console.warn('No Address Data');
-//             return res.status(400).json({success:false, message: 'Address data not found'});
-//         }
-
-//         return res.status(200).json({success:true,address:addressData});
-//     } catch (error) {
-//         console.error('Error in loading edit address',error);
-//         return res.status(500).json({success:false,message:'Internal Server Error'});
-//     }
-// }
 
 const getEditAddress = async(req,res)=>{
     try {
         console.log('backend')
-        const id = req.query.id;
+        const id = req.params.id;
         const userId = req.session.user;
 
         if(!mongoose.Types.ObjectId.isValid(id)){
@@ -644,7 +615,7 @@ const editAddress = async(req,res)=>{
     try {
 
         const userId = req.session.user;
-        const addressId = req.query.id;
+        const addressId = req.params.id;
 
         const {
         name,
@@ -779,10 +750,15 @@ const addToCart = async(req,res)=>{
 
         //Check if same product and sku already in cart
         const itemIndex = userCart.items.findIndex(item => item.productId.equals(productId) && item.sku === sku);
+
+        
   
         if(itemIndex > -1){
             //  Product already in cart. update qty
             const item = userCart.items[itemIndex];
+            if(item.quantity > 3){
+                return res.status(400).json({success:false,message:'Maximum 3 quantiy for each product'});
+            }
             item.quantity += quantity;
 
             if(item.quantity > selectedVariant.quantity){
@@ -858,9 +834,13 @@ const updateQty = async(req,res)=>{
             item.quantity -= 1;
 
             //Remove if quantity is 0
-            if(item.quantity <= 0){
-                userCart.items.splice(itemIndex,1);
-            }
+            // if(item.quantity <= 0){
+            //     userCart.items.splice(itemIndex,1);
+            // }
+        }
+
+        if(item.quantity > 3 ){
+            return res.status(400).json({success:false,message:'maximum 3 quantiy for each product'});
         }
 
         // Update total price only if item still exists
@@ -908,14 +888,52 @@ const removeItem = async(req,res)=>{
 
 const orderPage = async(req,res)=>{
     try {
-        const orders = await Order.find()
+
+        const userId = req.session.user;
+        const user = await User.findOne({_id:userId})
+
+        const orders = await Order.find({userId:userId})
         
         res.render('order',{
-            orders: orders
+            orders: orders,
+            user
         });
     } catch (error) {
         console.log('Error while loading order page',error);
         res.redirect('/pageNotFound');
+    }
+}
+
+
+const getCoupons = async(req,res)=>{
+    try {
+        const userId = req.session.user;
+
+        const user = await User.findOne({_id: userId})
+
+        const [publicCoupons,privateCoupons] = await Promise.all([
+            Coupon.find({
+                isListed: true,
+                isPublic: true,
+                expireOn : {$gte: new Date()}
+            }),
+            Coupon.find({
+                isListed: true,
+                isPublic: false,
+                givenTo: userId,
+                expireOn: {$gte: new Date()}
+            })
+        ])
+
+        const coupons = [...publicCoupons,...privateCoupons];
+
+        return res.render('user-coupons',{
+            coupons,
+            user
+        })
+    } catch (error) {
+        console.log("Error while loading Coupon page",error);
+        return res.redirect('/pageNotFound');
     }
 }
 
@@ -939,7 +957,7 @@ module.exports ={
     changeName,
     changePhone,
     addresses,
-    addAddress,
+    // addAddress,
     postAddAddress,
     getEditAddress,
     editAddress,
@@ -948,5 +966,6 @@ module.exports ={
     addToCart,
     updateQty,
     removeItem,
-    orderPage
+    orderPage,
+    getCoupons
 }

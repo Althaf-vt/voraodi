@@ -21,10 +21,10 @@ const productDetails = async(req,res)=>{
             _id: { $ne: productId },
             category: findCategory._id,
             isBlocked: false,
-            quantity: { $gt: 0 },
+            'variants.quantity': { $gt: 0 }
         })
         .limit(4)
-        .sort({ createdOn: -1 });
+        .sort({ createdAt: -1 });
 
         
         res.render('product-details',{
@@ -66,6 +66,12 @@ const addToWishlist = async(req,res)=>{
         const userId = req.session.user;
 
         const findProduct = await Product.findOne({_id:productId,isBlocked:false});
+
+        const quantity =  findProduct.variants.reduce((qty,variant)=> qty + variant.quantity,0);
+
+        if(quantity < 1){
+            return res.status(400).json({success:false,message:'All variants are out of stock'})
+        }
 
         let wishlist = await Wishlist.findOne({userId:userId});
 
