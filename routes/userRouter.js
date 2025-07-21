@@ -99,7 +99,8 @@ router.post('/cart/remove-item',userAuth,profileController.removeItem);
 router.post('/addToWishlist',userAuth,productController.addToWishlist);
 router.get('/wishlist',userAuth,wishlistController.loadWishlist);
 router.post('/check-qty',userAuth,wishlistController.checkStock);
-router.post('/wishlist/addTocart',userAuth,wishlistController.addToCart)
+router.post('/wishlist/addTocart',userAuth,wishlistController.addToCart);
+router.patch('/wishlist-remove-item',userAuth,wishlistController.removeItem)
 
 // Orders
 router.get('/orders',userAuth,profileController.orderPage);

@@ -59,6 +59,8 @@ const addToCart = async(req,res)=>{
         const userId = req.session.user;
         const {productId,size} = req.body;
 
+        
+
         const product = await Product.findOne({_id:productId,isBlocked:false});
         if(!product) return res.status(400).json({success:false,message:'Product is currently unavailable'})
 
@@ -98,8 +100,7 @@ const addToCart = async(req,res)=>{
                 size: size,
                 quantity: 1,
                 price: product.salePrice,
-                totalPrice: product.salePrice,  
-                user, 
+                totalPrice: product.salePrice, 
             })
         }
 
@@ -123,8 +124,33 @@ const addToCart = async(req,res)=>{
     }
 }
 
+const removeItem = async(req,res)=>{
+    try {
+        const {productId} = req.body;
+        const userId = req.session.user;
+
+        const wishlist = await Wishlist.findOne({userId:userId});
+
+        const itemIndex = wishlist.products.findIndex((product => product._id.equals(productId)));
+
+        if(itemIndex === -1){
+            return res.status(400).json({success:false,message:'Product not found in wishlist'})
+        }
+
+        wishlist.products.splice(itemIndex,1)
+        wishlist.save();
+
+        return res.status(200).json({success:true,message:'Product removed from wishlist'});
+    } catch (error) {
+        console.log("Error while removing product from wishlist : ", error);
+        return res.status(500).json({success:false,message:'Internal Server Error'});
+        
+    }
+}
+
 module.exports = {
     loadWishlist,
     checkStock,
-    addToCart
+    addToCart,
+    removeItem,
 }

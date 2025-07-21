@@ -103,7 +103,7 @@
                     </div>
                     <h2>Your Wishlist is Empty</h2>
                     <p>Save your favorite items to your wishlist and shop them later!</p>
-                    <a href="/products" class="continue-shopping-btn">Continue Shopping</a>
+                    <a href="/shop" class="continue-shopping-btn">Continue Shopping</a>
                 </div>
             <% } %>
         </div>
@@ -155,9 +155,45 @@
 
     <script>
         // Placeholder functions for button actions
-        function removeFromWishlist(itemId) {
-            console.log('Remove from wishlist:', itemId);
-            // Add your remove functionality here
+        async function removeFromWishlist(productId) {
+            const confirmResult = await Swal.fire({
+                toast: true,
+                title: 'Remove Item?',
+                text: 'Are you sure you want to remove this item from your wishlist?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes'
+            });
+            if(confirmResult.isConfirmed){
+                fetch('/wishlist-remove-item',{
+                    method: "PATCH",
+                    headers: {
+                        'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify({productId})
+                })
+                .then(res => res.json())
+                .then((data => {
+                    if(data.success){
+                        toast(data);
+                    }else{
+                        toast(data,'Error');
+                    }
+                }))
+                .catch(err => {
+                    console.log("Error :",err);
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'error',
+                        title: '',
+                        text: 'Something went wrong. Please try again later',
+                    });
+                })
+                // Add your remove functionality here
+            }
         }
 
         function quickView(productId) {
@@ -338,67 +374,6 @@ let selectedSize = null;
 // REMOVE CONFIRMATION FUNCTION
 // Replace your existing removeFromWishlist function with this:
 
-function removeFromWishlist(itemId) {
-    const itemRow = document.querySelector(`[data-item-id="${itemId}"]`);
-    const productName = itemRow.querySelector('.wishlist-item-name').textContent;
-    
-    Swal.fire({
-        toast:true,
-        title: '',
-        text: `Are you sure you want to remove "${productName}" from your wishlist?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Remove',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#ff6b6b',
-        cancelButtonColor: '#d4af37',
-        background: '#fff',
-        color: '#2f3a44',
-        customClass: {
-            popup: 'swal-custom-popup',
-            title: 'swal-custom-title',
-            content: 'swal-custom-content'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            showLoading();
-            
-            // Here you would typically make an AJAX call to remove the item
-            // For now, we'll just simulate the removal
-            setTimeout(() => {
-                hideLoading();
-                
-                // Remove the item from DOM
-                itemRow.remove();
-                
-                // Update wishlist count
-                const countElement = document.querySelector('.wishlist-count span');
-                if (countElement) {
-                    const currentCount = parseInt(countElement.textContent);
-                    const newCount = currentCount - 1;
-                    countElement.textContent = `${newCount} ${newCount === 1 ? 'item' : 'items'}`;
-                    
-                    // If no items left, show empty state
-                    if (newCount === 0) {
-                        document.querySelector('.wishlist-items').style.display = 'none';
-                        document.querySelector('.wishlist-count').style.display = 'none';
-                        // You might want to show the empty wishlist state here
-                    }
-                }
-                
-                Swal.fire({
-                    title: 'Removed!',
-                    text: 'Item has been removed from your wishlist.',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#d4af37',
-                    background: '#fff',
-                    color: '#2f3a44'
-                });
-            }, 1000);
-        }
-    });
-}
 
 // Add custom SweetAlert styles
 const swalStyles = `
