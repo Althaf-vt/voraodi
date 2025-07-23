@@ -1,252 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOGUE - Coupon Management</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap"
+    rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
   <link rel="stylesheet" href="/admin/couponStyle.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
   <!-- Include the Header (Navbar and Sidebar) -->
   <%- include('../../views/partials/admin/header') %>
 
-  <!-- Main Content Wrapper -->
-  <div class="main-content">
-    <!-- Coupon Management Header -->
-    <div class="coupon-management-header">
-      <div class="text-container">
-        <h1 id="typewriter">Coupon Management</h1>
-        <div class="subtitle">Manage VOGUE's Coupons</div>
-        <p>Create & Control with Elegance</p>
-      </div>
-    </div>
-
-    <!-- Coupon List Section -->
-    <div class="coupon-list">
-      <h2>Coupon List</h2>
-
-      <!-- Action Bar -->
-      <div class="coupon-action-bar">
-        <!-- Search Bar -->
-        <div class="coupon-search-container">
-          <form id="searchForm" action="/admin/searchCoupon" method="GET" class="coupon-search-form">
-            <input type="text" name="query" id="searchInput" placeholder="Search coupons..." class="coupon-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
-            <button type="submit" class="coupon-search-button">Search</button>
-            <button type="button" class="coupon-search-clear" onclick="clearSearch()">Clear</button>
-          </form>
-        </div>
-
-        <!-- Add Coupon Button -->
-        <div class="add-coupon-container">
-          <button class="add-coupon-btn" onclick="window.location.href='/admin/add-coupon'">
-            <span>+ Add New Coupon</span>
-          </button>
+    <!-- Main Content Wrapper -->
+    <div class="main-content">
+      <!-- Coupon Management Header -->
+      <div class="coupon-management-header">
+        <div class="text-container">
+          <h1 id="typewriter">Coupon Management</h1>
+          <div class="subtitle">Manage VOGUE's Coupons</div>
+          <p>Create & Control with Elegance</p>
         </div>
       </div>
 
-      <div class="coupons-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Coupon Name</th>
-              <th>Code</th>
-              <th>Created Date</th>
-              <th>Expire Date</th>
-              <th>Offer Price</th>
-              <th>Min Amount</th>
-              <th>Status</th>
-              <th>Visibility</th>
-              <th>Used Count</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if (coupons && coupons.length > 0) { %>
-              <% coupons.forEach(coupon => { %>
-                <tr id="coupon-<%= coupon._id %>">
-                  <td><%= coupon.name %></td>
-                  <td>
-                    <span class="coupon-code"><%= coupon.code %></span>
-                  </td>
-                  <td><%= new Date(coupon.createdOn).toLocaleDateString() %></td>
-                  <td>
-                    <span class="<%= new Date(coupon.expireOn) < new Date() ? 'expired-date' : 'valid-date' %>">
-                      <%= new Date(coupon.expireOn).toLocaleDateString() %>
-                    </span>
-                  </td>
-                  <td>₹<%= coupon.amount %></td>
-                  <td>₹<%= coupon.minimumPrice %></td>
-                  <td>
-                    <% if (new Date(coupon.expireOn) < new Date()) { %>
-                      <span class="coupon-expired">Expired</span>
-                    <% } else if (coupon.isListed) { %>
-                      <span class="coupon-active">Active</span>
-                    <% } else { %>
-                      <span class="coupon-inactive">Inactive</span>
-                    <% } %>
-                  </td>
-                  <td>
-                    <% if (coupon.isPublic) { %>
-                      <span class="coupon-public">Public</span>
-                    <% } else { %>
-                      <span class="coupon-private">Private</span>
-                    <% } %>
-                  </td>
-                  <td>
-                    <span class="usage-count">
-                      <%= coupon.usedBy ? coupon.usedBy.length : 0 %>
-                    </span>
-                  </td>
-                  <td class="action-buttons">
-                    <!-- <button class="action-btn view-btn" aria-label="View Coupon Details">
+      <!-- Coupon List Section -->
+      <div class="coupon-list">
+        <h2>Coupon List</h2>
+
+        <!-- Action Bar -->
+        <div class="coupon-action-bar">
+          <!-- Search Bar -->
+          <div class="coupon-search-container">
+            <form id="searchForm" action="/admin/searchCoupon" method="GET" class="coupon-search-form">
+              <input type="text" name="query" id="searchInput" placeholder="Search coupons..."
+                class="coupon-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+                required>
+              <button type="submit" class="coupon-search-button">Search</button>
+              <button type="button" class="coupon-search-clear" onclick="clearSearch()">Clear</button>
+            </form>
+          </div>
+
+          <!-- Add Coupon Button -->
+          <div class="add-coupon-container">
+            <button class="add-coupon-btn" onclick="window.location.href='/admin/add-coupon'">
+              <span>+ Add New Coupon</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="coupons-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Coupon Name</th>
+                <th>Code</th>
+                <th>Created Date</th>
+                <th>Expire Date</th>
+                <th>Offer Price</th>
+                <th>Min Amount</th>
+                <th>Status</th>
+                <th>Visibility</th>
+                <th>Used Count</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (coupons && coupons.length> 0) { %>
+                <% coupons.forEach(coupon=> { %>
+                  <tr id="coupon-<%= coupon._id %>">
+                    <td>
+                      <%= coupon.name %>
+                    </td>
+                    <td>
+                      <span class="coupon-code">
+                        <%= coupon.code %>
+                      </span>
+                    </td>
+                    <td>
+                      <%= new Date(coupon.createdOn).toLocaleDateString() %>
+                    </td>
+                    <td>
+                      <span class="<%= new Date(coupon.expireOn) < new Date() ? 'expired-date' : 'valid-date' %>">
+                        <%= new Date(coupon.expireOn).toLocaleDateString() %>
+                      </span>
+                    </td>
+                    <td>₹<%= coupon.amount %>
+                    </td>
+                    <td>₹<%= coupon.minimumPrice %>
+                    </td>
+                    <td>
+                      <% if (new Date(coupon.expireOn) < new Date()) { %>
+                        <span class="coupon-expired">Expired</span>
+                        <% } else if (coupon.isListed) { %>
+                          <span class="coupon-active">Active</span>
+                          <% } else { %>
+                            <span class="coupon-inactive">Inactive</span>
+                            <% } %>
+                    </td>
+                    <td>
+                      <% if (coupon.isPublic) { %>
+                        <span class="coupon-public">Public</span>
+                        <% } else { %>
+                          <span class="coupon-private">Private</span>
+                          <% } %>
+                    </td>
+                    <td>
+                      <span class="usage-count">
+                        <%= coupon.usedBy ? coupon.usedBy.length : 0 %>
+                      </span>
+                    </td>
+                    <td class="action-buttons">
+                      <!-- <button class="action-btn view-btn" aria-label="View Coupon Details">
                       <a href="/admin/couponDetails?couponId=<%#= coupon._id %>">View</a>
                     </button> -->
-                    <!-- <button class="action-btn edit-btn" aria-label="Edit Coupon"> -->
-                    <button class="action-btn edit-btn" onclick="openEditModal('<%= coupon._id %>')" aria-label="Edit Coupon">
+                      <!-- <button class="action-btn edit-btn" aria-label="Edit Coupon"> -->
+                      <button class="action-btn edit-btn" onclick="openEditModal('<%= coupon._id %>')"
+                        aria-label="Edit Coupon">
                         Edit
-                    </button>
-                    </button>
-                    <% if (coupon.isListed) { %>
-                      <button class="action-btn disable-btn" onclick="toggleCouponStatus('<%= coupon._id %>', false)" aria-label="Disable Coupon">
-                        Unlist
                       </button>
+                      </button>
+                      <% if (coupon.isListed) { %>
+                        <button class="action-btn disable-btn" onclick="listUnlist('<%= coupon._id %>', false)"
+                          aria-label="Disable Coupon">
+                          Unlist
+                        </button>
+                        <% } else { %>
+                          <button class="action-btn enable-btn" onclick="listUnlist('<%= coupon._id %>', true)"
+                            aria-label="Enable Coupon">
+                            List
+                          </button>
+                          <% } %>
+                            <button class="action-btn delete-btn" onclick="deleteCoupon('<%= coupon._id %>')"
+                              aria-label="Delete Coupon">
+                              Delete
+                            </button>
+                    </td>
+                  </tr>
+                  <% }) %>
                     <% } else { %>
-                      <button class="action-btn enable-btn" onclick="toggleCouponStatus('<%= coupon._id %>', true)" aria-label="Enable Coupon">
-                        List
-                      </button>
-                    <% } %>
-                    <button class="action-btn delete-btn" onclick="deleteCoupon('<%= coupon._id %>')" aria-label="Delete Coupon">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              <% }) %>
-            <% } else { %>
-              <tr>
-                <td colspan="10">No coupons found.</td>
-              </tr>
-            <% } %>
-          </tbody>
-        </table>
+                      <tr>
+                        <td colspan="10">No coupons found.</td>
+                      </tr>
+                      <% } %>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-    <!-- Pagination Section -->
-    <div class="pagination">
-      <nav aria-label="Page navigation">
-        <ul class="pagination-list">
-          <% if (typeof totalPages === 'number' && totalPages > 0) { %>
-            <% for (let i = 1; i <= totalPages; i++) { %>
-              <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                <a class="page-link" href="<%= typeof searchQuery !== 'undefined' ? '/admin/searchCoupon?page=' + i + '&query=' + encodeURIComponent(searchQuery) : '/admin/coupons?page=' + i %>">
-                  <%= i %>
-                </a>
-              </li>
-            <% } %>
-          <% } %>
-        </ul>
-      </nav>
-    </div>
+      <!-- Pagination Section -->
+      <div class="pagination">
+        <nav aria-label="Page navigation">
+          <ul class="pagination-list">
+            <% if (typeof totalPages==='number' && totalPages> 0) { %>
+              <% for (let i=1; i <=totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <a class="page-link"
+                    href="<%= typeof searchQuery !== 'undefined' ? '/admin/searchCoupon?page=' + i + '&query=' + encodeURIComponent(searchQuery) : '/admin/coupons?page=' + i %>">
+                    <%= i %>
+                  </a>
+                </li>
+                <% } %>
+                  <% } %>
+          </ul>
+        </nav>
+      </div>
 
-    <!-- Edit Coupon Modal - Add this before the closing </div> of main-content in your coupon listing EJS file -->
-    <div id="editCouponModal" class="modal-overlay" style="display: none;">
-    <div class="modal-container">
-        <div class="modal-header">
-        <h2>Edit Coupon</h2>
-        <button type="button" class="modal-close" onclick="closeEditModal()">&times;</button>
-        </div>
-        
-        <form id="editCouponForm" class="modal-form">
-        <input type="hidden" id="editCouponId" name="couponId">
-        
-        <div class="modal-form-grid">
-            <!-- Row 1: Name and Code -->
-            <div class="modal-form-row">
-            <div class="modal-form-group">
-                <label for="editName" class="modal-form-label">Coupon Name <span class="required">*</span></label>
-                <input type="text" id="editName" name="name" class="modal-form-input" required>
-            </div>
-            <div class="modal-form-group">
-                <label for="editCode" class="modal-form-label">Coupon Code <span class="required">*</span></label>
-                <input type="text" id="editCode" name="code" class="modal-form-input" required>
-            </div>
-            </div>
+      <!-- Edit Coupon Modal - Add this before the closing </div> of main-content in your coupon listing EJS file -->
+      <div id="editCouponModal" class="modal-overlay" style="display: none;">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h2>Edit Coupon</h2>
+            <button type="button" class="modal-close" onclick="closeEditModal()">&times;</button>
+          </div>
 
-            <!-- Row 2: Expire Date and Discount Amount -->
-            <div class="modal-form-row">
-            <div class="modal-form-group">
-                <label for="editExpireOn" class="modal-form-label">Expiry Date <span class="required">*</span></label>
-                <input type="date" id="editExpireOn" name="expireOn" class="modal-form-input" required>
-            </div>
-            <div class="modal-form-group">
-                <label for="editOfferPrice" class="modal-form-label">Discount Amount (₹) <span class="required">*</span></label>
-                <input type="number" id="editOfferPrice" name="amount" class="modal-form-input" min="1" required>
-            </div>
-            </div>
+          <form id="editCouponForm" class="modal-form">
+            <input type="hidden" id="editCouponId" name="couponId">
 
-            <!-- Row 3: Min Cart Value and Max Usage -->
-            <div class="modal-form-row">
-            <div class="modal-form-group">
-                <label for="editMinimumPrice" class="modal-form-label">Min Cart Value (₹) <span class="required">*</span></label>
-                <input type="number" id="editMinimumPrice" name="minimumPrice" class="modal-form-input" min="1" required>
-            </div>
-            <div class="modal-form-group">
-                <label for="editMaxUsage" class="modal-form-label">Max Usage Count</label>
-                <input type="number" id="editMaxUsage" name="maxUsage" class="modal-form-input" min="1">
-            </div>
-            </div>
-
-            <!-- Row 4: Checkboxes -->
-            <div class="modal-checkbox-section">
-            <div class="modal-checkbox-group">
-                <div class="modal-checkbox-item">
-                <input type="checkbox" id="editIsPublic" name="isPublic" class="form-checkbox">
-                <label for="editIsPublic" class="checkbox-label">
-                    <span class="checkbox-custom"></span>
-                    Public Coupon
-                </label>
+            <div class="modal-form-grid">
+              <!-- Row 1: Name and Code -->
+              <div class="modal-form-row">
+                <div class="modal-form-group">
+                  <label for="editName" class="modal-form-label">Coupon Name <span class="required">*</span></label>
+                  <input type="text" id="editName" name="name" class="modal-form-input" required>
                 </div>
-
-                <div class="modal-checkbox-item">
-                <input type="checkbox" id="editHasRewardThreshold" name="hasRewardThreshold" class="form-checkbox">
-                <label for="editHasRewardThreshold" class="checkbox-label">
-                    <span class="checkbox-custom"></span>
-                    Reward Threshold
-                </label>
-                <div class="modal-threshold-input-container" style="display: none;">
-                    <input type="number" id="editRewardThreshold" name="rewardThreshold" class="threshold-input" min="1" placeholder="Enter threshold amount">
+                <div class="modal-form-group">
+                  <label for="editCode" class="modal-form-label">Coupon Code <span class="required">*</span></label>
+                  <input type="text" id="editCode" name="code" class="modal-form-input" required>
                 </div>
+              </div>
+
+              <!-- Row 2: Expire Date and Discount Amount -->
+              <div class="modal-form-row">
+                <div class="modal-form-group">
+                  <label for="editExpireOn" class="modal-form-label">Expiry Date <span class="required">*</span></label>
+                  <input type="date" id="editExpireOn" name="expireOn" class="modal-form-input" required>
                 </div>
-            </div>
-            </div>
-        </div>
+                <div class="modal-form-group">
+                  <label for="editOfferPrice" class="modal-form-label">Discount Amount (₹) <span
+                      class="required">*</span></label>
+                  <input type="number" id="editOfferPrice" name="amount" class="modal-form-input" min="1" required>
+                </div>
+              </div>
 
-        <!-- Modal Actions -->
-        <div class="modal-form-actions">
-            <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
-            <button type="submit" class="btn-primary">Update Coupon</button>
-        </div>
-        </form>
-    </div>
-    </div>
+              <!-- Row 3: Min Cart Value and Max Usage -->
+              <div class="modal-form-row">
+                <div class="modal-form-group">
+                  <label for="editMinimumPrice" class="modal-form-label">Min Cart Value (₹) <span
+                      class="required">*</span></label>
+                  <input type="number" id="editMinimumPrice" name="minimumPrice" class="modal-form-input" min="1"
+                    required>
+                </div>
+                <div class="modal-form-group">
+                  <label for="editMaxUsage" class="modal-form-label">Max Usage Count</label>
+                  <input type="number" id="editMaxUsage" name="maxUsage" class="modal-form-input" min="1">
+                </div>
+              </div>
 
-    <script>
+              <!-- Row 4: Checkboxes -->
+              <div class="modal-checkbox-section">
+                <div class="modal-checkbox-group">
+                  <div class="modal-checkbox-item">
+                    <input type="checkbox" id="editIsPublic" name="isPublic" class="form-checkbox">
+                    <label for="editIsPublic" class="checkbox-label">
+                      <span class="checkbox-custom"></span>
+                      Public Coupon
+                    </label>
+                  </div>
+
+                  <div class="modal-checkbox-item">
+                    <input type="checkbox" id="editHasRewardThreshold" name="hasRewardThreshold" class="form-checkbox">
+                    <label for="editHasRewardThreshold" class="checkbox-label">
+                      <span class="checkbox-custom"></span>
+                      Reward Threshold
+                    </label>
+                    <div class="modal-threshold-input-container" style="display: none;">
+                      <input type="number" id="editRewardThreshold" name="rewardThreshold" class="threshold-input"
+                        min="1" placeholder="Enter threshold amount">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="modal-form-actions">
+              <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+              <button type="submit" class="btn-primary">Update Coupon</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <script>
 
         // Open Edit Modal Function
         function openEditModal(couponId) {
-            console.log('coupon id : ',couponId)
-        // Fetch coupon data
-        fetch(`/admin/getCoupon/${couponId}`)
+          console.log('coupon id : ', couponId)
+          // Fetch coupon data
+          fetch(`/admin/getCoupon/${couponId}`)
             .then(response => response.json())
             .then(data => {
-            if (data.success) {
+              if (data.success) {
                 const coupon = data.coupon;
-                
+
                 // Populate form fields
                 document.getElementById('editCouponId').value = coupon._id;
                 document.getElementById('editName').value = coupon.name;
@@ -255,155 +278,155 @@
                 document.getElementById('editOfferPrice').value = coupon.amount;
                 document.getElementById('editMinimumPrice').value = coupon.minimumPrice;
                 document.getElementById('editMaxUsage').value = coupon.maxUsage || '';
-                
+
                 // Set checkboxes
                 document.getElementById('editIsPublic').checked = coupon.isPublic;
                 document.getElementById('editHasRewardThreshold').checked = coupon.hasRewardThreshold;
-                
+
                 // Handle reward threshold input
                 if (coupon.hasRewardThreshold) {
-                document.querySelector('.modal-threshold-input-container').style.display = 'block';
-                document.getElementById('editRewardThreshold').value = coupon.rewardThreshold || '';
-                document.getElementById('editIsPublic').disabled = true;
+                  document.querySelector('.modal-threshold-input-container').style.display = 'block';
+                  document.getElementById('editRewardThreshold').value = coupon.rewardThreshold || '';
+                  document.getElementById('editIsPublic').disabled = true;
                 } else {
-                document.querySelector('.modal-threshold-input-container').style.display = 'none';
-                document.getElementById('editIsPublic').disabled = false;
+                  document.querySelector('.modal-threshold-input-container').style.display = 'none';
+                  document.getElementById('editIsPublic').disabled = false;
                 }
-                
+
                 // Handle public checkbox logic
                 if (coupon.isPublic) {
-                document.getElementById('editHasRewardThreshold').disabled = true;
+                  document.getElementById('editHasRewardThreshold').disabled = true;
                 } else {
-                document.getElementById('editHasRewardThreshold').disabled = false;
+                  document.getElementById('editHasRewardThreshold').disabled = false;
                 }
-                
+
                 // Show modal
                 document.getElementById('editCouponModal').style.display = 'flex';
-            } else {
+              } else {
                 Swal.fire('Error!', 'Failed to load coupon data', 'error');
-            }
+              }
             })
             .catch(error => {
-            Swal.fire('Error!', 'Something went wrong', 'error');
+              Swal.fire('Error!', 'Something went wrong', 'error');
             });
         }
 
         // Close Edit Modal Function
         function closeEditModal() {
-        document.getElementById('editCouponModal').style.display = 'none';
-        document.getElementById('editCouponForm').reset();
+          document.getElementById('editCouponModal').style.display = 'none';
+          document.getElementById('editCouponForm').reset();
         }
 
         // Modal checkbox logic (add after existing script in your coupon listing page)
-        document.getElementById('editIsPublic').addEventListener('change', function() {
-        const rewardThresholdCheckbox = document.getElementById('editHasRewardThreshold');
-        const thresholdContainer = document.querySelector('.modal-threshold-input-container');
-        
-        if (this.checked) {
+        document.getElementById('editIsPublic').addEventListener('change', function () {
+          const rewardThresholdCheckbox = document.getElementById('editHasRewardThreshold');
+          const thresholdContainer = document.querySelector('.modal-threshold-input-container');
+
+          if (this.checked) {
             rewardThresholdCheckbox.checked = false;
             rewardThresholdCheckbox.disabled = true;
             thresholdContainer.style.display = 'none';
             document.getElementById('editRewardThreshold').value = '';
-        } else {
+          } else {
             rewardThresholdCheckbox.disabled = false;
-        }
+          }
         });
 
-        document.getElementById('editHasRewardThreshold').addEventListener('change', function() {
-        const publicCheckbox = document.getElementById('editIsPublic');
-        const thresholdContainer = document.querySelector('.modal-threshold-input-container');
-        
-        if (this.checked) {
+        document.getElementById('editHasRewardThreshold').addEventListener('change', function () {
+          const publicCheckbox = document.getElementById('editIsPublic');
+          const thresholdContainer = document.querySelector('.modal-threshold-input-container');
+
+          if (this.checked) {
             publicCheckbox.checked = false;
             publicCheckbox.disabled = true;
             thresholdContainer.style.display = 'block';
-        } else {
+          } else {
             publicCheckbox.disabled = false;
             thresholdContainer.style.display = 'none';
             document.getElementById('editRewardThreshold').value = '';
-        }
+          }
         });
 
         // Edit Form Submission
-        document.getElementById('editCouponForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const data = {};
-        
-        // Convert FormData to object
-        for (let [key, value] of formData.entries()) {
+        document.getElementById('editCouponForm').addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const data = {};
+
+          // Convert FormData to object
+          for (let [key, value] of formData.entries()) {
             if (key === 'isPublic' || key === 'hasRewardThreshold') {
-            data[key] = true;
+              data[key] = true;
             } else {
-            data[key] = value;
+              data[key] = value;
             }
-        }
-        
-        // Set default values for unchecked checkboxes
-        if (!data.isPublic) data.isPublic = false;
-        if (!data.hasRewardThreshold) {
+          }
+
+          // Set default values for unchecked checkboxes
+          if (!data.isPublic) data.isPublic = false;
+          if (!data.hasRewardThreshold) {
             data.hasRewardThreshold = false;
             data.rewardThreshold = '';
-        }
-        
-        // If reward threshold is checked but no value provided, set to 0
-        if (data.hasRewardThreshold && !data.rewardThreshold) {
+          }
+
+          // If reward threshold is checked but no value provided, set to 0
+          if (data.hasRewardThreshold && !data.rewardThreshold) {
             data.rewardThreshold = 0;
-        }
-        
-        // Ensure maxUsage gets set if left blank
-        if (!data.maxUsage || parseInt(data.maxUsage) <= 0) {
+          }
+
+          // Ensure maxUsage gets set if left blank
+          if (!data.maxUsage || parseInt(data.maxUsage) <= 0) {
             data.maxUsage = 1;
-        }
-        
-        // Basic validation
-        if (parseInt(data.amount) >= parseInt(data.minimumPrice)) {
+          }
+
+          // Basic validation
+          if (parseInt(data.amount) >= parseInt(data.minimumPrice)) {
             Swal.fire('Error!', 'Discount amount should be less than minimum cart value', 'error');
             return;
-        }
-        
-        if (new Date(data.expireOn) <= new Date()) {
+          }
+
+          if (new Date(data.expireOn) <= new Date()) {
             Swal.fire('Error!', 'Expiry date should be in the future', 'error');
             return;
-        }
+          }
 
-        fetch('/admin/edit-coupon', {
+          fetch('/admin/edit-coupon', {
             method: 'PATCH',
             headers: {
-            'Content-Type': 'application/json',
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify(data)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-            Swal.fire({
-                toast: true,
-                icon: 'success',
-                title: data.message || 'Coupon updated Successful',
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-            }).then(()=>{
-              closeEditModal()
-              window.location.reload()
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  toast: true,
+                  icon: 'success',
+                  title: data.message || 'Coupon updated Successful',
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true,
+                }).then(() => {
+                  closeEditModal()
+                  window.location.reload()
+                })
+              } else {
+                Swal.fire({
+                  toast: true,
+                  icon: 'error',
+                  title: data.message || 'Something went wrong',
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true,
+                });
+              }
             })
-            } else {
-            Swal.fire({
-                toast: true,
-                icon: 'error',
-                title: data.message || 'Something went wrong',
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-            });
-            }
-        })
-        .catch(err => {
-            Swal.fire({
+            .catch(err => {
+              Swal.fire({
                 toast: true,
                 icon: 'error',
                 title: 'Something went wrong. Please try again later',
@@ -411,94 +434,232 @@
                 showConfirmButton: false,
                 timer: 2000,
                 timerProgressBar: true,
+              });
             });
-        });
         });
 
         // Auto-format coupon code to uppercase in modal
-        document.getElementById('editCode').addEventListener('input', function(e) {
-        e.target.value = e.target.value.toUpperCase();
+        document.getElementById('editCode').addEventListener('input', function (e) {
+          e.target.value = e.target.value.toUpperCase();
         });
 
         // Close modal when clicking outside
-        document.getElementById('editCouponModal').addEventListener('click', function(e) {
-        if (e.target === this) {
+        document.getElementById('editCouponModal').addEventListener('click', function (e) {
+          if (e.target === this) {
             closeEditModal();
-        }
+          }
         });
+      </script>
+    </div>
+
+    <script>
+      // Clear search function
+      function clearSearch() {
+        window.location.href = '/admin/coupons';
+      }
+
+      // Toggle coupon status
+      function toggleCouponStatus(couponId, isListed) {
+        Swal.fire({
+          title: isListed ? 'Enable Coupon?' : 'Disable Coupon?',
+          text: isListed ? 'This coupon will be available for users.' : 'This coupon will not be available for users.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#c9a022',
+          cancelButtonColor: '#9d0000',
+          confirmButtonText: isListed ? 'Yes, Enable!' : 'Yes, Disable!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '/admin/toggleCouponStatus',
+              method: 'POST',
+              data: { couponId: couponId, isListed: isListed },
+              success: function (response) {
+                if (response.success) {
+                  location.reload();
+                  Swal.fire('Success!', response.message, 'success');
+                } else {
+                  Swal.fire('Error!', response.message, 'error');
+                }
+              },
+              error: function () {
+                Swal.fire('Error!', 'Something went wrong', 'error');
+              }
+            });
+          }
+        });
+      }
+
+
+      // Delete coupon
+
+      async function deleteCoupon(couponId) {
+        
+          const result = await Swal.fire({
+            toast:true,
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#9d0000',
+            cancelButtonColor: '#c9a022',
+            confirmButtonText: 'Yes, delete it!'
+          });
+
+          if(result.isConfirmed){
+            try {
+              const response = await fetch('/admin/delete-coupon',{
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({couponId})
+              })
+
+              const data = await response.json();
+
+              if(data.success){
+                 Swal.fire({
+                  toast: true,
+                  icon: 'success',
+                  title: data.message || 'Coupon deleted successfully',
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true,
+                });
+
+                reloadCouponTable();
+              }else{
+                await Swal.fire({
+                  toast: true,
+                  icon: 'error',
+                  title: data.message || 'Something went wrong',
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true,
+                });
+              }
+            } catch (error) {
+              await Swal.fire({
+                toast: true,
+                icon: 'error',
+                title: 'Something went wrong. Please try again later',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+              });
+            }
+          }
+        
+      }
+
+      async function listUnlist(couponId){
+        const result = await Swal.fire({
+          toast:true,
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#9d0000',
+          cancelButtonColor: '#c9a022',
+          confirmButtonText: 'Yes, delete it!'
+        });
+        try {
+          if(result.isConfirmed){
+            const response = await fetch('/admin/coupon-list-unlist',{
+              method: "PATCH",
+              headers: {
+                'Content-Type':'application/json',
+              },
+              body: JSON.stringify({couponId})
+            })
+            
+            const data = await response.json();
+
+            if(data.success){
+              Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: data.message || 'Coupon updated successfully',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+              });
+              reloadCouponTable();
+            }else{
+              await Swal.fire({
+                toast: true,
+                icon: 'error',
+                title: data.message || 'Something went wrong',
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+              });
+            }
+          }
+        } catch (error) {
+          await Swal.fire({
+            toast: true,
+            icon: 'error',
+            title: 'Something went wrong. Please try again later',
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+          });
+        }
+
+
+      }
+
+      async function reloadCouponTable() {
+    const query = document.getElementById('searchInput').value.trim();
+    const page = document.querySelector('.pagination-list .active a')?.textContent || 1;
+    const url = query 
+        ? `/admin/searchCoupon?query=${encodeURIComponent(query)}&page=${page}`
+        : `/admin/coupons?page=${page}`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        // Get the entire page HTML
+        const html = await response.text();
+        
+        // Create a temporary container to parse the HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // Extract the relevant parts
+        const newTable = tempDiv.querySelector('.coupons-table');
+        const newPagination = tempDiv.querySelector('.pagination');
+        
+        if (newTable && newPagination) {
+            // Replace the existing content
+            document.querySelector('.coupons-table').innerHTML = newTable.innerHTML;
+            document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+        } else {
+            console.error('Could not find table or pagination in response');
+        }
+    } catch (error) {
+        console.error('Error reloading coupon table:', error);
+        // Swal.fire({
+        //     toast: true,
+        //     icon: 'error',
+        //     title: 'Failed to reload coupons',
+        //     position: 'top-end',
+        //     showConfirmButton: false,
+        //     timer: 2000,
+        //     timerProgressBar: true,
+        // });
+    }
+}
     </script>
-  </div>
-
-  <script>
-    // Clear search function
-    function clearSearch() {
-      window.location.href = '/admin/coupons';
-    }
-
-    // Toggle coupon status
-    function toggleCouponStatus(couponId, isListed) {
-      Swal.fire({
-        title: isListed ? 'Enable Coupon?' : 'Disable Coupon?',
-        text: isListed ? 'This coupon will be available for users.' : 'This coupon will not be available for users.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#c9a022',
-        cancelButtonColor: '#9d0000',
-        confirmButtonText: isListed ? 'Yes, Enable!' : 'Yes, Disable!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '/admin/toggleCouponStatus',
-            method: 'POST',
-            data: { couponId: couponId, isListed: isListed },
-            success: function(response) {
-              if (response.success) {
-                location.reload();
-                Swal.fire('Success!', response.message, 'success');
-              } else {
-                Swal.fire('Error!', response.message, 'error');
-              }
-            },
-            error: function() {
-              Swal.fire('Error!', 'Something went wrong', 'error');
-            }
-          });
-        }
-      });
-    }
-
-    // Delete coupon
-    function deleteCoupon(couponId) {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#9d0000',
-        cancelButtonColor: '#c9a022',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '/admin/deleteCoupon',
-            method: 'DELETE',
-            data: { couponId: couponId },
-            success: function(response) {
-              if (response.success) {
-                $(`#coupon-${couponId}`).fadeOut();
-                Swal.fire('Deleted!', response.message, 'success');
-              } else {
-                Swal.fire('Error!', response.message, 'error');
-              }
-            },
-            error: function() {
-              Swal.fire('Error!', 'Something went wrong', 'error');
-            }
-          });
-        }
-      });
-    }
-
-  </script>
 </body>
+
 </html>

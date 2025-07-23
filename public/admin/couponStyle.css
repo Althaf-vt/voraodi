@@ -304,11 +304,9 @@ tr:hover td {
 
 /* Usage Count */
 .usage-count {
-  /* background: linear-gradient(135deg, #6f42c1, #5a32a3); */
   color: #000000;
   padding: 4px 8px;
   border-radius: 50%;
-  /* font-weight: bold; */
   font-size: 12px;
   min-width: 24px;
   text-align: center;
@@ -395,9 +393,9 @@ tr:hover td {
   height: 100%;
 }
 
-/* Pagination */
+/* Pagination - Updated to match customer page style */
 .pagination {
-  padding: 30px;
+  padding: 20px;
   display: flex;
   justify-content: center;
   background: linear-gradient(135deg, #1a252f, #2f3a44);
@@ -408,7 +406,7 @@ tr:hover td {
   list-style: none;
   padding: 0;
   margin: 0;
-  gap: 12px;
+  gap: 10px;
 }
 
 .page-item {
@@ -416,36 +414,28 @@ tr:hover td {
 }
 
 .page-link {
-  padding: 10px 18px;
+  padding: 8px 16px;
   background: linear-gradient(135deg, #c9a022, #a3821b);
   color: #1a252f;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   font-family: 'Cinzel', serif;
   font-size: 14px;
   text-transform: uppercase;
   text-decoration: none;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .page-link:hover {
   background: linear-gradient(135deg, #004d00, #1a661a);
   color: #f5f5e8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
 }
 
 .page-item.active .page-link {
   background: linear-gradient(135deg, #004d00, #1a661a);
   color: #f5f5e8;
   cursor: default;
-  box-shadow: 0 4px 12px rgba(0, 77, 0, 0.4);
-}
-
-.page-item.active .page-link:hover {
-  transform: none;
 }
 
 /* Responsive Design */
@@ -488,6 +478,11 @@ tr:hover td {
   .action-btn {
     padding: 6px 10px;
     font-size: 10px;
+  }
+
+  .page-link {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }
 
@@ -537,6 +532,11 @@ tr:hover td {
   .action-buttons {
     flex-direction: column;
     gap: 4px;
+  }
+
+  .page-link {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }
 
@@ -590,10 +590,12 @@ tr:hover td {
     padding: 10px 20px;
     font-size: 12px;
   }
+
+  .page-link {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
 }
-
-
-/* Add this CSS to your couponStyle.css file */
 
 /* Modal Overlay */
 .modal-overlay {
@@ -740,6 +742,7 @@ tr:hover td {
   padding-top: 8px;
   border-top: 1px solid rgba(201, 160, 34, 0.2);
 }
+
 /* Modal Form Actions */
 .modal-form-actions {
   display: flex;
@@ -806,15 +809,6 @@ tr:hover td {
 }
 
 @media (max-width: 480px) {
-  .modal-form-actions .btn-primary,
-  .modal-form-actions .btn-secondary {
-    padding: 12px 20px;
-    font-size: 13px;
-    min-width: 120px;
-  }
-}
-
-@media (max-width: 480px) {
   .modal-container {
     padding: 15px;
   }
@@ -835,5 +829,11 @@ tr:hover td {
   .modal-checkbox-item {
     padding: 12px;
   }
-}
 
+  .modal-form-actions .btn-primary,
+  .modal-form-actions .btn-secondary {
+    padding: 12px 20px;
+    font-size: 13px;
+    min-width: 120px;
+  }
+}

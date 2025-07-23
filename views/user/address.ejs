@@ -37,7 +37,7 @@
         <div class="address-content">
             <div class="address-header">
                 <h1 class="address-title">My Addresses</h1>
-                <a href="/add-address" class="add-address-button">Add Address</a>
+                <a onclick="openAddModal()" class="add-address-button">Add Address</a>
             </div>
             <div class="address-card-container">
                 <% if (userAddress && userAddress.length > 0) { %>
@@ -68,7 +68,7 @@
                                     </label>
                                     <span><%= address.altPhone %></span>
                                 </div>
-                                <a onclick="editAddress('<%=address.id%>')" class="edit-button">Edit</a>
+                                <a onclick="openEditModal('<%=address._id%>')" class="edit-button">Edit</a>
                                 <a onclick="deleteAddress('<%=address.id%>')" class="delete-button">Delete</a>
                             </div>
                         </div>
@@ -129,6 +129,50 @@
     </div>
     </div>
 
+    <!-- Add address modal -->
+    <div id="addModal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeAddModal()"></div>
+
+        <div class="modal-card">
+            <h2 class="modal-title">Add New Address</h2>
+
+            <form id="addForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input name="country" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group"><label>State</label><input name="state" required></div>
+                    <div class="form-group"><label>City</label><input name="city" required></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group"><label>Street</label><input name="street" required></div>
+                    <div class="form-group"><label>Pin&nbsp;Code</label><input name="pincode" maxlength="6" required></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group"><label>Phone</label><input name="phone" maxlength="10" required></div>
+                    <div class="form-group"><label>Alt&nbsp;Phone</label><input name="altPhone" maxlength="10"></div>
+                </div>
+
+                <div id="addMsg" class="form-message"></div>
+
+                <div class="form-actions">
+                    <button type="submit" class="action-button">Add Address</button>
+                    <button type="button" class="action-button cancel" onclick="closeAddModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <%- include('../../views/partials/user/footer') %>
 
     <script>
@@ -180,63 +224,243 @@
             })
         }
 
-    
-/* ---------- helpers ---------- */
-const modal      = document.getElementById('editModal');
-const form       = document.getElementById('editForm');
-const msg        = document.getElementById('editMsg');
-const backdrop   = modal.querySelector('.modal-backdrop');
 
-function openEditModal()   { modal.classList.remove('hidden'); }
-function closeEditModal()  { modal.classList.add('hidden');  form.reset(); msg.textContent=''; }
-backdrop.addEventListener('click', closeEditModal);
-
-async function editAddress(id){
-  try{
-    const res = await fetch(`/get-address/${id}`);
-    const data = await res.json();
-    if(!data.success){
-        Swal.fire({toast:true,icon:'error',title:'Could not fetch address',text:data.message});
-    }
-
-    console.log('data success')
-    Object.entries(data.address).forEach(([k,v])=>{
-      const input = form.elements.namedItem(k);
-      if(input) input.value = v ?? '';
-    });
-    form.dataset.id = id; 
-    openEditModal();
-  }catch(err){
-    console.error(err);
-    Swal.fire({toast:true,icon:'error',title:'Could not fetch address'});
-  }
+        // Common validation functions
+function isInvalidPhone(phone) {
+    return (
+        !phone || 
+        phone.length !== 10 ||
+        /^(\d)\1{9}$/.test(phone) ||  // All same digit
+        phone === '1234567890' || 
+        phone === '0123456789' || 
+        !/^[6-9]\d{9}$/.test(phone)   // Not starting with 6-9
+    );
 }
 
-form.addEventListener('submit', async e=>{
-  e.preventDefault();
+function isInvalidPin(pin) {
+    if (!pin || pin.length !== 6) return true;
+    
+    const basicValid = /^[1-9]\d{5}$/.test(pin); // Only digits 1-9, length 6
+    if (!basicValid) return true;
 
-  const id   = form.dataset.id;                          // pulled from data‑attribute
-  const body = Object.fromEntries(new FormData(form).entries());
+    const ascendingSeq = '123456789';
+    const descendingSeq = '987654321';
 
-  try{
-    const res   = await fetch(`/edit-address/${id}`,{  
-      method : 'PATCH',
-      headers: {'Content-Type':'application/json'},
-      body   : JSON.stringify(body)
-    });
-    const data = await res.json();
-    if(!data.success) throw new Error(data.message);
+    for (let i = 0; i <= ascendingSeq.length - 6; i++) {
+        const seq = ascendingSeq.substring(i, i + 6);
+        const revSeq = descendingSeq.substring(i, i + 6);
+        if (pin === seq || pin === revSeq) return true;
+    }
+
+    // Repeating digits like 111111
+    if (/^(\d)\1{5}$/.test(pin)) return true;
+
+    return false;
+}
+
+function isInvalidName(name) {
+    return !name || name.trim().length < 2 || /[0-9]/.test(name);
+}
+
+function isInvalidField(field) {
+    return !field || field.trim().length < 2;
+}
+
+// Common validation handler
+function validateAddressForm(formData) {
+    const errors = {};
+    const { name, country, state, city, street, pincode, phone, altPhone } = formData;
+
+    if (isInvalidName(name)) {
+        errors.name = 'Please enter a valid name (min 2 chars, no numbers)';
+    }
+
+    if (isInvalidField(country)) {
+        errors.country = 'Please enter a valid country';
+    }
+
+    if (isInvalidField(state)) {
+        errors.state = 'Please enter a valid state';
+    }
+
+    if (isInvalidField(city)) {
+        errors.city = 'Please enter a valid city';
+    }
+
+    if (isInvalidField(street)) {
+        errors.street = 'Please enter a valid street address';
+    }
+
+    if (isInvalidPin(pincode)) {
+        errors.pincode = 'Invalid PIN: Must be 6 digits (1-9 only), no sequences or repetitions';
+    }
+
+    if (isInvalidPhone(phone)) {
+        errors.phone = 'Invalid phone number (10 digits starting with 6-9)';
+    }
+
+    if (altPhone && isInvalidPhone(altPhone)) {
+        errors.altPhone = 'Invalid alternate phone number';
+    }
+
+    return errors;
+}
 
     
-    closeEditModal();
-    toast(data);
+/* ---------- helpers ---------- */
+// Edit Address Modal Helpers
+const editModal = document.getElementById('editModal');
+const editForm = document.getElementById('editForm');
+const editMsg = document.getElementById('editMsg');
+const editBackdrop = editModal.querySelector('.modal-backdrop');
 
-  }catch(err){
-    console.error(err);
-    msg.textContent = err.message || 'Save failed';
-    msg.style.color = 'crimson';
-  }
+function openEditModal(id) {
+    // Fetch the address data first
+    fetch(`/get-address/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Populate the form
+                const address = data.address;
+                editForm.querySelector('input[name="id"]').value = address._id;
+                editForm.querySelector('input[name="name"]').value = address.name;
+                editForm.querySelector('input[name="country"]').value = address.country;
+                editForm.querySelector('input[name="state"]').value = address.state;
+                editForm.querySelector('input[name="city"]').value = address.city;
+                editForm.querySelector('input[name="street"]').value = address.street;
+                editForm.querySelector('input[name="pincode"]').value = address.pincode;
+                editForm.querySelector('input[name="phone"]').value = address.phone;
+                editForm.querySelector('input[name="altPhone"]').value = address.altPhone || '';
+                
+                // Open the modal
+                editModal.classList.remove('hidden');
+            } else {
+                toast(data);
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching address:', err);
+            toast({success: false, message: 'Failed to load address details'});
+        });
+}
+
+function closeEditModal() {
+    editModal.classList.add('hidden');
+    editForm.reset();
+    editMsg.textContent = '';
+}
+
+editBackdrop.addEventListener('click', closeEditModal);
+
+// Edit Address Form Validation & Submission
+editForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    editMsg.textContent = '';
+    editMsg.style.color = '';
+
+    const formData = Object.fromEntries(new FormData(editForm));
+    const errors = validateAddressForm(formData);
+
+    if (Object.keys(errors).length > 0) {
+        editMsg.innerHTML = Object.values(errors).join('<br>');
+        editMsg.style.color = 'crimson';
+        return;
+    }
+
+    try {
+        const res = await fetch(`/edit-address/${formData.id}`, {
+            method: 'PATCH', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            toast(data);
+            closeEditModal();
+        } else {
+            editMsg.textContent = data.message || 'Failed to update address';
+            editMsg.style.color = 'crimson';
+        }
+    } catch (err) {
+        console.error('Edit error:', err);
+        editMsg.textContent = err.message || 'Something went wrong';
+        editMsg.style.color = 'crimson';
+    }
 });
+
+
+/* ---------- Add Address Modal helpers ---------- */
+const addModal = document.getElementById('addModal');
+const addForm = document.getElementById('addForm');
+const addMsg = document.getElementById('addMsg');
+const addBackdrop = addModal.querySelector('.modal-backdrop');
+
+function openAddModal() { addModal.classList.remove('hidden'); }
+function closeAddModal() { addModal.classList.add('hidden'); addForm.reset(); addMsg.textContent=''; }
+addBackdrop.addEventListener('click', closeAddModal);
+
+// Add Address Form Validation
+addForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    addMsg.textContent = '';
+    addMsg.style.color = '';
+
+    const formData = Object.fromEntries(new FormData(addForm));
+    const errors = validateAddressForm(formData);
+
+    if (Object.keys(errors).length > 0) {
+        addMsg.innerHTML = Object.values(errors).join('<br>');
+        addMsg.style.color = 'crimson';
+        return;
+    }
+
+    try {
+        const res = await fetch('/add-address', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            toast(data);
+            closeAddModal();
+        } else {
+            addMsg.textContent = data.message || 'Failed to add address';
+            addMsg.style.color = 'crimson';
+        }
+    } catch (err) {
+        console.error(err);
+        addMsg.textContent = err.message || 'Failed to add address';
+        addMsg.style.color = 'crimson';
+    }
+});
+
+// Real-time validation for PIN code
+document.querySelectorAll('input[name="pincode"]').forEach(input => {
+    input.addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    });
+});
+
+// Real-time validation for phone numbers
+document.querySelectorAll('input[name="phone"], input[name="altPhone"]').forEach(input => {
+    input.addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+});
+
+// Real-time validation for name (letters and spaces only)
+document.querySelectorAll('input[name="name"]').forEach(input => {
+    input.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+    });
+});
+
+
+
 
 
         

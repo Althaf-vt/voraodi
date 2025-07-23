@@ -4,8 +4,24 @@ const Coupon = require('../../models/couponSchema');
 
 const getAllCoupons = async(req,res)=>{
     try {
-        const coupons = await Coupon.find();
-        return res.render('coupon-list',{coupons});
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 6 ;
+        const skip = (page - 1)*limit;
+
+        const totalCoupons = await Coupon.find().countDocuments();
+        const totalPages = Math.ceil(totalCoupons / limit);
+
+        const coupons = await Coupon.find()
+        .sort({createdOn : - 1})
+        .skip(skip)
+        .limit(limit);
+
+        return res.render('coupon-list',{
+            coupons,
+            currentPage: page,
+            totalPages
+        });
     } catch (error) {
         console.log("Error in loading Coupon list page",error);
         return res.redirect('/admin/pageError');
@@ -84,20 +100,6 @@ const getEditCoupon = async(req,res)=>{
     }
 }
 
-/*
-Body :  {
-  couponId: '687b7b4cccbd8e2c8d814a49',
-  name: 'Hey Newbie',
-  code: 'NEW500',
-  expireOn: '2025-07-31',
-  amount: '500',
-  minimumPrice: '1000',
-  maxUsage: '100',
-  isPublic: true,
-  rewardThreshold: '',
-  hasRewardThreshold: false
-}
-*/
 
 const editCoupon = async(req,res)=>{
     try {
@@ -138,6 +140,53 @@ const editCoupon = async(req,res)=>{
 }
 
 
+const deleteCoupon = async(req,res)=>{
+    try {
+        const {couponId} = req.body;
+
+        const deleted = await Coupon.findByIdAndDelete(couponId);
+
+        if(!deleted){
+            return res.status(400).json({success:false,message:'Coupon not found'});
+        }
+
+        return res.status(200).json({success:true,message:'Coupon deleted successful'})
+
+    } catch (error) {
+        console.log('Error in delete coupon : ',error);
+        return res.status(500).json({success:false,message:'Internal Server Error'});
+    }
+}
+
+
+const listUnlist = async(req,res)=>{
+    try {
+        const {couponId} = req.body;
+
+        const coupon = await Coupon.findOne({_id:couponId});
+
+        if(!coupon){
+            return res.status(400).json({success:false,message:'Coupon not found'});
+        }
+        let messageData = ''
+
+        if(coupon.isListed === true){
+            coupon.isListed = false;
+            messageData = 'Coupon unlisted successful';
+        }else{
+            messageData = 'Coupon listed successful';
+            coupon.isListed = true;
+        }
+
+        await coupon.save();
+
+        return res.status(200).json({success:true,message:messageData});
+
+    } catch (error) {
+        console.log('Error in list unlist coupon : ',error);
+        return res.status(500).json({success:false,message:'Internal Server Error'});
+    }
+}
 
 module.exports = {
     getAllCoupons,
@@ -145,4 +194,6 @@ module.exports = {
     addCoupon,
     getEditCoupon,
     editCoupon,
+    deleteCoupon,
+    listUnlist,
 }

@@ -332,8 +332,6 @@ const loadShoppingPage = async (req,res)=>{
             filter.productName = {$regex: searchQuery, $options: 'i'};
         }
 
-        
-
         if(priceFilter === 'under500'){
             filter.salePrice = {$lt:500};
         }else if(priceFilter === '500to1000'){
@@ -393,7 +391,6 @@ const loadShoppingPage = async (req,res)=>{
         res.redirect('/pageNotFound');
     }
 }
-
 
 
 module.exports = {
