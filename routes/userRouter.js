@@ -115,8 +115,12 @@ router.get('/invoice',userAuth,orderController.invoice);
 // Checkout
 router.get('/checkout',userAuth,checkoutController.loadCheckout);
 router.post('/apply-coupon',userAuth,checkoutController.applyCoupon)
-router.post('/cart/check-stock',userAuth,checkoutController.checkStock)
-router.post('/place-order',userAuth,checkoutController.orderDone);
+router.post('/cart/check-stock',userAuth,checkoutController.checkStock);
+router.post('/verify-razorpay-payment',userAuth,checkoutController.verifyRazorpayPayment);
+router.post('/place-order',userAuth,checkoutController.placeOrder);
+router.get('/order-success/:id',userAuth,checkoutController.orderSuccess);
+router.get('/payment-failed',userAuth,checkoutController.paymentFailed)
+router.post('/create-razorpay-order',userAuth,checkoutController.createRazorpayOrder);
 
 
 

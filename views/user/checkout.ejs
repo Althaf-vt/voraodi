@@ -206,12 +206,12 @@
 
     <%- include('../../views/partials/user/footer') %>
 
-    <form id="hidden-order-form" action="/place-order" method="POST" style="display: none;">
-        <input type="hidden" name="userId" value="<%= user._id %>">
+    <!-- <form id="hidden-order-form" action="/place-order" method="POST" style="display: none;">
+        <input type="hidden" name="userId" value="<%#= user._id %>">
         <input type="hidden" name="addressId" id="hidden-address-id">
         <input type="hidden" name="paymentMethod" id="hidden-payment-method">
         <input type="hidden" name="couponCode" id="hidden-coupon-code">
-    </form>
+    </form> -->
 
 
     <!-- Address Modal -->
@@ -275,6 +275,7 @@
     </div>
   
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>
 
@@ -521,8 +522,6 @@
         }
     });
 
-    
-
         function placeOrder(userId) {
             const selectedAddressInput = document.querySelector('input[name="addressId"]:checked');
             const selectedPaymentInput = document.querySelector('input[name="paymentMethod"]:checked');
@@ -537,13 +536,142 @@
                 return;
             }
 
-            // Set hidden form values
-            document.getElementById('hidden-address-id').value = addressId;
-            document.getElementById('hidden-payment-method').value = paymentMethod;
-            document.getElementById('hidden-coupon-code').value = couponCode;
+            if(paymentMethod === 'razorpay'){
+                // Call backend to create Razorpay order
+                fetch('/create-razorpay-order',{
+                    method: "POST",
+                    headers: {
+                        'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        addressId,
+                        couponCode
+                    })
+                })
+                .then(res => res.json())
+                .then(order => {
+                    console.log("order:  ", order);
+                    if(!order || !order.id){
+                        alert('Failed to initiate razorpay payment');
+                        return;
+                    }
 
-            // Submit the hidden form
-            document.getElementById('hidden-order-form').submit();
+                    const options = {
+                        key: '<%= process.env.RAZORPAY_KEY_ID %>',
+                        amount: order.amount,
+                        currency: "INR",
+                        name: "VORAODI",
+                        description: 'Order Payment',
+                        image: '/images/voraodi.png',
+                        order_id: order.id,
+                        handler: async function (response){
+                            // Handle successful payment
+                            fetch('/verify-razorpay-payment',{
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type':'application/json'
+                                },
+                                body: JSON.stringify({
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    addressId,
+                                    userId,
+                                    couponCode
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if(data.success){
+                                    fetch('/place-order',{
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type':'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            userId,
+                                            addressId,
+                                            paymentMethod,
+                                            couponCode
+                                        })
+                                    })
+                                    .then(result => result.json())
+                                    .then(info => {
+                                        if(info.success){
+                                            const orderId = info.orderId
+                                            window.location.href = `/order-success/${orderId}`;
+                                        }else{
+                                            alert(info.message || 'Order failed');
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log("order error: ",err);
+                                        alert('Something went wrong, please try again later');
+                                    })
+                                    // window.location.href = '/place-order';
+                                }else{
+                                    alert('Payment Verification failed')
+                                }
+                            });
+                        },
+                        prefill: {
+                            name: "<%= user.name%>",
+                            email: "<%= user.email%>",
+                            contact: "<%= user.phone%>",
+                        },
+                        theme: {
+                            color : "#cca935"
+                        }
+                    }
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', function (response) {
+                        alert("Payment failed");
+
+                        // Redirect to payment failed page
+                        window.location.href = '/payment-failed';
+                    });
+                    rzp.open()
+                })
+                .catch(err => {
+                    console.log(err);
+                    alert('Error initiating Razorpay');
+                });
+            
+            }else{
+                fetch('/place-order',{
+                    method:'POST',
+                     headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        addressId,
+                        paymentMethod,
+                        couponCode
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success){
+                        const orderId = data.orderId
+                        window.location.href = `/order-success/${orderId}`;
+                    }else{
+                        alert(data.message || 'Order failed');
+                    }
+                })
+                .catch(err => {
+                    console.log("order error: ",err);
+                    alert('Something went wrong, please try again later');
+                })
+                // Set hidden form values
+                // document.getElementById('hidden-address-id').value = addressId;
+                // document.getElementById('hidden-payment-method').value = paymentMethod;
+                // document.getElementById('hidden-coupon-code').value = couponCode;
+
+                // // Submit the hidden form
+                // document.getElementById('hidden-order-form').submit();
+            }
         }
        
        

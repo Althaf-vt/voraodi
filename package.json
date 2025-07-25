@@ -7,7 +7,6 @@
   },
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "dotenv": "^16.5.0",
@@ -22,7 +21,18 @@
     "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "razorpay": "^2.9.6",
     "sharp": "^0.34.2",
     "uuid": "^11.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Althaf-vt/voraodi.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/Althaf-vt/voraodi/issues"
+  },
+  "homepage": "https://github.com/Althaf-vt/voraodi#readme",
+  "description": ""
 }

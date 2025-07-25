@@ -126,8 +126,20 @@
                         <span class="detail-value"><%= new Date(order.createdAt).toLocaleDateString() %></span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Total:</span>
+                        <span class="detail-label">Subtotal:</span>
                         <span class="detail-value">₹<%= order.totalPrice.toFixed(2) %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Discount:</span>
+                        <span class="detail-value">- ₹<%= order.discount.toFixed(2) %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Shipping:</span>
+                        <span class="detail-value">+ ₹<%= order.deliveryCharge.toFixed(2) %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Total:</span>
+                        <span class="detail-value">₹<%= order.finalAmount.toFixed(2) %></span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Payment Method:</span>
@@ -199,9 +211,9 @@
                                 <td><%= item.quantity %></td>
 
                                 <!-- Unit Price -->
-                                <td>₹<%= item.product.salePrice.toFixed(2) %></td>
+                                <td>₹<%= item.price.toFixed(2) %></td>
                                 <!-- Total Price -->
-                                <td>₹<%= (item.product.salePrice * item.quantity).toFixed(2) %></td>
+                                <td>₹<%= (item.price * item.quantity).toFixed(2) %></td>
 
                                 <!-- Status -->
                                 <td>

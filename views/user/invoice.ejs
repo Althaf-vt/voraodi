@@ -57,9 +57,7 @@
                     <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                     <p><strong>Payment Status:</strong> <span class="status <%= order.paymentStatus.toLowerCase() %>"><%= order.paymentStatus %></span></p>
                     <p><strong>Order Status:</strong> <span class="status <%= order.status.toLowerCase().replace(/\s+/g, '-') %>"><%= order.status %></span></p>
-                    <% if (order.couponApplied) { %>
-                        <p><strong>Coupon Applied:</strong> <span class="coupon-badge">Yes</span></p>
-                    <% } %>
+                    <!--  -->
                 </div>
             </div>
         </div>
@@ -111,6 +109,13 @@
                     <span class="summary-label">Subtotal:</span>
                     <span class="summary-value">₹<%= order.totalPrice.toFixed(2) %></span>
                 </div>
+                <% if (order.deliveryCharge > 0) { %>
+                    <div class="summary-row ">
+                        <span class="summary-label">Shipping:</span>
+                        <span class="summary-value">+₹<%= order.deliveryCharge.toFixed(2) %></span>
+                    </div>
+                <% } %>
+                
                 <% if (order.discount > 0) { %>
                     <div class="summary-row discount">
                         <span class="summary-label">Discount:</span>
