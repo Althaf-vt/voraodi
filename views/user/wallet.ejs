@@ -52,7 +52,7 @@
                             </div>
                             <div class="balance-info">
                                 <h3>Available Balance</h3>
-                                <p class="balance-amount">₹<span id="walletBalance"><%= wallet.balance || 0 %></span></p>
+                                <p class="balance-amount">₹ <span id="walletBalance"><%= wallet.balance || 0 %></span></p>
                             </div>
                         </div>
                         
@@ -61,14 +61,14 @@
                                 <i class="fas fa-arrow-up stat-icon credit"></i>
                                 <div class="stat-details">
                                     <span class="stat-label">Total Credited</span>
-                                    <span class="stat-value credit"><%= creditTotal %></span>
+                                    <span class="stat-value credit">₹ <%= creditTotal %></span>
                                 </div>
                             </div>
                             <div class="stat-item">
                                 <i class="fas fa-arrow-down stat-icon debit"></i>
                                 <div class="stat-details">
                                     <span class="stat-label">Total Debited</span>
-                                    <span class="stat-value debit"><%= debitTotal %></span>
+                                    <span class="stat-value debit">₹ <%= debitTotal %></span>
                                 </div>
                             </div>
                         </div>
@@ -81,99 +81,99 @@
                 
 
                 <!-- Transaction History Section -->
-                <div class="transaction-history-section">
-                    <!-- Filters -->
-                    <div class="transaction-filters">
-                        <div class="filter-group">
-                            <label for="typeFilter">Transaction Type</label>
-                            <select id="typeFilter" class="filter-select">
-                                <option value="all">All Transactions</option>
-                                <option value="credit">Credit</option>
-                                <option value="debit">Debit</option>
-                                <option value="refund">Refund</option>
-                                <option value="cashback">Cashback</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="timeFilter">Time Period</label>
-                            <select id="timeFilter" class="filter-select">
-                                <option value="30">Last 30 Days</option>
-                                <option value="7">Last 7 Days</option>
-                                <option value="365">Last Year</option>
-                                <option value="all">All Time</option>
-                            </select>
-                        </div>
-                        <button class="filter-reset" onclick="resetFilters()">
-                            <i class="fas fa-refresh"></i>
-                            Reset
-                        </button>
-                    </div>
+<div class="transaction-history-section">
+    <!-- Filters -->
+    <div class="transaction-filters">
+        <div class="filter-group">
+            <label for="typeFilter">Transaction Type</label>
+            <select id="typeFilter" class="filter-select">
+                <option value="all">All Transactions</option>
+                <option value="credit">Credit</option>
+                <option value="debit">Debit</option>
+                <option value="refund">Refund</option>
+                <option value="cashback">Cashback</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="timeFilter">Time Period</label>
+            <select id="timeFilter" class="filter-select">
+                <option value="30">Last 30 Days</option>
+                <option value="7">Last 7 Days</option>
+                <option value="365">Last Year</option>
+                <option value="all">All Time</option>
+            </select>
+        </div>
+        <button class="filter-reset" onclick="resetFilters()">
+            <i class="fas fa-refresh"></i>
+            Reset
+        </button>
+    </div>
 
-                    <!-- Transaction List -->
-                    <div class="transaction-list">
-                        <div class="transaction-header">
-                            <h3>Transaction History</h3>
-                            <!-- <span class="transaction-count">Showing <span id="transactionCount">12</span> transactions</span> -->
-                        </div>
+    <!-- Transaction List -->
+    <div class="transaction-list">
+        <div class="transaction-header"></div>
 
-                        <div class="transactions-container">
-                            <!-- Sample Transaction Items -->
-                            <div class="transactions-container">
-                            <% if (wallet.transactions.length === 0) { %>
-                                <p>No transactions yet.</p>
+        <div class="transactions-container">
+            <% if (wallet.transactions.length === 0) { %>
+                <p>No transactions yet.</p>
+            <% } else { %>
+                <% wallet.transactions.slice().reverse().forEach((txn, index) => { %>
+                    <div class="transaction-item <%= txn.type %>" 
+                         data-type="<%= txn.type %>" 
+                         data-date="<%= txn.createdAt.toISOString().split('T')[0] %>"
+                         data-index="<%= index %>"
+                         style="<%= index >= 4 ? 'display: none;' : '' %>">
+                        
+                        <div class="transaction-icon <%= txn.type %>">
+                            <% if (txn.type === 'credit') { %>
+                                <i class="fas fa-plus"></i>
                             <% } else { %>
-                                <% wallet.transactions.slice().reverse().forEach(txn => { %>
-                                    <div class="transaction-item <%= txn.type %>" data-type="<%= txn.type %>" data-date="<%= txn.createdAt.toISOString().split('T')[0] %>">
-                                        <div class="transaction-icon <%= txn.type %>">
-                                            <% if (txn.type === 'credit') { %>
-                                                <i class="fas fa-plus"></i>
-                                            <% } else { %>
-                                                <i class="fas fa-minus"></i>
-                                            <% } %>
-                                        </div>
-                                        <div class="transaction-details">
-                                            <h4 class="transaction-title">
-                                                <% if (txn.reason && txn.reason !== "Wallet transaction") { %>
-                                                    <%= txn.reason %>
-                                                <% } else if (txn.type === 'credit') { %>
-                                                    Money Added
-                                                <% } else { %>
-                                                    Purchase Payment
-                                                <% } %>
-                                            </h4>
-                                            <p class="transaction-description">
-                                                <% if (txn.orderId) { %>
-                                                    Payment for Order #<%= txn.orderId %>
-                                                <% } else { %>
-                                                    Added to wallet
-                                                <% } %>
-                                            </p>
-                                            <span class="transaction-date">
-                                                <i class="far fa-calendar"></i>
-                                                <%= new Date(txn.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %>
-                                            </span>
-                                        </div>
-                                        <div class="transaction-amount <%= txn.type %>">
-                                            <span class="amount"><%= txn.type === 'credit' ? '+' : '-' %>₹<%= txn.amount.toFixed(2) %></span>
-                                            <span class="transaction-id">#TXN<%= txn._id.toString().slice(-9).toUpperCase() %></span>
-                                        </div>
-                                    </div>
-                                <% }) %>
-                                <!-- Load More Button -->
-                                <div class="load-more-section">
-                                    <button class="load-more-btn">
-                                        <i class="fas fa-chevron-down"></i>
-                                        Load More Transactions
-                                    </button>
-                                </div>
+                                <i class="fas fa-minus"></i>
                             <% } %>
                         </div>
-
-                        </div>
-
                         
+                        <div class="transaction-details">
+                            <h4 class="transaction-title">
+                                <% if (txn.reason && txn.reason !== "Wallet transaction") { %>
+                                    <%= txn.reason %>
+                                <% } else if (txn.type === 'credit') { %>
+                                    Money Added
+                                <% } else { %>
+                                    Purchase Payment
+                                <% } %>
+                            </h4>
+                            <p class="transaction-description">
+                                <% if (txn.orderId) { %>
+                                    Payment for Order #<%= txn.orderId %>
+                                <% } else { %>
+                                    Added to wallet
+                                <% } %>
+                            </p>
+                            <span class="transaction-date">
+                                <i class="far fa-calendar"></i>
+                                <%= new Date(txn.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %>
+                            </span>
+                        </div>
+                        
+                        <div class="transaction-amount <%= txn.type %>">
+                            <span class="amount"><%= txn.type === 'credit' ? '+' : '-' %>₹<%= txn.amount.toFixed(2) %></span>
+                            <span class="transaction-id">#TXN<%= txn._id.toString().slice(-9).toUpperCase() %></span>
+                        </div>
                     </div>
+                <% }) %>
+
+                <!-- Load More Button -->
+                <div class="load-more-section">
+                    <button class="load-more-btn">
+                        <i class="fas fa-chevron-down"></i>
+                        Load More Transactions
+                    </button>
                 </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
             </div>
             <!-- Referral Section -->
             <div class="referral-section">
@@ -252,15 +252,46 @@
         document.getElementById('typeFilter').addEventListener('change', filterTransactions);
         document.getElementById('timeFilter').addEventListener('change', filterTransactions);
 
-        // Load more functionality (demo)
-        document.querySelector('.load-more-btn').addEventListener('click', function() {
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-            
-            setTimeout(() => {
-                this.innerHTML = '<i class="fas fa-chevron-down"></i> Load More Transactions';
-                // In real implementation, you would load more transactions
-            }, 1500);
+
+        // Hide the load-more  if trasaction lessthan 4 
+        window.addEventListener('DOMContentLoaded', () => {
+            const totalTxn = document.querySelectorAll('.transaction-item').length;
+            if (totalTxn <= visibleTransactions) {
+                document.querySelector('.load-more-section').style.display = 'none';
+            }
         });
+
+        // Load more functionality (demo)
+        let visibleTransactions = 4;
+        const TRANSACTIONS_PER_LOAD = 4;
+
+        function showMoreTransactions() {
+            const allTransactions = document.querySelectorAll('.transaction-item');
+            const nextVisibleCount = visibleTransactions + TRANSACTIONS_PER_LOAD;
+
+            allTransactions.forEach((txn, index) => {
+                if (index < nextVisibleCount) {
+                    txn.style.display = 'flex';
+                }
+            });
+
+            visibleTransactions = nextVisibleCount;
+
+            // Hide load more button if all transactions are visible
+            if (visibleTransactions >= allTransactions.length) {
+                document.querySelector('.load-more-section').style.display = 'none';
+            }
+        }
+
+        document.querySelector('.load-more-btn').addEventListener('click', function () {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            setTimeout(() => {
+                showMoreTransactions();
+                this.innerHTML = '<i class="fas fa-chevron-down"></i> Load More Transactions';
+            }, 500);
+        });
+
+        // Update filterTransactions() to only work on visible items if needed
 
 
         // Copy referral code functionality

@@ -67,6 +67,9 @@ router.post('/updateOrderStatus', adminAuth, orderController.updateOrderStatus);
 router.post('/approveReturnOrder', adminAuth, orderController.approveReturnOrder)
 router.post('/rejectReturnOrder', adminAuth, orderController.rejectReturnOrder);
 
+router.patch('/approve-return-item',adminAuth,orderController.approveReturnItem)
+router.patch('/reject-return-item',adminAuth,orderController.rejectReturnItem)
+
 // Coupon management
 router.get('/coupons', adminAuth, couponController.getAllCoupons);
 router.get('/add-coupon', adminAuth, couponController.getAddCoupon);

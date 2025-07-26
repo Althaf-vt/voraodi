@@ -37,7 +37,7 @@
                                     <div class="cart-column total-column">Total</div>
                                 </div>
                                 <% cartItems.forEach(item => { %>
-                                    <% if (item.productId) { %>  <!-- ✅ Null check -->
+                                    <% if (item.productId) { %>  <!--  Null check -->
                                         <div class="cart-table-row">
                                             <div class="cart-column product-column">
                                                 <div class="cart-product">
@@ -182,7 +182,7 @@
                             </div>
                             <div class="payment-option">
                                 <input type="radio" id="wallet" name="paymentMethod" value="wallet">
-                                <label for="wallet">Wallet (₹<%#= userWalletBalance.toFixed(2) %> available)</label>
+                                <label for="wallet">Wallet (₹<%= wallet.balance.toFixed(2) %> available)</label>
                             </div>
                         </div>
                         

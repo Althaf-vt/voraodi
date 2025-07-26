@@ -80,26 +80,29 @@ const cancelItem = async(req,res)=>{
             await findOrder.save();
         }
 
-        const refundAmount = unitPrice * cancelQty;
+        console.log(findOrder.paymentMethod);
 
-        await Wallet.updateOne(
-            {userId},
-            {
-                $inc:{balance:refundAmount},
-                $push:{
-                    transactions:{
-                        type:'credit',
-                        amount: refundAmount,
-                        reason: 'Refund for Cancel Item',
-                        orderId: orderId,
-                        productId: productId,
-                        quantity: cancelQty,
+        if(findOrder.paymentMethod !== 'cod'){
+            const refundAmount = unitPrice * cancelQty;
+            
+            await Wallet.updateOne(
+                {userId},
+                {
+                    $inc:{balance:refundAmount},
+                    $push:{
+                        transactions:{
+                            type:'credit',
+                            amount: refundAmount,
+                            reason: 'Refund for Cancel Item',
+                            orderId: orderId,
+                            productId: productId,
+                            quantity: cancelQty,
+                        }
                     }
                 }
-            }
-        )
-
-        findOrder.finalAmount -= refundAmount;
+            )
+            findOrder.finalAmount -= refundAmount;
+        }
 
         await product.save();
         await findOrder.save();
@@ -148,23 +151,27 @@ const cancelOrder = async (req,res)=>{
 
         order.status = 'Cancelled';
 
-        const refundAmount = order.finalAmount;
+        if(order.paymentMethod !== 'cod'){
 
+            const refundAmount = order.finalAmount;
 
-        await Wallet.updateOne(
-            {userId},
-            {
-                $inc:{balance: refundAmount},
-                $push: {
-                    transactions: {
-                        type: 'credit',
-                        amount: refundAmount,
-                        reason: 'Refund for cancel Order',
-                        orderId: orderId,
+            await Wallet.updateOne(
+                {userId},
+                {
+                    $inc:{balance: refundAmount},
+                    $push: {
+                        transactions: {
+                            type: 'credit',
+                            amount: refundAmount,
+                            reason: 'Refund for cancel Order',
+                            orderId: orderId,
+                        }
                     }
                 }
-            }
-        )
+            )
+            order.finalAmount -= refundAmount;
+        }
+
         await order.save();
 
         return res.status(200).json({success: true, message: 'Order Cancelled successfully'});

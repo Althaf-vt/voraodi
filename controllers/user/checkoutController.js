@@ -7,6 +7,7 @@ const Product = require('../../models/productSchema');
 const Razorpay = require('razorpay');
 const Crypto = require('crypto');
 const { router } = require('../../server');
+const Wallet = require('../../models/walletSchema');
 
 // const { generate } = require('mongoose/lib/types/objectid');
 
@@ -79,6 +80,8 @@ const loadCheckout = async(req,res)=>{
 
         const availableCoupons = coupons.filter(c => !c.usedBy.includes(userId));
 
+        const wallet = await Wallet.findOne({userId:userId})
+
 
         return res.render('checkout',{
             user,
@@ -87,7 +90,8 @@ const loadCheckout = async(req,res)=>{
             availableCoupons,
             subtotal,
             total,
-            deliveryCharge: userCart.deliveryCharge
+            deliveryCharge: userCart.deliveryCharge,
+            wallet,
         });
 
     } catch (error) {
@@ -239,6 +243,7 @@ const placeOrder = async (req,res)=>{
         
         const finalAmount = recalculatedTotal + deliveryCharge;
 
+
         const newOrder = new Order({
             orderedItems,
             totalPrice: totalPrice, // Original total before discounts
@@ -254,7 +259,27 @@ const placeOrder = async (req,res)=>{
         });
         await newOrder.save();
 
+        console.log(paymentMethod)
 
+        // Decrease amount from wallet
+        if(paymentMethod === 'wallet'){
+            await Wallet.updateOne(
+                {userId:userId},
+                {
+                    $inc: {balance:-finalAmount},
+                    $push: {
+                        transactions: {
+                            type: 'debit',
+                            amount: finalAmount,
+                            reason: 'Wallet payment',
+                            orderId: newOrder.orderId
+                        }
+                    }
+                }
+            )
+        }
+
+        // decrease product quanity
         for(const item of orderedItems){
             const product = await Product.findById(item.product);
 
