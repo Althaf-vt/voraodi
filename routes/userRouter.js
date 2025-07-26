@@ -7,6 +7,7 @@ const productController = require('../controllers/user/productController');
 const wishlistController = require('../controllers/user/wishlistController');
 const checkoutController = require('../controllers/user/checkoutController');
 const orderController = require('../controllers/user/orderController');
+const wallterController = require('../controllers/user/walletController')
 const multer = require('../middlewares/profileMulter');
 const { userAuth } = require('../middlewares/auth');
 
@@ -121,6 +122,12 @@ router.post('/place-order',userAuth,checkoutController.placeOrder);
 router.get('/order-success/:id',userAuth,checkoutController.orderSuccess);
 router.get('/payment-failed',userAuth,checkoutController.paymentFailed)
 router.post('/create-razorpay-order',userAuth,checkoutController.createRazorpayOrder);
+
+// Wallet & referral code
+router.get('/wallet',userAuth,wallterController.loadWallet);
+router.post('/submit-referral',userAuth,wallterController.submitReferral);
+router.get('/api/user/status',userAuth,wallterController.userStatus);
+router.post('/skip-referral',userAuth,wallterController.skipRefer);
 
 
 

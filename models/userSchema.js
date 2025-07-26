@@ -60,9 +60,17 @@ const userSchema = new Schema({
         type: Date,
         default: Date.now,
     },
-    referalCode: {
+    referralCode: {
         type: String,
-        // required: true
+        required: true
+    },
+    referrals:[{
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    hasEnteredReferralCode: {
+        type : Boolean,
+        default: false
     },
     redeemed: {
         type: Boolean,

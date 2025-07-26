@@ -3,28 +3,12 @@ const env = require('dotenv').config();
 const User = require('../../models/userSchema');
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
+const Wallet = require('../../models/walletSchema');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const { search } = require('../../server');
 const { find } = require('../../models/addressSchema');
 const mongoose = require('mongoose');
-
-// const loadHomepage = async (req,res) =>{
-//     try {
-//         const user = req.session.user;
-//         if(user){
-//             const userData = await User.findOne({_id:user._id});
-//             return res.render("home",{user:userData})
-//         }else{
-//             return res.render('home');
-//         }
-
-//     } catch (error) {
-//         console.log("Home page not found");
-//         res.status(500).send('Server error');
-//     }
-// }
-
 
 
 
@@ -59,6 +43,9 @@ const loadHomepage = async (req, res) => {
 // Load Signup
 const loadSignup = async (req,res) =>{
     try {
+        if(req.session.user){
+            return res.redirect('/');
+        }
         return res.render('signup')
     } catch (error) {
         console.log("Signup page not loading",error);
@@ -100,6 +87,29 @@ async function sendVerificationEmail(email,otp){
         console.error('Error sending Email',error);
         return false
     }
+}
+
+
+// Helper to generate a referral code
+function createReferralCode(name) {
+  const trimmed = name.trim().toLowerCase().replace(/\s+/g, '');
+  const prefix = trimmed.slice(0, 4);
+  const random = Math.floor(1000 + Math.random() * 9000); 
+  return `${prefix}${random}`;
+}
+
+//referral code generator that ensures uniqueness
+async function generateReferralCode(name) {
+  let code;
+  let isUnique = false;
+
+  while (!isUnique) {
+    code = createReferralCode(name);
+    const existing = await User.findOne({ referralCode: code });
+    if (!existing) isUnique = true;
+  }
+
+  return code;
 }
 
 // Signup Checks
@@ -169,14 +179,23 @@ const otpVerification = async (req,res) =>{
                 throw new Error('Password hashing failed');
             }
 
+            const referralCode  = await generateReferralCode(user.name);
+
             const saveUserData = new User ({
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
-                password: passwordHash
+                password: passwordHash,
+                referralCode
             })
 
             await saveUserData.save();
+
+             const newWallet = new Wallet({
+                userId: saveUserData._id,
+            });
+
+            newWallet.save();
 
             // req.session.user = saveUserData._id;
 

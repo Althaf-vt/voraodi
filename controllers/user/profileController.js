@@ -104,6 +104,9 @@ const securePassword = async (password) => {
 const getForgotPassword = async (req, res) => {
     try {
 
+        if(req.session.user){
+            return res.redirect('/')
+        }
         res.render('forgot-password');
     } catch (error) {
         console.log(error)
@@ -163,6 +166,9 @@ const verifyForgotPassOtp = async (req, res) => {
 
 const getResetPassword = async (req, res) => {
     try {
+        if(req.session.user){
+            return res.redirect('/')
+        }
         return res.render('reset-password');
     } catch (error) {
         console.error("Error while rendering reset password page");

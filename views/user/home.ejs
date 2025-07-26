@@ -29,36 +29,6 @@
         </div>
     </div>
 
-    <!-- Featured Collections Section -->
-    <!-- <div class="featured-collections">
-        <h2>Signature Collections</h2>
-        <div class="collections-grid">
-            <div class="collection-card">
-                <a href="/filter?category=6853dd0aa1516b95f1def11e">
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Imperial Tailored Blazers">
-                <div class="overlay">
-                    <h3>Imperial Tailored Blazers</h3>
-                    <p>Rule with Authority</p>
-                </div>
-                </a>
-            </div>
-            <div class="collection-card">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Warrior Leather Coats">
-                <div class="overlay">
-                    <h3>Warrior Leather Coats</h3>
-                    <p>Defy the Elements</p>
-                </div>
-            </div>
-            <div class="collection-card">
-                <img src="https://images.unsplash.com/photo-1534030347209-467a5b0ad3e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Centurion Polos">
-                <div class="overlay">
-                    <h3>Centurion Polos</h3>
-                    <p>Lead with Valor</p>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
 
     <!-- Category Section: Linen Trousers -->
 <div class="category-section">
@@ -120,52 +90,86 @@
 </div>
 </div>
 
+<!-- Referral Modal -->
+<div id="referralModal" class="referral-modal">
+    <div class="referral-modal-content">
+        <h2>Enter Referral Code</h2>
+        <p>Do you have a referral code? Enter it below to unlock exclusive benefits!</p>
+        <input type="text" id="referralInput" class="referral-input" placeholder="Enter referral code" maxlength="20">
+        <div class="referral-buttons">
+            <button class="referral-submit" onclick="submitReferralCode(document.getElementById('referralInput').value)">Submit</button>
+            <button class="referral-skip" onclick="skipReferralCode()">Skip for Now</button>
+        </div>
+    </div>
+</div>
+
   
     <%- include('../../views/partials/user/footer') %>
 
     <script>
-        const text = "Forge Your Legacy";
-        let i = 0;
-        function typeWriter() {
-            if (i < text.length) {
-                document.getElementById("typewriter").innerHTML = text.substring(0, i + 1);
-                i++;
-                setTimeout(typeWriter, 100);
-            }
+
+        async function toastMessage(data, type) {
+            const message = data?.message ?? (type ? "Something went wrong" : "Updated successfully");
+
+            Toastify({
+                text: message,
+                duration: 1500,
+                close: true,
+                gravity: "top",
+                position: "right",
+                stopOnFocus: true,
+                style: {
+                    background: type === "error" ? "#dc3545" : "#28a745",
+                    borderRadius: "10px",
+                    padding: "10px 20px",
+                    fontWeight: "500",
+                }
+            }).showToast();
         }
 
-        gsap.to(".crest", { opacity: 1, duration: 1.5, delay: 0.5, ease: "power2.out" });
-        gsap.from(".hero .text-container", { opacity: 0, y: 30, duration: 1, delay: 1 });
-        gsap.from(".hero .subtitle", { opacity: 0, y: 20, duration: 1, delay: 1.5 });
-        gsap.from(".hero p", { opacity: 0, y: 20, duration: 1, delay: 2 });
-        gsap.from(".hero .cta-button", { opacity: 0, scale: 0.9, duration: 1, delay: 2.5 });
+        function showReferralModal() {
+            document.getElementById('referralModal').style.display = 'block';
+        }
 
-        gsap.utils.toArray(".featured-collections, .tailors-note, .legacy-collection, .category-section").forEach(section => {
-            gsap.from(section, {
-                opacity: 0,
-                y: 30,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%",
-                    end: "bottom 20%",
-                    toggleActions: "play none none none"
-                }
+        function hideModal() {
+            document.getElementById('referralModal').style.display = 'none';
+        }
+
+        function skipReferralCode() {
+            hideModal();
+            document.body.classList.remove("blur-bg");
+            // Optional: Mark that user skipped the referral code
+            fetch('/skip-referral', { method: 'POST' });
+        }
+
+        // On homepage load
+        window.addEventListener("DOMContentLoaded", async () => {
+            const response = await fetch('/api/user/status');
+            const user = await response.json();
+
+            if (!user.hasEnteredReferralCode) {
+                showReferralModal(); // Open modal
+                document.body.classList.add("blur-bg"); // Apply blur
+            }
+        });
+        async function submitReferralCode(code){
+            const res = await fetch('/submit-referral',{
+                method: "POST",
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({code})
             });
-        });
 
-        window.onload = function () {
-            typeWriter();
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-        };
+            const result = await res.json();
+            if(result.success){
+                hideModal()
+                document.body.classList.remove("blur-bg");
+                toastMessage(result);
+            }else{
+                toastMessage(result,'error')
+            }
 
-        VanillaTilt.init(document.querySelectorAll(".collection-card"), {
-            max: 8,
-            speed: 400,
-            glare: true,
-            "max-glare": 0.2
-        });
+        }
+
 
         function openQuickViewModal(productId) {
             fetch(`/quickView?id=${productId}`)
