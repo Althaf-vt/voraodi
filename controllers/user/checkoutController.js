@@ -175,7 +175,17 @@ const placeOrder = async (req,res)=>{
             return res.status(400).json({ success: false, message: 'Cart is empty' });
         }
         
-        const totalPrice = cart.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+        //Update cart item prices with latest product prices
+        for (let item of cart.items) {
+            if (item.productId) {
+                const latestPrice = item.productId.salePrice;
+                item.price = latestPrice;
+                item.totalPrice = latestPrice * item.quantity;
+            }
+        }
+        await cart.save();
+
+        const totalPrice = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
 
         //coupon handling
         let discount = 0;

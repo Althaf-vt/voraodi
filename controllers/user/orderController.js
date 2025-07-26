@@ -1,6 +1,7 @@
 const User = require('../../models/userSchema');
 const Order = require('../../models/orderSchema');
 const Product = require('../../models/productSchema');
+const Wallet = require('../../models/walletSchema');
 
 
 const orderDetailpage = async(req,res)=>{
@@ -30,6 +31,8 @@ const cancelItem = async(req,res)=>{
     try {
         const {orderId,sku} = req.body;
 
+        const userId = req.session.user;
+
         const findOrder = await Order.findOne({orderId:orderId});
 
         if(!findOrder){
@@ -38,7 +41,6 @@ const cancelItem = async(req,res)=>{
         }
 
         const item = findOrder.orderedItems.find((item)=> item.sku === sku);
-        console.log("Found item index:", item);
 
         if(!item){
             console.log('Item with SKU not found')
@@ -49,11 +51,10 @@ const cancelItem = async(req,res)=>{
             return res.status(400).json({success: false, message: "Item already cancelled"});
         }
         const cancelQty = item.quantity;
+        const unitPrice = item.price
         const productId = item.product;
 
         item.status = 'Cancelled';
-
-        await findOrder.save();
 
         // update quantity in product schema
         const product = await Product.findOne({_id: productId});
@@ -65,14 +66,13 @@ const cancelItem = async(req,res)=>{
 
         // Find the variant by SKU and increment its quantity
         const variant = product.variants.find(variant => variant.sku === sku);
-        console.log("Variant matched:", variant); //  log variant
         if(!variant){
             console.log('varient not found in product Schema');
             return res.status(500).json({success: false, message:"Product variant not found"})
         }
 
         variant.quantity += cancelQty; // restock qty
-        await product.save();
+        
 
         const allCancelled = findOrder.orderedItems.every(item => item.status === 'Cancelled');
         if(allCancelled && findOrder.status !== 'Cancelled'){
@@ -80,7 +80,30 @@ const cancelItem = async(req,res)=>{
             await findOrder.save();
         }
 
-        console.log("Item removed successfully");
+        const refundAmount = unitPrice * cancelQty;
+
+        await Wallet.updateOne(
+            {userId},
+            {
+                $inc:{balance:refundAmount},
+                $push:{
+                    transactions:{
+                        type:'credit',
+                        amount: refundAmount,
+                        reason: 'Refund for Cancel Item',
+                        orderId: orderId,
+                        productId: productId,
+                        quantity: cancelQty,
+                    }
+                }
+            }
+        )
+
+        findOrder.finalAmount -= refundAmount;
+
+        await product.save();
+        await findOrder.save();
+        
         return res.status(200).json({ success: true, message: "Item removed successfully" });
     } catch (error) {
         console.error(" Error deleting item:", error);
@@ -91,6 +114,7 @@ const cancelItem = async(req,res)=>{
 const cancelOrder = async (req,res)=>{
     try {
         const {orderId} = req.body;
+        const userId = req.session.user;
         
         const order = await Order.findOne({orderId:orderId});
 
@@ -123,6 +147,24 @@ const cancelOrder = async (req,res)=>{
         }
 
         order.status = 'Cancelled';
+
+        const refundAmount = order.finalAmount;
+
+
+        await Wallet.updateOne(
+            {userId},
+            {
+                $inc:{balance: refundAmount},
+                $push: {
+                    transactions: {
+                        type: 'credit',
+                        amount: refundAmount,
+                        reason: 'Refund for cancel Order',
+                        orderId: orderId,
+                    }
+                }
+            }
+        )
         await order.save();
 
         return res.status(200).json({success: true, message: 'Order Cancelled successfully'});
