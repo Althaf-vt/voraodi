@@ -7,290 +7,344 @@
 }
 
 body {
-    background-color: #f5f5e8;
+    background-color: #000000;
     overflow-x: hidden;
-}
-
-/* Admin Dashboard Styles */
-.admin-hero {
-    height: 60vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(rgba(26, 37, 47, 0.9), rgba(47, 58, 68, 0.9)), url(https://www.transparenttextures.com/patterns/black-linen.png);
-    color: #f5f5e8;
-    position: relative;
-    overflow: hidden;
-}
-
-.admin-hero .text-container {
-    padding: 20px;
-}
-
-.admin-hero h1 {
-    font-family: 'Cinzel', serif;
-    font-size: 48px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    margin-bottom: 10px;
-    white-space: nowrap;
-}
-
-.admin-hero .subtitle {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-style: italic;
-    color: #c9a022;
-    margin-bottom: 10px;
-}
-
-.admin-hero p {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
-    font-weight: 300;
-    letter-spacing: 1px;
-}
-
-.dashboard-overview {
-    padding: 60px 20px;
-    background-color: #f5f5e8;
-    text-align: center;
-}
-
-.dashboard-overview h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 36px;
     color: #1a252f;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-    letter-spacing: 2px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Dashboard Heading */
+.dashboard-heading {
+  margin-top: 60px; /* Match this with your navbar height */
+  padding: 25px 40px;
+  /* background: #fff; */
+  /* border-bottom: 1px solid #eee; */
+  /* position: sticky; */
+  top: 60px; /* Same as navbar height */
+  z-index: 500;
+}
+
+.dashboard-heading h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a252f;
+  margin: 0;
+}
+
+/* Section Headings */
+.date-filter-section h2,
+.dashboard-overview h2,
+.sales-chart-section h2,
+.sales-report-section h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a252f;
+    text-align: left;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #c9a022;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/* Date Filter Section */
+.date-filter-section {
+    padding: 20px 40px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    margin: 0 40px 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.filter-options {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    background: transparent;
+    color: #1a252f;
+    border: 1px solid #c9a022;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background: rgba(201, 160, 34, 0.1);
+}
+
+.filter-btn.active {
+    background: #c9a022;
+    color: #fff;
+    font-weight: 600;
+}
+
+.custom-date-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.date-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    min-width: 180px;
+}
+
+.apply-btn, .export-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.apply-btn {
+    background: #c9a022;
+    color: #fff;
+}
+
+.apply-btn:hover {
+    background: #a3821b;
+}
+.export-btn{
+    font-size: 10px;
+    padding: 10px 14px;
+    border-radius: 20px;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.export-btn {
+    background: #1a252f;
+    color: #fff;
+    border: 1px solid #1a252f;
+}
+
+.export-btn:hover {
+    background: #2f3a44;
+}
+
+/* Dashboard Metrics */
+.dashboard-overview {
+    padding: 20px 40px;
+    margin: 0 40px 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 .metric-card {
-    background: rgba(255, 255, 245, 0.9);
-    border: 2px solid #c9a022;
+    background: #fff;
+    border: 1px solid #eee;
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
 }
 
 .metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .metric-card h3 {
-    font-family: 'Cinzel', serif;
-    font-size: 18px;
-    color: #1a252f;
-    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #666;
     margin-bottom: 10px;
+    font-weight: 600;
 }
 
 .metric-card p {
     font-family: 'Montserrat', sans-serif;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
-    color: #c9a022;
+    color: #1a252f;
 }
 
-.recent-orders {
-    padding: 60px 20px;
-    background: linear-gradient(135deg, #1a252f, #2f3a44);
-    color: #f5f5e8;
-    text-align: center;
+/* Sales Chart Section */
+.sales-chart-section {
+    padding: 20px 40px;
+    margin: 0 40px 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.recent-orders h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 36px;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-    letter-spacing: 2px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+.chart-container {
+    height: 400px;
+    background: #fff;
+    border-radius: 8px;
 }
 
-.orders-table {
-    max-width: 1200px;
-    margin: 0 auto;
+/* Sales Report Section */
+.sales-report-section {
+    padding: 20px 40px;
+    margin: 0 40px 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.table-container {
     overflow-x: auto;
+    margin-bottom: 20px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background: rgba(255, 255, 245, 0.9);
+    background: #fff;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 th, td {
-    padding: 15px;
+    padding: 12px 15px;
     text-align: left;
     font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
+    border-bottom: 1px solid #eee;
 }
 
 th {
     background: #1a252f;
-    color: #f5f5e8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: #f8f8f8;
+    font-weight: 600;
 }
 
-td {
-    color: #1a252f;
-    border-bottom: 1px solid rgba(201, 160, 34, 0.2);
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
 }
 
-.status {
-    padding: 5px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    text-transform: uppercase;
-}
-
-.status.shipped {
-    background-color: #a3821b;
-    color: #f5f5e8;
-}
-
-.status.pending {
-    background-color: #ff4040;
-    color: #f5f5e8;
-}
-
-.status.delivered {
-    background-color: #004d00;
-    color: #f5f5e8;
-}
-
-.action-btn {
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #c9a022, #a3821b);
-    color: #1a252f;
-    border: none;
+.page-link {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    cursor: pointer;
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    text-transform: uppercase;
-    transition: background 0.3s ease, transform 0.3s ease;
+    color: #1a252f;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    transition: all 0.2s ease;
 }
 
-.action-btn:hover {
-    background: linear-gradient(135deg, #004d00, #1a661a);
-    color: #f5f5e8;
-    transform: scale(1.05);
+.page-link:hover {
+    background: #f0f0f0;
+}
+
+.page-link.active {
+    background: #c9a022;
+    color: #fff;
+    border-color: #c9a022;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-    .admin-hero h1 {
-        font-size: 36px;
+    .admin-hero {
+        padding: 0 30px;
     }
-
-    .admin-hero .subtitle {
-        font-size: 20px;
-    }
-
-    .admin-hero p {
-        font-size: 14px;
-    }
-
-    .dashboard-overview h2,
-    .recent-orders h2 {
-        font-size: 30px;
-    }
-
-    .metric-card h3 {
-        font-size: 16px;
-    }
-
-    .metric-card p {
-        font-size: 20px;
-    }
-
-    th, td {
-        font-size: 12px;
-        padding: 10px;
-    }
-
-    .action-btn {
-        padding: 6px 12px;
-        font-size: 10px;
+    
+    .date-filter-section,
+    .dashboard-overview,
+    .sales-chart-section,
+    .sales-report-section {
+        padding: 20px 30px;
+        margin: 0 30px 25px;
     }
 }
 
 @media (max-width: 768px) {
     .admin-hero {
-        height: 50vh;
+        height: 160px;
+        padding: 0 20px;
     }
-
-    .admin-hero h1 {
-        font-size: 30px;
+    
+    .date-filter-section,
+    .dashboard-overview,
+    .sales-chart-section,
+    .sales-report-section {
+        padding: 15px 20px;
+        margin: 0 20px 20px;
     }
-
-    .admin-hero .subtitle {
-        font-size: 18px;
-    }
-
-    .admin-hero p {
-        font-size: 12px;
-    }
-
-    .dashboard-overview h2,
-    .recent-orders h2 {
-        font-size: 26px;
-    }
-
+    
     .metrics-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .chart-container {
+        height: 300px;
     }
 }
 
 @media (max-width: 480px) {
     .admin-hero {
-        height: 40vh;
+        height: 140px;
+        padding: 0 15px;
     }
-
+    
     .admin-hero h1 {
-        font-size: 24px;
-        letter-spacing: 2px;
-    }
-
-    .admin-hero .subtitle {
-        font-size: 16px;
-    }
-
-    .admin-hero p {
-        font-size: 10px;
-    }
-
-    .dashboard-overview h2,
-    .recent-orders h2 {
         font-size: 22px;
     }
-
-    .metric-card h3 {
-        font-size: 14px;
+    
+    .date-filter-section,
+    .dashboard-overview,
+    .sales-chart-section,
+    .sales-report-section {
+        padding: 15px;
+        margin: 0 15px 15px;
     }
-
-    .metric-card p {
-        font-size: 18px;
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-group {
+        justify-content: flex-start;
+    }
+    
+    .export-buttons {
+        justify-content: flex-start;
+    }
+    
+    th, td {
+        padding: 10px 12px;
+        font-size: 12px;
     }
 }

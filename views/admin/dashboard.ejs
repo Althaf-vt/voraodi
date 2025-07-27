@@ -3,120 +3,404 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VOGUE - Admin Dashboard</title>
+  <title>VORAODI - Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="/admin/dashboardStyle.css">
 </head>
 <body>
-  <!-- Include the Header (Navbar and Sidebar) -->
-    <%- include('../../views/partials/admin/header') %>
+  <%- include('../../views/partials/admin/header') %>
 
-  <!-- Main Content Wrapper -->
   <div class="main-content">
-    <!-- Hero Section -->
-    <div class="admin-hero">
-      <div class="text-container">
-        <h1 id="typewriter">Admin Command Center</h1>
-        <div class="subtitle">Manage the Legacy of VOGUE</div>
-        <p>Control with Precision</p>
+    <div class="dashboard-heading">
+      <h1>Dashboard Overview</h1>
+    </div>
+
+    <!-- Date Filter Section -->
+    <div class="date-filter-section">
+      <h2>Filter Reports</h2>
+      <div class="filter-options">
+        <div class="filter-group">
+          <button class="filter-btn <%= filter.period === 'daily' ? 'active' : '' %>" data-period="daily">Daily</button>
+          <button class="filter-btn <%= filter.period === 'weekly' ? 'active' : '' %>" data-period="weekly">Weekly</button>
+          <button class="filter-btn <%= filter.period === 'monthly' ? 'active' : '' %>" data-period="monthly">Monthly</button>
+          <button class="filter-btn <%= filter.period === 'yearly' ? 'active' : '' %>" data-period="yearly">Yearly</button>
+          <button class="filter-btn <%= filter.period === 'custom' ? 'active' : '' %>" data-period="custom">Custom</button>
+        </div>
+        <div class="custom-date-group" id="custom-date-group" style="<%= filter.period === 'custom' ? '' : 'display: none;' %>">
+          <input type="text" id="start-date" class="date-input" placeholder="Start Date" value="<%= filter.startDate ? moment(filter.startDate).format('YYYY-MM-DD') : '' %>">
+          <input type="text" id="end-date" class="date-input" placeholder="End Date" value="<%= filter.endDate ? moment(filter.endDate).format('YYYY-MM-DD') : '' %>">
+          <button id="apply-filter" class="apply-btn">Apply Filter</button>
+        </div>
+        <div class="export-buttons">
+          <button id="export-pdf" class="fas fa-file-download export-btn"> PDF</button>
+          <button id="export-excel" class="fas fa-file-excel export-btn"> Excel</button>
+        </div>
       </div>
     </div>
 
-    <!-- Dashboard Overview -->
+    <!-- Dashboard Metrics -->
     <div class="dashboard-overview">
       <h2>Dashboard Overview</h2>
       <div class="metrics-grid">
         <div class="metric-card">
           <h3>Total Sales</h3>
-          <p>$125,430</p>
+          <p>₹<%= totalSale.toLocaleString('en-IN') %></p>
         </div>
         <div class="metric-card">
-          <h3>New Orders</h3>
-          <p>142</p>
+          <h3>Total Orders</h3>
+          <p><%= totalOrders %></p>
         </div>
         <div class="metric-card">
-          <h3>Active Users</h3>
-          <p>3,245</p>
+          <h3>Total Customers</h3>
+          <p><%= totalCustomers %></p>
         </div>
         <div class="metric-card">
-          <h3>Inventory Stock</h3>
-          <p>2,890 Items</p>
+          <h3>Total Income</h3>
+          <p>₹<%= totalIncome.toLocaleString('en-IN') %></p>
         </div>
       </div>
     </div>
 
-    <!-- Recent Orders -->
-    <div class="recent-orders">
-      <h2>Recent Orders</h2>
-      <div class="orders-table">
+    <!-- Sales Analytics -->
+    <div class="sales-chart-section">
+      <h2>Sales Analytics</h2>
+      <div class="chart-container">
+        <% if (incomeData && incomeData.length > 0) { %>
+          <canvas id="salesChart"></canvas>
+        <% } else { %>
+          <p class="no-data-message">No sales data available for the selected period</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Sales Report Table -->
+    <div class="sales-report-section">
+      <h2>Sales Report</h2>
+      <div class="table-container">
         <table>
           <thead>
             <tr>
               <th>Order ID</th>
+              <th>Date</th>
               <th>Customer</th>
-              <th>Product</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>Total</th>
+              <th>Discount</th>
+              <th>Coupon</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>#VOG12345</td>
-              <td>John Doe</td>
-              <td>Legacy Monarch Suit</td>
-              <td>$1,250.00</td>
-              <td><span class="status shipped">Shipped</span></td>
-              <td><button class="action-btn" aria-label="View Order">View</button></td>
-            </tr>
-            <tr>
-              <td>#VOG12346</td>
-              <td>Jane Smith</td>
-              <td>Imperial Tailored Blazer</td>
-              <td>$450.00</td>
-              <td><span class="status pending">Pending</span></td>
-              <td><button class="action-btn" aria-label="View Order">View</button></td>
-            </tr>
-            <tr>
-              <td>#VOG12347</td>
-              <td>Michael Brown</td>
-              <td>Centurion Polo</td>
-              <td>$145.00</td>
-              <td><span class="status delivered">Delivered</span></td>
-              <td><button class="action-btn" aria-label="View Order">View</button></td>
-            </tr>
+            <% if (salesReport && salesReport.length > 0) { %>
+              <% salesReport.forEach(order => { %>
+                <tr>
+                  <td><%= order.orderId %></td>
+                  <td><%= order.orderDate %></td>
+                  <td><%= order.userName %></td>
+                  <td>₹<%= order.finalAmount.toLocaleString('en-IN') %></td>
+                  <td>₹<%= order.discount.toLocaleString('en-IN') %></td>
+                  <td><%= order.couponCode %></td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="no-data">No sales data available</td>
+              </tr>
+            <% } %>
           </tbody>
         </table>
       </div>
-    </div>
-
-    <!-- Product Management -->
-    <div class="product-management">
-      <h2>Product Management</h2>
-      <div class="management-grid">
-        <div class="management-card">
-          <h3>Add New Product</h3>
-          <p>Create a new product listing for the VOGUE collection.</p>
-          <button aria-label="Add Product">Add Product</button>
+      
+      <!-- Pagination -->
+      <% if (pagination && pagination.totalPages > 1) { %>
+        <div class="pagination">
+          <% if (pagination.currentPage > 1) { %>
+            <a href="?page=<%= pagination.currentPage - 1 %>&limit=<%= pagination.limit %>&period=<%= filter.period %><%= filter.startDate ? '&startDate=' + filter.startDate : '' %><%= filter.endDate ? '&endDate=' + filter.endDate : '' %>" class="page-link">&laquo; Prev</a>
+          <% } %>
+          
+          <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+            <a href="?page=<%= i %>&limit=<%= pagination.limit %>&period=<%= filter.period %><%= filter.startDate ? '&startDate=' + filter.startDate : '' %><%= filter.endDate ? '&endDate=' + filter.endDate : '' %>" class="page-link <%= pagination.currentPage === i ? 'active' : '' %>"><%= i %></a>
+          <% } %>
+          
+          <% if (pagination.currentPage < pagination.totalPages) { %>
+            <a href="?page=<%= pagination.currentPage + 1 %>&limit=<%= pagination.limit %>&period=<%= filter.period %><%= filter.startDate ? '&startDate=' + filter.startDate : '' %><%= filter.endDate ? '&endDate=' + filter.endDate : '' %>" class="page-link">Next &raquo;</a>
+          <% } %>
         </div>
-        <div class="management-card">
-          <h3>Edit Existing Products</h3>
-          <p>Update product details, prices, or images.</p>
-          <button aria-label="Edit Products">Edit Products</button>
-        </div>
-        <div class="management-card">
-          <h3>Manage Inventory</h3>
-          <p>Track and update stock levels for all products.</p>
-          <button aria-label="Manage Inventory">Manage Inventory</button>
-        </div>
-      </div>
+      <% } %>
     </div>
   </div>
 
-  <script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize date pickers
+      flatpickr("#start-date", { 
+        dateFormat: "Y-m-d", 
+        maxDate: "today",
+        defaultDate: "<%= filter.startDate ? moment(filter.startDate).format('YYYY-MM-DD') : '' %>"
+      });
+      
+      flatpickr("#end-date", { 
+        dateFormat: "Y-m-d", 
+        maxDate: "today",
+        defaultDate: "<%= filter.endDate ? moment(filter.endDate).format('YYYY-MM-DD') : '' %>"
+      });
 
+      // Filter button functionality
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const period = this.dataset.period;
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          
+          if (period === 'custom') {
+            document.getElementById('custom-date-group').style.display = 'flex';
+          } else {
+            document.getElementById('custom-date-group').style.display = 'none';
+            updateSalesReport(period);
+          }
+        });
+      });
+
+      // Apply filter button
+      document.getElementById('apply-filter').addEventListener('click', function() {
+        const period = 'custom';
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        
+        if (startDate && endDate) {
+          updateSalesReport(period, startDate, endDate);
+        } else {
+          alert('Please select both start and end dates');
+        }
+      });
+
+      // Function to update sales report
+      function updateSalesReport(period, startDate = null, endDate = null) {
+        const body = { period };
+        
+        if (period === 'custom' && startDate && endDate) {
+          body.startDate = startDate;
+          body.endDate = endDate;
+        }
+
+        fetch('/admin/sales-report', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            // Reload the page with new filter parameters
+            let url = `/admin?period=${period}`;
+            if (period === 'custom') {
+              url += `&startDate=${startDate}&endDate=${endDate}`;
+            }
+            window.location.href = url;
+          } else {
+            alert(data.message || 'Failed to update report');
+          }
+        })
+        .catch(error => {
+          console.error('Error updating sales report:', error);
+          alert('Failed to update report. Please try again.');
+        });
+      }
+
+      // Export PDF
+      document.getElementById('export-pdf').addEventListener('click', function() {
+        const period = document.querySelector('.filter-btn.active').dataset.period;
+        let url = '/admin/download-pdf';
+        const body = { period };
+        
+        if (period === 'custom') {
+          const startDate = document.getElementById('start-date').value;
+          const endDate = document.getElementById('end-date').value;
+          
+          if (!startDate || !endDate) {
+            alert('Please select both start and end dates');
+            return;
+          }
+          
+          body.startDate = startDate;
+          body.endDate = endDate;
+        }
+        
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/pdf'
+          },
+          body: JSON.stringify(body)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `VORAODI-Sales-Report-${new Date().toISOString().split('T')[0]}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch(error => {
+          console.error('Error exporting PDF:', error);
+          alert('Failed to export PDF. Please try again.');
+        });
+      });
+
+      // Export Excel
+      document.getElementById('export-excel').addEventListener('click', function() {
+        const period = document.querySelector('.filter-btn.active').dataset.period;
+        let url = '/admin/download-excel';
+        const body = { period };
+        
+        if (period === 'custom') {
+          const startDate = document.getElementById('start-date').value;
+          const endDate = document.getElementById('end-date').value;
+          
+          if (!startDate || !endDate) {
+            alert('Please select both start and end dates');
+            return;
+          }
+          
+          body.startDate = startDate;
+          body.endDate = endDate;
+        }
+        
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          },
+          body: JSON.stringify(body)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `VORAODI-Sales-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        })
+        .catch(error => {
+          console.error('Error exporting Excel:', error);
+          alert('Failed to export Excel. Please try again.');
+        });
+      });
+
+      // Initialize sales chart
+      <% if (incomeData && incomeData.length > 0) { %>
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(salesCtx, {
+          type: 'line',
+          data: {
+            labels: <%- JSON.stringify(incomeData.map(item => item.date)) %>,
+            datasets: [{
+              label: 'Sales Income (₹)',
+              data: <%- JSON.stringify(incomeData.map(item => item.income)) %>,
+              backgroundColor: 'rgba(201, 160, 34, 0.2)',
+              borderColor: 'rgba(201, 160, 34, 1)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function(value) {
+                    return '₹' + value.toLocaleString('en-IN');
+                  }
+                }
+              }
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return '₹' + context.raw.toLocaleString('en-IN');
+                  }
+                }
+              }
+            }
+          }
+        });
+      <% } %>
+
+      // Initialize category chart if data exists
+      <% if (categorySalesData && categorySalesData.length > 0) { %>
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        const categoryChart = new Chart(categoryCtx, {
+          type: 'doughnut',
+          data: {
+            labels: <%- JSON.stringify(categorySalesData.map(cat => cat.category)) %>,
+            datasets: [{
+              data: <%- JSON.stringify(categorySalesData.map(cat => cat.totalSold)) %>,
+              backgroundColor: [
+                'rgba(201, 160, 34, 0.7)',
+                'rgba(26, 37, 47, 0.7)',
+                'rgba(47, 58, 68, 0.7)',
+                'rgba(117, 117, 117, 0.7)',
+                'rgba(169, 169, 169, 0.7)'
+              ],
+              borderColor: [
+                'rgba(201, 160, 34, 1)',
+                'rgba(26, 37, 47, 1)',
+                'rgba(47, 58, 68, 1)',
+                'rgba(117, 117, 117, 1)',
+                'rgba(169, 169, 169, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'right',
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return context.label + ': ' + context.raw;
+                  }
+                }
+              }
+            }
+          }
+        });
+      <% } %>
+    });
   </script>
 </body>
 </html>

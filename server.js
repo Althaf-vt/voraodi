@@ -12,7 +12,7 @@ db()
 
 app.use(methodOverride('_method'));
 
-
+// app.locals.moment = moment;  
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(session({

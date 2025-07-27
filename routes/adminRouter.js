@@ -7,6 +7,7 @@ const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
 const orderController = require('../controllers/admin/orderController');
 const couponController = require('../controllers/admin/couponController');
+// const dashboardController = require('../controllers/admin/dashboardController');
 const { userAuth, adminAuth } = require('../middlewares/auth');
 const Product = require('../models/productSchema');
 
@@ -16,6 +17,9 @@ const Product = require('../models/productSchema');
 router.get('/signin', adminController.loadAdminSignin);
 router.post('/signin', adminController.signin);
 router.get('/', adminAuth, adminController.loadDashboard);
+router.post('/sales-report', adminAuth, adminController.saleReport);
+router.post('/download-pdf', adminAuth, adminController.downloadPDF);
+router.post('/download-excel', adminController.downloadExcel);
 router.get('/logout', adminController.logout);
 
 // Customer Management
