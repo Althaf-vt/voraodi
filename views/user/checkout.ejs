@@ -173,15 +173,20 @@
                         <div class="payment-options">
                             <h4>Payment Method</h4>
                             <div class="payment-option">
-                                <input type="radio" id="cod" name="paymentMethod" value="cod" checked required>
-                                <label for="cod">Cash on Delivery</label>
-                            </div>
-                            <div class="payment-option">
-                                <input type="radio" id="razorpay" name="paymentMethod" value="razorpay">
+                                <input type="radio" id="razorpay" name="paymentMethod" value="razorpay" checked required>
                                 <label for="razorpay">Razorpay (Cards/UPI/NetBanking)</label>
                             </div>
                             <div class="payment-option">
-                                <input type="radio" id="wallet" name="paymentMethod" value="wallet">
+                                <input type="radio" id="cod" name="paymentMethod" value="cod">
+                                <label for="cod">Cash on Delivery</label>
+                            </div>
+                            <div class="payment-option <%= wallet.balance < total ? 'disabled' : '' %>">
+                                <input 
+                                    type="radio" 
+                                    id="wallet" 
+                                    name="paymentMethod" 
+                                    value="wallet" 
+                                    <%= wallet.balance < total ? 'disabled' : '' %>>
                                 <label for="wallet">Wallet (₹<%= wallet.balance.toFixed(2) %> available)</label>
                             </div>
                         </div>

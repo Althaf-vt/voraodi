@@ -97,7 +97,7 @@ const getAllProducts = async (req, res) => {
         .skip(skip)
         .limit(limit);
 
-        // 🔁 Add total quantity to each product
+        //  Add total quantity to each product
         const enrichedProducts = productData.map(product => {
         const totalQuantity = product.variants.reduce((sum, variant) => sum + (variant.quantity || 0), 0);
         // Use `.toObject()` to convert the Mongoose doc to plain JS object so .category.name works in EJS
@@ -130,37 +130,81 @@ const getAllProducts = async (req, res) => {
 const addProductOffer = async(req,res)=>{
     try {
         const {productId,percentage} = req.body;
-        const findProduct = await Product.findOne({_id:productId});
-        const findCategory = await Category.findOne({_id:findProduct.category});
-        if(findCategory.categoryOffer > percentage){
-            return res.json({status:false, message:"This product's category already has a category offer"});
+
+        if (!productId || !percentage) {
+            return res.status(400).json({ success: false, message: "Product ID and percentage are required" });
         }
-        findProduct.salePrice = Math.floor(findProduct.regularPrice * ((100 - percentage) / 100));
-        findProduct.productOffer = parseInt(percentage);
-        await findProduct.save();
-        findCategory.categoryOffer = 0;
-        await findCategory.save();
-        res.json({status: true});
+
+        const product = await Product.findOne({_id:productId});
+        if (!product) {
+            return res.status(400).json({ success: false, message: "Product not found" });
+        }
+
+        const category = await Category.findOne({_id:product.category});
+        if (!category) {
+            return res.status(400).json({ success: false, message: "Category not found" });
+        }
+
+        const productOffer = parseInt(percentage);
+        const categoryOffer = category.categoryOffer || 0;
+
+        //Decide which offer to apply 
+        const finalOffer = Math.max(productOffer, categoryOffer);
+        const offerType = finalOffer === productOffer ? 'product' : 'category';
+
+
+        //Calculate salePrice
+        const salePrice = Math.floor(product.regularPrice * (1 - finalOffer / 100));
+        
+        //update product fields
+        product.productOffer = productOffer;
+        product.appliedOffer = finalOffer;
+        product.offerType = offerType;
+        product.salePrice = salePrice;
+
+        await product.save();
+
+        return res.status(200).json({status: true});
     } catch (error) {
         console.log(error)
-        res.redirect('/pageError');
-        res.status(500).json({status:false, message:"Internal Server Error"})
+        return res.status(500).json({status:false, message:"Internal Server Error"})
     }
 }
 
 const removeProductOffer = async (req,res)=>{
     try {
         const {productId} = req.body;
-        const findProduct = await Product.findOne({_id:productId});
-        const percentage = findProduct.productOffer;
-        findProduct.salePrice = findProduct.regularPrice;
-        findProduct.productOffer = 0;
-        await findProduct.save();
-        res.json({status:true});
+
+        if (!productId) {
+            return res.status(400).json({ status: false, message: "Product ID is required" });
+        }
+
+        const product = await Product.findOne({_id:productId});
+        if (!product) {
+            return res.status(400).json({ status: false, message: "Product not found" });
+        }
+        
+        const category = await Category.findOne({_id: product.category});
+        const categoryOffer = category?.categoryOffer || 0;
+
+        // Recalculate based on category offer
+        let finalOffer = categoryOffer;
+        let offerType = categoryOffer > 0 ? 'category' : 'none';
+        let salePrice = Math.floor(product.regularPrice * (1 - finalOffer / 100));
+
+        // Reset product offer
+        product.productOffer = 0;
+        product.appliedOffer = finalOffer;
+        product.offerType = offerType;
+        product.salePrice = salePrice;
+
+        await product.save();
+
+        return res.status(200).json({status:true});
 
     } catch (error) {
         console.log(error)
-        res.redirect("/pageError");
+        return res.status(500).json({success:false,message:'Internal Server Error'});
 
     }
 }

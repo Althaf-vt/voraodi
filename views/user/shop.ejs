@@ -20,138 +20,148 @@
     if (typeof searchQuery !== 'undefined' && searchQuery) queryParams.set('query', searchQuery);
     if (Array.isArray(selectedCategories) && selectedCategories.length) queryParams.set('category', selectedCategories.join(','));
     if (typeof sortBy !== 'undefined' && sortBy) queryParams.set('sort', sortBy);
-    if (Array.isArray(selectedPriceFilters) && selectedPriceFilters.length) queryParams.set('priceFilter', selectedPriceFilters[0]); // assuming single select
+    if (Array.isArray(selectedPriceFilters) && selectedPriceFilters.length) queryParams.set('priceFilter', selectedPriceFilters[0]);
 
     const paginationBaseRoute = `/shop?${queryParams.toString()}&`;
     %>
 
-    
     <div class="main-container">
         <div class="page-header breadcrumb-wrap">
-      <div class="container">
-        <div class="breadcrumb">
-          <a class="b1" href="/" rel="nofollow">Home</a>
-          <span></span> <a class="b2" href="/shop" style="text-decoration: none;">Shop</a>
+            <div class="container">
+                <div class="breadcrumb">
+                    <a class="b1" href="/" rel="nofollow">Home</a>
+                    <span></span> <a class="b2" href="/shop" style="text-decoration: none;">Shop</a>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
+        
         <section class="shop-page container">
             <div class="shop-topbar">
                 <div class="search-bar">
                     <form id="searchForm" action="/shop" method="GET" class="search-form">
-                        <input id="searchInput" type="text" name="query" placeholder="Search items..." class="search-input"  value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
-                        <button type="submit" class="search-button">Search</button>
-                        <button type="button" class="clear-button" onclick="clearSearch()">Clear</button>
+                        <input id="searchInput" type="text" name="query" placeholder="Search..." class="search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
+                        <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+                        <button type="button" class="clear-button" onclick="clearSearch()"><i class="fas fa-times"></i></button>
                     </form>
                 </div>
+                <button class="mobile-filter-btn" onclick="toggleMobileFilters()">
+                    <i class="fas fa-filter"></i>
+                </button>
             </div>
+            
             <div class="product-list-container">
-                <aside class="sidebar">
-                    <div class="sidebar-refresh-icon">
-                        <button class="refresh-button" onclick="clearFilters()" title="Clear All Filters">
-                            <i class="fas fa-sync-alt"></i>
+                <aside class="sidebar" id="sidebarFilters">
+                    <div class="filter-header">
+                        <h3>FILTERS</h3>
+                        <button class="close-filter-btn" onclick="toggleMobileFilters()">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
 
-                    <!--  CATEGORY FILTER-->
+                    <!-- CATEGORY FILTER -->
                     <div class="filter-section">
-                    <div class="filter-title" onclick="toggleSection(this)">
-                        Categories <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="filter-options" style="display: block;">
-                        <% for (let i = 0; i < category.length; i++) { %>
-                        <label class="filter-label">
-                            <input 
-                            type="checkbox" 
-                            name="category" 
-                            value="<%= category[i]._id %>" 
-                            <%= selectedCategories.includes(category[i]._id.toString()) ? 'checked' : '' %>
-                            />
-                            <%= category[i].name %>
-                        </label>
-                        <% } %>
-                    </div>
-                    </div>
-
-                   <!--  SORT FILTER -->
-                    <div class="price-filter">
-                    <div class="filter-title" onclick="toggleSection(this)">
-                        Sort Products <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="filter-options" style="display: block;">
-                        <% const sortOptions = [
-                        { label: 'Low-High', value: 'priceLowHigh' },
-                        { label: 'High-Low', value: 'priceHighLow' },
-                        { label: 'A-Z', value: 'nameAZ' },
-                        { label: 'Z-A', value: 'nameZA' }
-                        ]; %>
-
-                        <% sortOptions.forEach(opt => { %>
-                        <label class="filter-label">
-                            <input 
-                            type="radio" 
-                            name="sort" 
-                            value="<%= opt.value %>" 
-                            <%= sortBy === opt.value ? 'checked' : '' %>
-                            />
-
-                            <%= opt.label %>
-                        </label>
-                        <% }); %>
-                    </div>
+                        <div class="filter-title" onclick="toggleSection(this)">
+                            Categories <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-options">
+                            <% for (let i = 0; i < category.length; i++) { %>
+                            <label class="filter-label">
+                                <input 
+                                type="checkbox" 
+                                name="category" 
+                                value="<%= category[i]._id %>" 
+                                <%= selectedCategories.includes(category[i]._id.toString()) ? 'checked' : '' %>
+                                />
+                                <%= category[i].name %>
+                            </label>
+                            <% } %>
+                        </div>
                     </div>
 
+                    <!-- SORT FILTER -->
+                    <div class="filter-section">
+                        <div class="filter-title" onclick="toggleSection(this)">
+                            Sort Products <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-options">
+                            <% const sortOptions = [
+                            { label: 'Low-High', value: 'priceLowHigh' },
+                            { label: 'High-Low', value: 'priceHighLow' },
+                            { label: 'A-Z', value: 'nameAZ' },
+                            { label: 'Z-A', value: 'nameZA' }
+                            ]; %>
 
-                    <!--  PRICE RANGE FILTER -->
-                    <div class="price-filter">
-                    <div class="filter-title" onclick="toggleSection(this)">
-                        Filter by Price <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="filter-options" style="display: block;">
-                        <% const priceRanges = ['under500', '500to1000', '1000to1500', 'above1500']; %>
-                        <% const priceLabels = ['Under ₹500', '₹500 - ₹1000', '₹1000 - ₹1500', 'Above ₹1500']; %>
-
-                        <% for (let i = 0; i < priceRanges.length; i++) { %>
-                        <label class="filter-label">
-                            <input 
-                            type="radio" 
-                            name="priceFilter" 
-                            value="<%= priceRanges[i] %>" 
-                            <%= selectedPriceFilters.includes(priceRanges[i]) ? 'checked' : '' %>
-                            />
-                            <%= priceLabels[i] %>
-                        </label>
-                        <% } %>
-                    </div>
-                    </div>
-                    <div style="text-align:center; margin-top: 20px;">
-                        <button class="apply-filter-btn" onclick="applyFilters()">Apply Filter</button>
+                            <% sortOptions.forEach(opt => { %>
+                            <label class="filter-label">
+                                <input 
+                                type="radio" 
+                                name="sort" 
+                                value="<%= opt.value %>" 
+                                <%= sortBy === opt.value ? 'checked' : '' %>
+                                />
+                                <%= opt.label %>
+                            </label>
+                            <% }); %>
+                        </div>
                     </div>
 
+                    <!-- PRICE RANGE FILTER -->
+                    <div class="filter-section">
+                        <div class="filter-title" onclick="toggleSection(this)">
+                            Filter by Price <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-options">
+                            <% const priceRanges = ['under500', '500to1000', '1000to1500', 'above1500']; %>
+                            <% const priceLabels = ['Under ₹500', '₹500 - ₹1000', '₹1000 - ₹1500', 'Above ₹1500']; %>
+
+                            <% for (let i = 0; i < priceRanges.length; i++) { %>
+                            <label class="filter-label">
+                                <input 
+                                type="radio" 
+                                name="priceFilter" 
+                                value="<%= priceRanges[i] %>" 
+                                <%= selectedPriceFilters.includes(priceRanges[i]) ? 'checked' : '' %>
+                                />
+                                <%= priceLabels[i] %>
+                            </label>
+                            <% } %>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-footer">
+                        <button class="apply-filter-btn" onclick="applyFilters()">Apply Filters</button>
+                    </div>
                 </aside>
 
                 <div class="product-section">
                     <div class="product-grid-container">
                         <main class="product-grid">
                             <% if (products.length === 0) { %>
-                                <div class="no-products">No products available.</div>
+                                <div class="no-products">No products found matching your criteria.</div>
                             <% } else { %>
                                 <% for(let i = 0; i < products.length; i ++) {%>
                                     <div class="product-card">
-                                        <span class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">♡</span>
+                                        <% if (products[i].appliedOffer && products[i].appliedOffer > 0) { %>
+                                            <span class="offer-badge"><%= products[i].appliedOffer %>% OFF</span>
+                                        <% } %>
                                         <a href="/productDetails/<%= products[i]._id %>" style="text-decoration: none;">
                                             <img src="<%= products[i].productImage[0]%>" alt="<%= products[i].productName %>">
                                             <h4><%= products[i].productName %></h4>
-                                            <p>₹<%=products[i].salePrice.toLocaleString('en-IN')%></p>
-                                            <% if (products[i].regularPrice > products[i].salePrice) { %>
-                                                <p><span style="color: rgb(219, 75, 9);" class="text-muted"><strike>₹<%=products[i].regularPrice.toLocaleString('en-IN')%></strike></span></p>
-                                            <% } else{%>
-                                                <p><span class="text-muted"><br></span></p>
-                                            <% } %>
+                                            <div class="price-container">
+                                                <span class="sale-price">₹<%=products[i].salePrice.toLocaleString('en-IN')%></span>
+                                                <% if (products[i].regularPrice > products[i].salePrice) { %>
+                                                    <span class="regular-price" ><strike>₹<%=products[i].regularPrice.toLocaleString('en-IN')%></strike></span>
+                                                <% } %>
+                                            </div>
                                         </a>
-                                        <button class="quick-view-btn" onclick="openQuickViewModal('<%= products[i]._id %>')">
-                                            <i class="fas fa-eye"></i> Quick View
-                                        </button>
+                                        <div class="product-actions">
+                                            <button class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                            <button class="quick-view-btn" onclick="openQuickViewModal('<%= products[i]._id %>')">
+                                                <i class="fas fa-eye"></i> Quick View
+                                            </button>
+                                        </div>
                                     </div>
                                 <% } %>
                             <% } %>
@@ -173,15 +183,16 @@
                             <a class="btn" href="<%= paginationBaseRoute %>page=<%= currentPage + 1 %>">Next</a>
                         <% } %>
                     </div>
-                </div> 
+                </div>
+                
                 <!-- Quick View Modal -->
                 <div id="quickViewModal" class="quick-view-modal">
-                <div class="quick-view-content">
-                    <span class="close-modal" onclick="closeQuickViewModal()">×</span>
-                    <div id="quickViewDetails">
-                    <!-- Content will be dynamically injected -->
+                    <div class="quick-view-content">
+                        <span class="close-modal" onclick="closeQuickViewModal()">×</span>
+                        <div id="quickViewDetails">
+                        <!-- Content will be dynamically injected -->
+                        </div>
                     </div>
-                </div>
                 </div>  
             </div>
         </section>
@@ -220,6 +231,12 @@
             .then(data => {
                 if(data.success){
                     toastMessage(data);
+                    const heartIcon = document.querySelector(`.wishlist-btn[onclick="addToWishlist('${productId}')"] i`);
+                    if (heartIcon) {
+                        heartIcon.classList.remove('far');
+                        heartIcon.classList.add('fas');
+                        heartIcon.style.color = '#d4af37';
+                    }
                 }else{
                     toastMessage(data,'error');
                 }
@@ -263,93 +280,118 @@
         function closeQuickViewModal() {
             document.getElementById('quickViewModal').style.display = 'none';
         }
+
+        function toggleMobileFilters() {
+            const sidebar = document.getElementById('sidebarFilters');
+            sidebar.classList.toggle('mobile-active');
+            document.body.classList.toggle('no-scroll');
+        }
+
+        function toggleSection(element) {
+            const options = element.nextElementSibling;
+            const icon = element.querySelector('i');
+
+            if (options.style.display === 'none') {
+                options.style.display = 'block';
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                options.style.display = 'none';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-right');
+            }
+        }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <%- include("../../views/partials/user/footer") %>
 </body>
 </html>
+
+
+
+
 <script>
-// // Search Form Submit
-  document.getElementById('searchForm').addEventListener('submit', function (e) {
-  e.preventDefault();
+// Search Form Submit
+document.getElementById('searchForm').addEventListener('submit', function (e) {
+    e.preventDefault();
 
-  const search = document.getElementById('searchInput')?.value.trim();
-  const params = new URLSearchParams(window.location.search);
+    const search = document.getElementById('searchInput')?.value.trim();
+    const params = new URLSearchParams(window.location.search);
 
-  params.set('page', 1);
+    params.set('page', 1);
 
-  //  CATEGORY (multi-select)
-  const categories = [...document.querySelectorAll('input[name="category"]:checked')].map(cb => cb.value);   
-  if (categories.length > 0) {
-    params.set('category', categories.join(','));
-  } else {
-    params.delete('category');
-  }
+    // CATEGORY (multi-select)
+    const categories = [...document.querySelectorAll('input[name="category"]:checked')].map(cb => cb.value);   
+    if (categories.length > 0) {
+        params.set('category', categories.join(','));
+    } else {
+        params.delete('category');
+    }
 
-  // SORT
-  const sort = document.querySelector('input[name="sort"]:checked')?.value;
-  if (sort) {
-    params.set('sort', sort);
-  } else {
-    params.delete('sort');
-  }
+    // SORT
+    const sort = document.querySelector('input[name="sort"]:checked')?.value;
+    if (sort) {
+        params.set('sort', sort);
+    } else {
+        params.delete('sort');
+    }
 
-  // PRICE
-  const price = document.querySelector('input[name="priceFilter"]:checked')?.value;
-  if (price) {
-    params.set('priceFilter', price);
-  } else {
-    params.delete('priceFilter');
-  }
+    // PRICE
+    const price = document.querySelector('input[name="priceFilter"]:checked')?.value;
+    if (price) {
+        params.set('priceFilter', price);
+    } else {
+        params.delete('priceFilter');
+    }
 
-  //  SEARCH 
-  if (search) {
-    params.set('query', search);
-  } else {
-    params.delete('query');
-  }
+    // SEARCH 
+    if (search) {
+        params.set('query', search);
+    } else {
+        params.delete('query');
+    }
 
-  const basePath = '/shop';
-  window.location.href = `${basePath}?${params.toString()}`;
+    const basePath = '/shop';
+    window.location.href = `${basePath}?${params.toString()}`;
 });
 
-  // AJAX Pagination
-  document.addEventListener('click', function (e) {
+// AJAX Pagination
+document.addEventListener('click', function (e) {
     const isPaginationBtn = e.target.classList.contains('btn') && e.target.closest('.pagination');
     if (isPaginationBtn) {
-      e.preventDefault();
+        e.preventDefault();
 
-      const url = e.target.href;
+        const url = e.target.href;
 
-      fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
+        fetch(url)
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
 
-          const newGrid = doc.querySelector('.product-grid-container');
-          const newPagination = doc.querySelector('.pagination');
-          const newSearchInput = doc.querySelector('#searchInput');
+                const newGrid = doc.querySelector('.product-grid-container');
+                const newPagination = doc.querySelector('.pagination');
+                const newSearchInput = doc.querySelector('#searchInput');
 
-          document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
-          document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+                document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
+                document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
 
-          if (newSearchInput) {
-            document.getElementById('searchInput').value = newSearchInput.value;
-          }
+                if (newSearchInput) {
+                    document.getElementById('searchInput').value = newSearchInput.value;
+                }
 
-          // Corrected line to maintain sorting in URL
-          history.pushState({}, '', url);
-        })
-        .catch(err => {
-          console.error('Pagination Error:', err);
-          alert('An error occurred while loading the page. Please try again.');
-        });
+                // Corrected line to maintain sorting in URL
+                history.pushState({}, '', url);
+            })
+            .catch(err => {
+                console.error('Pagination Error:', err);
+                alert('An error occurred while loading the page. Please try again.');
+            });
     }
 });
 
-  // Clear Search
-  function clearSearch() {
+// Clear Search
+function clearSearch() {
     const queryParams = new URLSearchParams(window.location.search);
     queryParams.delete('query');
     const basePath = window.location.pathname;
@@ -357,25 +399,25 @@
     document.getElementById('searchInput').value = "";
 
     fetch(route)
-      .then(res => res.text())
-      .then(html => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
+        .then(res => res.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
 
-        const newGrid = doc.querySelector('.product-grid-container');
-        const newPagination = doc.querySelector('.pagination');
+            const newGrid = doc.querySelector('.product-grid-container');
+            const newPagination = doc.querySelector('.pagination');
 
-        document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
-        document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
-        history.pushState({}, '', route);
-      })
-      .catch(err => {
-        console.error('Clear Search Error:', err);
-      });
-  }
+            document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
+            document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+            history.pushState({}, '', route);
+        })
+        .catch(err => {
+            console.error('Clear Search Error:', err);
+        });
+}
 
-  // Clear Filter
-  function clearFilters() {
+// Clear Filter
+function clearFilters() {
     const queryParams = new URLSearchParams(window.location.search);
     const searchInputValue = document.getElementById('searchInput').value.trim();
 
@@ -391,26 +433,26 @@
     const route = `${basePath}?${queryParams.toString() || 'page=1'}`;
 
     fetch(route)
-      .then(res => res.text())
-      .then(html => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
+        .then(res => res.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
 
-        const newGrid = doc.querySelector('.product-grid-container');
-        const newPagination = doc.querySelector('.pagination');
+            const newGrid = doc.querySelector('.product-grid-container');
+            const newPagination = doc.querySelector('.pagination');
 
-        if (newGrid && newPagination) {
-          document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
-          document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
-        }
+            if (newGrid && newPagination) {
+                document.querySelector('.product-grid-container').innerHTML = newGrid.innerHTML;
+                document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+            }
 
-        document.getElementById('searchInput').value = searchInputValue;
-        history.pushState({}, '', route);
-      })
-      .catch(err => {
-        console.error('Clear Filter Error:', err);
-        alert('Could not clear filters. Try again.');
-      });
+            document.getElementById('searchInput').value = searchInputValue;
+            history.pushState({}, '', route);
+        })
+        .catch(err => {
+            console.error('Clear Filter Error:', err);
+            alert('Could not clear filters. Try again.');
+        });
 }
 
 function applyFilters() {
@@ -443,7 +485,7 @@ function applyFilters() {
         params.delete('priceFilter');
     }
 
-    //  SEARCH 
+    // SEARCH 
     if (search) {
         params.set('query', search);
     }
@@ -453,20 +495,17 @@ function applyFilters() {
 }
 
 function toggleSection(element) {
-  const options = element.nextElementSibling;
-  const icon = element.querySelector('i');
+    const options = element.nextElementSibling;
+    const icon = element.querySelector('i');
 
-  if (options.style.display === 'none') {
-    options.style.display = 'block';
-    icon.classList.remove('fa-chevron-right');
-    icon.classList.add('fa-chevron-down');
-  } else {
-    options.style.display = 'none';
-    icon.classList.remove('fa-chevron-down');
-    icon.classList.add('fa-chevron-right');
-  }
+    if (options.style.display === 'none') {
+        options.style.display = 'block';
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-down');
+    } else {
+        options.style.display = 'none';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-right');
+    }
 }
-
-
-
 </script>

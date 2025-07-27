@@ -27,6 +27,15 @@ const productSchema = new Schema({
         type: Number,
         default: 0
     },
+    appliedOffer: {
+        type: Number,
+        default: 0
+    },
+    offerType: {
+        type: String,
+        enum: ['none','product','category'],
+        default: 'none'
+    },
     variants: [{
         size:{
             type: String,

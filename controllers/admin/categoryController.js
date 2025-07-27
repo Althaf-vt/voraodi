@@ -53,31 +53,65 @@ const addCategory = async (req,res) =>{
 
 const addCategoryOffer = async (req,res)=>{
     try {
-        const percentage = parseInt(req.body.percentage);
-        const categoryId = req.body.id;
-        const category = await Category.findById(categoryId);
+        const {percentage,id} = req.body;
 
+        if(!percentage || !id){
+            return res.status(400).json({success:false,message:'Category ID and percentage are required'});
+        }
+        
+        const category = await Category.findOne({_id:id});
         if(!category){
             return res.status(404).json({status:false, message:'Category not found'});
         }
 
+        const categoryOffer = parseInt(percentage);
+
+        category.categoryOffer = categoryOffer
+        await category.save();
+
         const products = await Product.find({category:category._id});
-        const hasProductOffer = products.some((product)=>product.productOffer > percentage);
-        if(hasProductOffer){
-            return res.json({status:false, message:'Product within this category already have product offers'});
+        if (products.length === 0) {
+            return res.status(200).json({ success: true, message: 'Category offer applied, but no products found in this category' });
         }
 
-        await Category.updateOne({_id:categoryId},{$set:{categoryOffer:percentage}});
+        // Apply offer to each product
+        for(const product of products){
+            const productOffer = product.productOffer || 0;
 
-        for (const product of products){
-            product.productOffer = 0;
-            product.salePrice = product.regularPrice;
-            await product.save();
+            const finalOffer = Math.max(categoryOffer, productOffer);
+
+            const offerType = finalOffer === productOffer ? 'product' : 'category';
+
+            const salePrice = Math.floor(product.regularPrice * (1 - finalOffer / 100));
+
+            product.appliedOffer = finalOffer;
+            product.offerType = offerType;
+            product.salePrice = salePrice;
+
+            // let offerToApply = categoryOffer;
+            // let offerType = 'category';
+
+            
+
+            // // If product offer is greater, prefer it
+            // if(product.productOffer > categoryOffer){
+            //     offerToApply = product.productOffer;
+            //     offerType = 'product'
+            // }
+
+            // let salePrice = Math.floor(product.regularPrice * (1 - offerToApply / 100));
+            // product.appliedOffer = offerToApply;
+            // product.offerType = offerType;
+            // product.salePrice = salePrice
+
+            await product.save()
         }
+        
 
-       res.json({ success: true });
+       res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ success: false });
+        console.log('Error in add categoty offer : ',error);
+        res.status(500).json({ success: false, message:'Internal Server Error'});
     }
 }
 
@@ -95,17 +129,27 @@ const removeCategoryOffer = async(req,res)=>{
 
         if(products.length > 0){
             for(const product of products){
-                product.salePrice = Math.floor(product.regularPrice);
-                product.productOffer = 0;
+                let appliedOffer = 0;
+                let offerType = 'none';
+
+                if(product.productOffer && product.productOffer > 0){
+                    appliedOffer = product.productOffer;
+                    offerType = 'product';
+                }
+                
+                product.appliedOffer = appliedOffer;
+                product.offerType = offerType;
+                product.salePrice = Math.floor(product.regularPrice * (1 - appliedOffer / 100));
+
                 await product.save();
             }
         }
         category.categoryOffer = 0;
         await category.save();
-        res.json({ success: true });
+        res.status(200).json({ success: true });
 
     } catch (error) {
-        console.error("Error in addCategoryOffer:", error);
+        console.error("Error in remove CategoryOffer:", error);
         res.status(500).json({ success: false });
     }
 }

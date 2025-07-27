@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Details - <%= product.productName %></title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Montserrat&family=Playfair+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="/user/productDetails.css">
   <link rel="stylesheet" href="/user/headerStyle.css" />
@@ -14,7 +15,6 @@
   <%- include('../../views/partials/user/header') %>
 
   <main class="main">
-
     <div class="page-header breadcrumb-wrap">
       <div class="container">
         <div class="breadcrumb">
@@ -25,226 +25,216 @@
       </div>
     </div>
 
-    <section class="mt-50 mb-50">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-9">
-            <div class="product-detail accordion-detail">
-              <div class="row mb-50">
+    <div class="container">
+      <div class="product-detail-container">
+        <!-- Product Images -->
+        <div class="product-gallery">
+          <div class="main-image-container" id="zoomWrapper">
+            <img src="<%= product.productImage[0] %>" alt="<%= product.productName %>" class="main-image" id="mainImage">
+          </div>
+          <div class="thumbnail-container">
+            <% for(let i = 0; i < product.productImage.length; i++) { %>
+              <img src="<%= product.productImage[i] %>" 
+                   alt="Thumbnail <%= i+1 %>" 
+                   class="thumbnail"
+                   onclick="changeMainImage('<%= product.productImage[i] %>')">
+            <% } %>
+          </div>
+        </div>
 
-                <!-- Product Image and Thumbnails -->
-                <div class="col-md-6 col-sm-12 col-xs-12">
-                  <div class="detail-gallery">
-                    <div class="product-image-slider">
-                      <figure class="border-radius-10 zoom-wrapper" id="zoomWrapper">
-                        <img id="mainImage" src="<%= product.productImage[0] %>" alt="product image">
-                      </figure>
-                    </div>
+        <!-- Product Info -->
+        <div class="product-info">
+          <h1 class="product-title"><%= product.productName %></h1>
+          
+          <div class="price-container">
+            <span class="current-price">₹<%= product.salePrice.toLocaleString('en-IN') %></span>
+            <% if(product.regularPrice > product.salePrice) { %>
+              <span class="original-price">₹<%= product.regularPrice.toLocaleString('en-IN') %></span>
+            <% } %>
+            <% if(product.appliedOffer) { %>
+              <span class="offer-badge"><%= product.appliedOffer %>% OFF</span>
+            <% } %>
+          </div>
 
-                    <div class="slider-nav-thumbnails pl-15 pr-15">
-                      <% for(let i = 0; i < product.productImage.length; i++) { %>
-                        <div>
-                          <img style="object-fit:contain; cursor:pointer;" 
-                               src="<%= product.productImage[i] %>" 
-                               alt="product image" 
-                               onclick="changeMainImage('<%= product.productImage[i] %>')">
-                        </div>
-                      <% } %>
-                    </div>
-                  </div>
+          <p class="product-description"><%= product.description %></p>
+
+          <!-- Variant Selection -->
+          <div class="variant-section">
+            <span class="section-title">Size:</span>
+            <div class="variant-options">
+              <% const allSizes = ['S', 'M', 'L', 'XL']; %>
+              <% allSizes.forEach(size => { %>
+                <% const variant = product.variants.find(v => v.size === size); %>
+                <% const isOutOfStock = !variant || variant.quantity === 0; %>
+                <div class="variant-option <%= isOutOfStock ? 'out-of-stock' : '' %>"
+                     <%= isOutOfStock ? '' : `onclick="selectVariant('${variant ? variant.sku : ''}', this)"` %>
+                     data-variant-id="<%= variant ? variant.sku : '' %>">
+                  <%= size %>
                 </div>
+              <% }) %>
+            </div>
+            <input type="hidden" name="variantId" id="selectedVariant">
+          </div>
 
-                <!-- Product Info -->
-                <div class="col-md-6 col-sm-12 col-xs-12">
-                  <div class="detail-info">
-                    <h2 class="title-detail"><%= product.productName %></h2>
+          <!-- Quantity Selector -->
+          <div class="quantity-selector">
+            <button class="quantity-btn" onclick="updateQuantity(-1)">-</button>
+            <span class="quantity-value" id="quantity">1</span>
+            <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
+          </div>
 
-                    <div class="product-detail-rating">
-                      <div class="product-rate-cover text-end">
-                        <div class="product-rate d-inline-block"></div>
-                        <span class="font-small ml-5 text-muted"> (30 reviews)</span>
-                      </div>
-                    </div>
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="add-to-cart-btn" onclick="addToCart('<%= product._id %>')">
+              Add to Cart
+            </button>
+            <button class="wishlist-btn" onclick="addToWishlist('<%= product._id %>')">
+              <i class="far fa-heart"></i>
+            </button>
+          </div>
 
-                    <div class="clearfix product-price-cover">
-                      <div class="product-price primary-color float-left">
-                        <ins><span class="text-brand">₹<%= product.salePrice %></span></ins> 
-                        <% if(product.regularPrice > product.salePrice) {%>
-                        <ins><span style="color: rgb(219, 75, 9);" class="text-muted"><strike>₹<%=product.regularPrice.toLocaleString('en-IN')%></strike></span></ins>
-                        <% } %>
-                        <br>
-                        <span class="save-price font-md color3 ml-15" style="font-weight: bold;">
-                          <% if (!totalOffer) { %>
-                            No Offers
-                          <% } else { %>
-                            <%= totalOffer %>% Offer
-                          <% } %>
-                        </span>
-                        <br><br><p> Description: <%= product.description %></p>
-                      </div>
-                    </div>
-
-                    <div class="bt-1 border-color-1 mt-15 mb-15"></div>
-                    <br>
-                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-
-                    <!-- Variant Selection -->
-                    <div class="variant-selection mb-20">
-                      <label>Select Size:</label>
-                      <div class="variant-boxes">
-                        <% const allSizes = ['S', 'M', 'L', 'XL']; %>
-                        <% allSizes.forEach(size => { %>
-                          <% const variant = product.variants.find(v => v.size === size); %>
-                          <% const isOutOfStock = !variant || variant.quantity === 0; %>
-                          <div class="variant-box <%= isOutOfStock ? 'out-of-stock' : '' %>"
-                               <%= isOutOfStock ? '' : `onclick="selectVariant('${variant ? variant.sku : ''}', this)"` %>
-                               data-variant-id="<%= variant ? variant.sku : '' %>">
-                            <%= size %>
-                          </div>
-                        <% }) %>
-                      </div>
-                      <input type="hidden" name="variantId" id="selectedVariant">
-                    </div>
-
-                    <!-- Quantity + Buttons -->
-                    <div class="detail-extralink">
-                      <div class="detail-qty border radius">
-                        <a class="qty-down" onclick="updateQuantity(-1)" style="text-decoration: none;"><i class="fi-rs-angle-small-down">-</i></a>
-                        <span class="qty-val" id="quantity">1</span>
-                        <a class="qty-up" onclick="updateQuantity(1)" style="text-decoration: none;"><i class="fi-rs-angle-small-up">+</i></a>
-                      </div>
-
-                      <div class="product-extra-link2">
-                        <button type="submit" class="button button-add-to-cart" onclick="addToCart('<%= product._id %>')">Add to Cart</button>
-                        <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addToWishlist('<%=product._id%>')">♡<i class="fi-rs-heart"></i></a>
-                      </div>
-                    </div>
-                    <br>
-                    <hr style="height: 1px; background-color: #d4af37; border: none;">
-
-                    <div class="product_sort_info font-xs mb-30">
-                      <ul>
-                        <!-- <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 7 Day Return Policy</li> -->
-                      </ul>
-                    </div>
-
-                    <!-- Product Meta -->
-                    <ul class="product-meta font-xs color-grey mt-50">
-                      <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 7 Day Return Policy</li>
-                      <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
-                      <li class="mb-5">Tags: <a href="#" rel="tag"><%= category.name %></a></li>
-                      <!-- <li>Availability:  -->
-                        <!-- <span class="in-stock text-success ml-5">
-                          <%#= quantity > 0 ? 'In Stock' : 'Out of Stock' %>
-                        </span> -->
-                      <!-- </li> -->
-                    </ul>
-                  </div>
-                </div>
-              </div>
+          <!-- Product Meta -->
+          <div class="product-meta">
+            <div class="meta-item">
+              <i class="fas fa-undo-alt"></i>
+              <span>7 Day Return Policy</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Cash on Delivery available</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-tag"></i>
+              <span>Category: <%= category.name %></span>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- Related Products -->
-    <section class="related-products-section mt-50 mb-50">
-      <div class="container">
-        <h3 class="related-title">Related Products</h3>
-        <div class="related-products-grid">
+      <!-- Related Products -->
+      <div class="related-products">
+        <h2 class="section-header">Related Products</h2>
+        <div class="related-grid">
           <% relatedProducts.forEach(item => { %>
-            <div class="related-card">
-              <a href="/productDetails?id=<%= item._id %>" style="text-decoration: none;">
-                <img src="<%= item.productImage[0] %>" alt="<%= item.productName %>">
-                <h4><%= item.productName %></h4>
-                <p class="price">$<%= item.salePrice %></p>
-                <% if(item.productOffer) { %>
-                  <p class="offer-badge"><%= item.productOffer %>% OFF</p>
+            <a href="/productDetails/<%= item._id %>"" class="related-product-card" style="text-decoration: none;">
+              <img src="<%= item.productImage[0] %>" alt="<%= item.productName %>" class="related-product-image">
+              <div class="related-product-info">
+                <h3 class="related-product-title"><%= item.productName %></h3>
+                <p class="related-product-price">₹<%= item.salePrice.toLocaleString('en-IN') %> <strike style="color: #aa0303; font-weight: 400;">₹<%= item.regularPrice.toLocaleString('en-IN') %></strike></p>
+                <% if(item.appliedOffer) { %>
+                  <p class="offer-badge"><%= item.appliedOffer %>% OFF</p>
                 <% } %>
-              </a>
-            </div>
+              </div>
+            </a>
           <% }) %>
           <% if (relatedProducts.length === 0) { %>
             <p>No related products found.</p>
           <% } %>
         </div>
       </div>
-    </section>
+    </div>
   </main>
 
   <%- include('../../views/partials/user/footer') %>
 
-  <script>
+<script>
+    // Keep all other existing JavaScript exactly the same
+    // Only updating the variant selection related code
+
     // Variant Selection
     let selectedVariantId = null;
     
-    function addToCart(productId) {
-      const sku = document.getElementById('selectedVariant').value;
-      const quantity = document.getElementById('quantity').textContent;
+    // Fix for variant selection using event delegation
+    document.querySelector('.variant-options').addEventListener('click', (e) => {
+        const variantOption = e.target.closest('.variant-option:not(.out-of-stock)');
+        if (!variantOption) return;
 
-      
-      if (!sku) {
-        Swal.fire({
-          toast:true,
-          position:'top-end',
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          icon: 'error',
-          title: 'Please select a size',
-          // text: 'You need to select a size before adding to cart'
-        });
-        return;
-      }
-
-      fetch(`/addToCart?id=${productId}&sku=${sku}&quantity=${quantity}`,{
-        headers:{
-          'Accept':'application/json'
+        const variantId = variantOption.dataset.variantId;
+        if (!variantId) {
+            console.error('No variantId found for this variant option');
+            return;
         }
-      })
-      
-      
-        .then(response => response.json())
-        .then(data => {
-          if(data.success){
-            Swal.fire({
-              toast: true,
-              position:'top-end',
-              icon: 'success',
-              title: 'Added!',
-              text: data.message || "Product added to cart",
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: true,
+
+        const allVariants = document.querySelectorAll('.variant-option:not(.out-of-stock)');
+        if (selectedVariantId === variantId) {
+            console.log('Deselecting variant:', variantId);
+            variantOption.classList.remove('selected');
+            selectedVariantId = null;
+            document.getElementById('selectedVariant').value = '';
+        } else {
+            console.log('Selecting variant:', variantId);
+            allVariants.forEach(variant => {
+                variant.classList.remove('selected');
             });
-          } else {
+            variantOption.classList.add('selected');
+            selectedVariantId = variantId;
+            document.getElementById('selectedVariant').value = variantId;
+        }
+    });
+
+    function addToCart(productId) {
+        const sku = document.getElementById('selectedVariant').value;
+        const quantity = document.getElementById('quantity').textContent;
+
+        if (!sku) {
             Swal.fire({
-              toast: true,
-              position:'top-end',
-              icon: 'error',
-              text: data.message || 'Failed to add to cart',
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: true,
+                toast:true,
+                position:'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                icon: 'error',
+                title: 'Please select a size',
             });
-          }
+            return;
+        }
+
+        fetch(`/addToCart?id=${productId}&sku=${sku}&quantity=${quantity}`,{
+            headers:{
+                'Accept':'application/json'
+            }
         })
-        .catch(error => {
-          console.error('Add to Cart error', error);
-          Swal.fire({
-            icon: 'error',
-            position:'top-end',
-            text: 'Something went wrong while adding to cart.',
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-          });
-        });
+            .then(response => response.json())
+            .then(data => {
+                if(data.success){
+                    Swal.fire({
+                        toast: true,
+                        position:'top-end',
+                        icon: 'success',
+                        title: 'Added!',
+                        text: data.message || "Product added to cart",
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                    });
+                } else {
+                    Swal.fire({
+                        toast: true,
+                        position:'top-end',
+                        icon: 'error',
+                        text: data.message || 'Failed to add to cart',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Add to Cart error', error);
+                Swal.fire({
+                    icon: 'error',
+                    position:'top-end',
+                    text: 'Something went wrong while adding to cart.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                });
+            });
     }
 
+    // Keep all other existing functions exactly the same
     function changeMainImage(imageUrl) {
-      document.getElementById('mainImage').src = imageUrl;
+        document.getElementById('mainImage').src = imageUrl;
     }
 
     // Zoom functionality
@@ -252,103 +242,80 @@
     const mainImage = document.getElementById('mainImage');
 
     zoomWrapper.addEventListener('mousemove', (e) => {
-      const { left, top, width, height } = zoomWrapper.getBoundingClientRect();
-      const x = ((e.pageX - left) / width) * 100;
-      const y = ((e.pageY - top) / height) * 100;
-      mainImage.style.transformOrigin = `${x}% ${y}%`;
-      mainImage.style.transform = "scale(2)";
+        const { left, top, width, height } = zoomWrapper.getBoundingClientRect();
+        const x = ((e.pageX - left) / width) * 100;
+        const y = ((e.pageY - top) / height) * 100;
+        mainImage.style.transformOrigin = `${x}% ${y}%`;
+        mainImage.classList.add('zoomed');
     });
 
     zoomWrapper.addEventListener('mouseleave', () => {
-      mainImage.style.transform = "scale(1)";
-      mainImage.style.transformOrigin = "center";
+        mainImage.classList.remove('zoomed');
+        mainImage.style.transformOrigin = "center";
     });
 
     // Update quantity
     function updateQuantity(change) {
-      const qtyElement = document.getElementById('quantity');
-      let currentQty = parseInt(qtyElement.textContent);
-      const newQty = currentQty + change;
+        const qtyElement = document.getElementById('quantity');
+        let currentQty = parseInt(qtyElement.textContent);
+        const newQty = currentQty + change;
 
-      if (newQty >= 1) {
-        qtyElement.textContent = newQty;
-      }
+        if (newQty >= 1) {
+            qtyElement.textContent = newQty;
+        }
     }
 
-    // Fix for variant selection using event delegation
-    document.querySelector('.variant-boxes').addEventListener('click', (e) => {
-      const variantBox = e.target.closest('.variant-box:not(.out-of-stock)');
-      if (!variantBox) return;
-
-      const variantId = variantBox.dataset.variantId;
-      if (!variantId) {
-        console.error('No variantId found for this variant box');
-        return;
-      }
-
-      const allVariants = document.querySelectorAll('.variant-box:not(.out-of-stock)');
-      if (selectedVariantId === variantId) {
-        console.log('Deselecting variant:', variantId);
-        variantBox.classList.remove('selected');
-        selectedVariantId = null;
-        document.getElementById('selectedVariant').value = '';
-      } else {
-        console.log('Selecting variant:', variantId);
-        allVariants.forEach(variant => {
-          variant.classList.remove('selected');
-        });
-        variantBox.classList.add('selected');
-        selectedVariantId = variantId;
-        document.getElementById('selectedVariant').value = variantId;
-      }
-    });
-
     async function toastMessage(data, type) {
-      const message = data?.message ?? (type ? "Something went wrong" : "Updated successfully");
+        const message = data?.message ?? (type ? "Something went wrong" : "Updated successfully");
 
-      Toastify({
-          text: message,
-          duration: 1500,
-          close: true,
-          gravity: "top",
-          position: "right",
-          stopOnFocus: true,
-          style: {
-              background: type === "error" ? "#dc3545" : "#28a745",
-              borderRadius: "10px",
-              padding: "10px 20px",
-              fontWeight: "500",
-          }
-      }).showToast();
+        Toastify({
+            text: message,
+            duration: 1500,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: type === "error" ? "#dc3545" : "#28a745",
+                borderRadius: "10px",
+                padding: "10px 20px",
+                fontWeight: "500",
+            }
+        }).showToast();
     }
 
     function addToWishlist(productId) {
-      fetch(`/addToWishlist`,{
-          method: "POST",
-          headers:{
-              'Content-Type':'application/json'
-          },
-          body: JSON.stringify({productId})
-      })
-      .then(res => res.json())
-      .then(data => {
-          if(data.success){
-              toastMessage(data);
-          }else{
-              toastMessage(data,'error');
-          }
-      })
-      .catch(err =>{
-          Swal.fire({
-              title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
-              text: 'Something went wrong. Please try again later.',
-              icon: '',
-              timer: 1500,
-              showConfirmButton: false
-          })
-      })
+        fetch(`/addToWishlist`,{
+            method: "POST",
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify({productId})
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success){
+                toastMessage(data);
+                const heartIcon = document.querySelector(`.wishlist-btn i`);
+                if (heartIcon) {
+                    heartIcon.classList.remove('far');
+                    heartIcon.classList.add('fas');
+                    heartIcon.style.color = '#d4af37';
+                }
+            }else{
+                toastMessage(data,'error');
+            }
+        })
+        .catch(err =>{
+            Swal.fire({
+                title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
+                text: 'Something went wrong. Please try again later.',
+                icon: '',
+                timer: 1500,
+                showConfirmButton: false
+            })
+        })
     }
-    
-  </script>
+</script>
 </body>
 </html>

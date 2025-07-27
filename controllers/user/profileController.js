@@ -539,7 +539,7 @@ const addresses = async (req, res) => {
 
         return res.render('address', {
             user: userData,
-            userAddress: addressData.address,
+            userAddress: addressData ? addressData.address : []
         })
     } catch (error) {
         console.error('Error while loading Profile', error);

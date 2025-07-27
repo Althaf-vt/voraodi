@@ -56,6 +56,13 @@ const checkStock = async(req,res)=>{
 
 const loadCheckout = async(req,res)=>{
     try {
+
+        //session handling
+        if (req.session.orderSuccess) {
+            req.session.orderSuccess = null;
+            return res.redirect('/shop');
+        }
+
         const userId = req.session.user;
 
         const user = await User.findById(userId);
@@ -243,6 +250,8 @@ const placeOrder = async (req,res)=>{
         
         const finalAmount = recalculatedTotal + deliveryCharge;
 
+        const paymentStatus = paymentMethod === 'cod' ? 'Pending' : 'Completed';
+
 
         const newOrder = new Order({
             orderedItems,
@@ -254,6 +263,7 @@ const placeOrder = async (req,res)=>{
             status: 'Pending',
             couponApplied,
             paymentMethod,
+            paymentStatus,
             userId: userId,
             deliveryCharge: deliveryCharge,
         });
@@ -304,8 +314,8 @@ const placeOrder = async (req,res)=>{
         cart.items = [];
         await cart.save();
 
-        const populateOrder = await Order.findById(newOrder._id).populate('orderedItems.product');
-        // return res.render('orderSuccess',{ order: populateOrder });
+        //session handling
+        req.session.orderSuccess = true;
         return res.status(200).json({success:true,orderId:newOrder.orderId});
     } catch (error) {
         console.error('Order placement error:', error);
@@ -390,7 +400,6 @@ const createRazorpayOrder = async(req,res)=>{
 
 const verifyRazorpayPayment = async(req,res)=>{
     try {
-        console.log('In verify')
         const {
             razorpay_payment_id,
             razorpay_order_id,
@@ -399,9 +408,6 @@ const verifyRazorpayPayment = async(req,res)=>{
             userId,
             couponCode
         } = req.body;
-
-
-        console.log('Body : ',req.body);
 
         if(!razorpay_payment_id || !razorpay_order_id || !razorpay_signature){
             return res.status(400).json({success:false,message:"Missing Razorpay credentials"});
@@ -412,8 +418,6 @@ const verifyRazorpayPayment = async(req,res)=>{
             .createHmac('sha256',process.env.RAZORPAY_KEY_SECRET)
             .update(`${razorpay_order_id}|${razorpay_payment_id}`)
             .digest('hex');
-
-            console.log('after crypto')
 
         // 2 compare signatures
         if(generated_signature !== razorpay_signature){

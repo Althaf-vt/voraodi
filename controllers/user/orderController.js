@@ -101,15 +101,16 @@ const cancelItem = async(req,res)=>{
                     }
                 }
             )
+            findOrder.totalPrice -= refundAmount;
             findOrder.finalAmount -= refundAmount;
         }
 
         await product.save();
         await findOrder.save();
         
-        return res.status(200).json({ success: true, message: "Item removed successfully" });
+        return res.status(200).json({ success: true, message: "Item cancelled successfully" });
     } catch (error) {
-        console.error(" Error deleting item:", error);
+        console.error(" Error cancelling item:", error);
         return res.status(400).json({ success: false, message: "Internal server error" });
     }
 }
@@ -169,6 +170,7 @@ const cancelOrder = async (req,res)=>{
                     }
                 }
             )
+            order.totalPrice -= refundAmount;
             order.finalAmount -= refundAmount;
         }
 
@@ -181,16 +183,7 @@ const cancelOrder = async (req,res)=>{
     }
 }
 
-// const returnItem = async(req,res)=>{
-//     try {
-//         const {orderId,sku,reason} = req.body;
-//         const user = req.session.user;
 
-//         // const order = await 
-//     } catch (error) {
-        
-//     }
-// }
 const returnItem = async(req,res)=>{
     try {
         const {orderId,sku,reason} = req.body;
