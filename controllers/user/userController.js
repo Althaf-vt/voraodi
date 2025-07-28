@@ -369,7 +369,7 @@ const loadShoppingPage = async (req,res)=>{
 
 
 
-        const limit = 6;
+        const limit = 8;
         const skip = (parseInt(page) - 1) * limit;
 
         const products = await Product.find(filter)

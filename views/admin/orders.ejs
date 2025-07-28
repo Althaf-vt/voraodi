@@ -21,14 +21,14 @@
     <div class="order-management-header">
       <div class="text-container">
         <h1 id="typewriter">Order Management</h1>
-        <div class="subtitle">Oversee VOGUE’s Orders</div>
-        <p>Manage with Elegance</p>
+        <div class="subtitle">Oversee VORAODI’s Orders</div>
+        <!-- <p>Manage with Elegance</p> -->
       </div>
     </div>
 
     <!-- Order List Section -->
     <div class="order-list">
-      <h2>Order List</h2>
+      <!-- <h2>Order List</h2> -->
 
       <!-- Search Bar -->
       <div class="order-search-container">
@@ -56,14 +56,14 @@
             <!-- Replace the existing table row in your HTML file -->
             <% if (orders && orders.length > 0) { %>
     <% orders.forEach(order => { %>
-        <tr id="order-<%= order._id %>">
-            <td><%= order.orderId %></td>
+            <tr id="order-<%= order._id%>">
+            <td><%= order.orderId.toString().substring(0,30) + '...'  %></td>
             <td><%= order.username %></td>
             <td><%= order.orderedDate %></td>
             <td><%= order.totalAmount %></td>
             <td><%= order.paymentMethod %></td>
             <td>
-                <% if (order.returnStatus === 'Returned' || order.returnStatus === 'Rejected') { %>
+                <% if (order.returnStatus === 'Returned' || order.returnStatus === 'Rejected' || order.returnStatus === 'Requested') { %>
                     <span class="return-status-span"><%= order.returnStatus %></span>
                 <% } else if (order.status === 'Delivered'){ %>
                     <span class="order-delivered"><%= order.status %></span>
@@ -182,21 +182,20 @@
     }
 
     // Update Order Status
-    // Updated JavaScript function - Replace the existing updateOrderStatus function
     async function updateOrderStatus(orderId, status) {
     try {
-        const result = await Swal.fire({
-        toast: true,
-        title: 'Update Status',
-        text: `Are you sure you want to update the status to ${status}?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#004d00',
-        cancelButtonColor: '#ff4040',
-        confirmButtonText: 'Yes, update it!'
-        });
+        // const result = await Swal.fire({
+        // toast: true,
+        // title: 'Update Status',
+        // text: ``,
+        // icon: '',
+        // showCancelButton: true,
+        // confirmButtonColor: '#004d00',
+        // cancelButtonColor: '#ff4040',
+        // confirmButtonText: 'update'
+        // });
 
-        if (result.isConfirmed) {
+       
         const response = await fetch('/admin/updateOrderStatus', {
             method: 'POST',
             headers: {
@@ -244,7 +243,7 @@
               timerProgressBar: true,
             });
         }
-      }
+      
     } catch (error) {
         console.error('Error updating status:', error);
         Swal.fire({

@@ -63,18 +63,21 @@ router.get('/handle-auth-failure', (req, res) => {
 
 // Profile Management
 router.get('/forgot-password',profileController.getForgotPassword);
-router.post('/forgot-email-valid',profileController.forgotEmailValid);
-router.post('/verify-passForgot-otp',profileController.verifyForgotPassOtp);
+router.post('/forgot-password',profileController.forgotEmailValid);
+router.get('/forgot-pass-otp',profileController.forgotPassOtp);
+router.post('/forgot-pass-otp',profileController.verifyForgotPassOtp);
 router.post('/resend-forgot-otp',profileController.resendOtp);
 router.get('/reset-password',profileController.getResetPassword);
 router.post('/reset-password',profileController.NewPassword);
 router.get('/userProfile',userAuth,profileController.userProfile);
 router.get('/change-email',userAuth,profileController.changeEmail);
 router.post('/change-email',userAuth,profileController.changeEmailValid);
+router.get('/verify-email-otp',userAuth,profileController.emailOtpPage);
 router.post('/verify-email-otp',userAuth,profileController.verifyOtp);
 router.post('/update-email',userAuth,profileController.UpdateEmail)
 router.get('/change-password',userAuth,profileController.changePassword)
 router.post('/change-password',userAuth,profileController.changePasswordValid);
+router.get('/verify-change-pass-otp',userAuth,profileController.passOtpPage);
 router.post('/verify-change-pass-otp',userAuth,profileController.verifyChangePassOtp);
 router.post('/update-password',userAuth,profileController.UpdatePassword);
 router.patch('/edit-profile/name',userAuth,profileController.changeName);

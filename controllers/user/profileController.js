@@ -107,6 +107,7 @@ const getForgotPassword = async (req, res) => {
         if(req.session.user){
             return res.redirect('/')
         }
+        req.session.step = 'forgot-pass';
         res.render('forgot-password');
     } catch (error) {
         console.log(error)
@@ -117,6 +118,10 @@ const getForgotPassword = async (req, res) => {
 
 const forgotEmailValid = async (req, res) => {
     try {
+
+        if(req.session.step !== 'forgot-pass'){
+            return redirect('/singin');
+        }
 
         const { email } = req.body;
 
@@ -129,8 +134,9 @@ const forgotEmailValid = async (req, res) => {
             if (emailSend) {
                 req.session.userOtp = otp;
                 req.session.email = email;
+                req.session.step = 'forgot-pass-otp';
                 console.log('F-Pass-OTP : ', otp);
-                return res.render('forgotPass-otp')
+                return res.redirect('/forgot-pass-otp');
 
             } else {
                 return res.json({ success: false, message: "Falied to send OTP, Please try again" });
@@ -147,12 +153,28 @@ const forgotEmailValid = async (req, res) => {
     }
 }
 
+const forgotPassOtp = async(req,res)=>{
+    try {
+        if(req.session.user){
+            return res.redirect('/');
+        }
+        if(req.session.step !== 'forgot-pass-otp'){
+            return res.redirect('/signin');
+        }
+
+        return res.render('forgotPass-otp');
+    } catch (error) {
+        console.log('Error while rendering forgot password otp : ',error);
+        return res.redirect('/pageNotFound');
+    }
+}
 
 const verifyForgotPassOtp = async (req, res) => {
     try {
         const enteredOtp = req.body.otp;
 
         if (enteredOtp === req.session.userOtp) {
+            req.session.step = 'reset-pass';
             return res.json({ success: true, redirectUrl: '/reset-password' });
         } else {
             return res.json({ success: false, message: 'OTP not matching' });
@@ -168,6 +190,9 @@ const getResetPassword = async (req, res) => {
     try {
         if(req.session.user){
             return res.redirect('/')
+        }
+        if(req.session.step !== 'reset-pass'){
+            return res.redirect('/signin');
         }
         return res.render('reset-password');
     } catch (error) {
@@ -201,6 +226,12 @@ const resendOtp = async (req, res) => {
 
 const NewPassword = async (req, res) => {
     try {
+        if(req.session.user){
+            return res.redirect('/');
+        }
+        if(req.session.step !== 'reset-pass'){
+            return res.redirect('/signin');
+        }
         const { newPass1, newPass2 } = req.body;
         const email = req.session.email;
 
@@ -211,6 +242,12 @@ const NewPassword = async (req, res) => {
                 { email: email },
                 { $set: { password: passwordHash } }
             )
+
+            //Clear session
+            req.session.userOtp = null;
+            req.session.email = null;
+            req.session.step = null;
+
             return res.render('reset-password', { success: true, message: null });
         } else {
             return res.render('reset-password', { message: 'Password do not match' })
@@ -275,6 +312,7 @@ const editImage = async (req, res) => {
 const changeEmail = async (req, res) => {
     try {
 
+        req.session.step = 'change-email'; // session created 
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId });
         return res.render('change-email', {
@@ -288,6 +326,10 @@ const changeEmail = async (req, res) => {
 
 const changeEmailValid = async (req, res) => {
     try {
+        if(req.session.step !== 'change-email'){
+            return res.redirect('/userProfile')
+        }
+        
         const userId = req.session.user;
         const { email } = req.body;
         const user = await User.findOne({ _id: userId });
@@ -295,7 +337,6 @@ const changeEmailValid = async (req, res) => {
 
 
         if (userExists) {
-            console.log('userExits=========>')
             if (user.email !== userExists.email) {
                 return res.render('change-email', {
                     userData: user,
@@ -309,10 +350,11 @@ const changeEmailValid = async (req, res) => {
                 req.session.userOtp = otp;
                 req.session.userData = req.body;
                 req.session.email = email;
+                req.session.step = 'otp-verify'; // session created 
 
                 console.log('Change Email OTP :', otp);
 
-                return res.render('change-email-otp');
+                return res.redirect('/verify-email-otp');
 
             } else {
                 return res.json('email-error');
@@ -330,9 +372,21 @@ const changeEmailValid = async (req, res) => {
     }
 }
 
+const emailOtpPage = async(req,res)=>{
+    try {
+        if(req.session.step !== 'otp-verify'){
+            return res.redirect('/userProfile')
+        }
+        return res.render('change-email-otp');
+    } catch (error) {
+        console.log('Error in rendering otp page : ',error);
+        return res.redirect('/pageNotFound');
+    }
+}
 
 const verifyOtp = async (req, res) => {
-    try {
+    try{
+        
         const enteredOtp = req.body.otp;
 
         if (!req.session.userOtp || !req.session.email) {
@@ -340,6 +394,8 @@ const verifyOtp = async (req, res) => {
         }
 
         if (enteredOtp === req.session.userOtp) {
+
+            req.session.step = 'new-email'; // session created 
             // OTP verified, invalidate session
             req.session.userData = req.body.userData;
 
@@ -360,6 +416,12 @@ const verifyOtp = async (req, res) => {
 
 const UpdateEmail = async (req, res) => {
     try {
+
+        // check session
+        if (req.session.step !== 'new-email') {
+            return res.redirect('/userProfile');
+        }
+
         const newEmail = req.body.newEmail;
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId });
@@ -368,6 +430,12 @@ const UpdateEmail = async (req, res) => {
             res.render('new-email', { message: 'Please enter an email that different from the old one' })
         }
         await User.findByIdAndUpdate(userId, { email: newEmail });
+
+        // remove all created sessions
+        req.session.userOtp = null;
+        req.session.userData = null;
+        req.session.email = null;
+        req.session.step = null;
 
         return res.redirect('/userProfile?success=' + encodeURIComponent('Email Updated Successfully'));
 
@@ -380,6 +448,7 @@ const UpdateEmail = async (req, res) => {
 
 const changePassword = async (req, res) => {
     try {
+        req.session.step = 'change-pass'; 
         return res.render('change-password');
     } catch (error) {
         console.log('Error in loading change password');
@@ -404,9 +473,10 @@ const changePasswordValid = async (req, res) => {
                 req.session.userOtp = otp;
                 req.session.userData = req.body;
                 req.session.email = email;
+                req.session.step = 'change-pass-otp';
 
                 console.log("OTP : ", otp);
-                return res.render('change-pass-otp');
+                return res.redirect('/verify-change-pass-otp');
             } else {
                 return res.json({
                     success: false,
@@ -424,10 +494,24 @@ const changePasswordValid = async (req, res) => {
     }
 }
 
+const passOtpPage = async(req,res)=>{
+    try {
+        if(req.session.step !== 'change-pass-otp'){
+            return res.redirect('/userProfile')
+        }
+        return res.render('change-pass-otp');
+    } catch (error) {
+        console.log('Error when loading change pass otp page : ',error);
+        return res.redirect('/pageNotFound');
+    }
+}
+
 const verifyChangePassOtp = async (req, res) => {
     try {
         const enteredOtp = req.body.otp;
         if (enteredOtp === req.session.userOtp) {
+
+            req.session.step = 'new-pass';
 
             return res.render('new-password', {
                 userData: req.session.userData,
@@ -447,6 +531,10 @@ const verifyChangePassOtp = async (req, res) => {
 
 const UpdatePassword = async (req, res) => {
     try {
+
+        if(req.session.step !== 'new-pass'){
+            return res.redirect('/pageNotFound');
+        }
         const { newPass1, newPass2 } = req.body;
         const userId = req.session.user;
 
@@ -461,6 +549,12 @@ const UpdatePassword = async (req, res) => {
             }
 
             await User.findByIdAndUpdate(userId, { password: passwordHash });
+
+            // remove session
+            req.session.userOtp = null;
+            req.session.userData = null;
+            req.session.email = null;
+            req.session.step = null;
             return res.redirect('/userProfile?success=' + encodeURIComponent('Password Updated Successfully'));
         } else {
             return res.render('new-password', { message: 'Password do not match' })
@@ -950,6 +1044,7 @@ const getCoupons = async (req, res) => {
 module.exports = {
     getForgotPassword,
     forgotEmailValid,
+    forgotPassOtp,
     verifyForgotPassOtp,
     getResetPassword,
     resendOtp,
@@ -977,5 +1072,7 @@ module.exports = {
     updateQty,
     removeItem,
     orderPage,
-    getCoupons
+    getCoupons,
+    emailOtpPage,
+    passOtpPage,
 }

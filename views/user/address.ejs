@@ -225,85 +225,87 @@
 
 
         // Common validation functions
-function isInvalidPhone(phone) {
-    return (
-        !phone || 
-        phone.length !== 10 ||
-        /^(\d)\1{9}$/.test(phone) ||  // All same digit
-        phone === '1234567890' || 
-        phone === '0123456789' || 
-        !/^[6-9]\d{9}$/.test(phone)   // Not starting with 6-9
-    );
-}
+        function isInvalidPhone(phone) {
+            return (
+                !phone || 
+                phone.length !== 10 ||
+                /^(\d)\1{9}$/.test(phone) ||  // All same digit
+                phone === '1234567890' || 
+                phone === '0123456789' || 
+                !/^[6-9]\d{9}$/.test(phone)   // Not starting with 6-9
+            );
+        }
 
-function isInvalidPin(pin) {
-    if (!pin || pin.length !== 6) return true;
-    
-    const basicValid = /^[1-9]\d{5}$/.test(pin); // Only digits 1-9, length 6
-    if (!basicValid) return true;
+        function isInvalidPin(pin) {
+            if (!pin || pin.length !== 6) return true;
 
-    const ascendingSeq = '123456789';
-    const descendingSeq = '987654321';
+            // Only digits 1–9, no 0 allowed at all
+            const onlyAllowedDigits = /^[1-9]{6}$/.test(pin);
+            if (!onlyAllowedDigits) return true;
 
-    for (let i = 0; i <= ascendingSeq.length - 6; i++) {
-        const seq = ascendingSeq.substring(i, i + 6);
-        const revSeq = descendingSeq.substring(i, i + 6);
-        if (pin === seq || pin === revSeq) return true;
-    }
+            const ascendingSeq = '123456789';
+            const descendingSeq = '987654321';
 
-    // Repeating digits like 111111
-    if (/^(\d)\1{5}$/.test(pin)) return true;
+            for (let i = 0; i <= ascendingSeq.length - 6; i++) {
+                const seq = ascendingSeq.substring(i, i + 6);
+                const revSeq = descendingSeq.substring(i, i + 6);
+                if (pin === seq || pin === revSeq) return true;
+            }
 
-    return false;
-}
+            // Repeating digits like 111111, 222222 etc.
+            if (/^(\d)\1{5}$/.test(pin)) return true;
 
-function isInvalidName(name) {
-    return !name || name.trim().length < 2 || /[0-9]/.test(name);
-}
+            return false;
+        }
 
-function isInvalidField(field) {
-    return !field || field.trim().length < 2;
-}
 
-// Common validation handler
-function validateAddressForm(formData) {
-    const errors = {};
-    const { name, country, state, city, street, pincode, phone, altPhone } = formData;
+        function isInvalidName(name) {
+            return !name || name.trim().length < 4 || /[0-9]/.test(name);
+        }
 
-    if (isInvalidName(name)) {
-        errors.name = 'Please enter a valid name (min 2 chars, no numbers)';
-    }
+        function isInvalidField(field) {
+            return !field || field.trim().length < 2;
+        }
 
-    if (isInvalidField(country)) {
-        errors.country = 'Please enter a valid country';
-    }
+        // Common validation handler
+        function validateAddressForm(formData) {
+            const errors = {};
+            const { name, country, state, city, street, pincode, phone, altPhone } = formData;
 
-    if (isInvalidField(state)) {
-        errors.state = 'Please enter a valid state';
-    }
+            if (isInvalidName(name)) {
+                errors.name = 'Please enter a valid name (min 4 chars, Letter only )';
+            }
 
-    if (isInvalidField(city)) {
-        errors.city = 'Please enter a valid city';
-    }
+            if (isInvalidField(country)) {
+                errors.country = 'Please enter a valid country';
+            }
 
-    if (isInvalidField(street)) {
-        errors.street = 'Please enter a valid street address';
-    }
+            if (isInvalidField(state)) {
+                errors.state = 'Please enter a valid state';
+            }
 
-    if (isInvalidPin(pincode)) {
-        errors.pincode = 'Invalid PIN: Must be 6 digits (1-9 only), no sequences or repetitions';
-    }
+            if (isInvalidField(city)) {
+                errors.city = 'Please enter a valid city';
+            }
 
-    if (isInvalidPhone(phone)) {
-        errors.phone = 'Invalid phone number (10 digits starting with 6-9)';
-    }
+            if (isInvalidField(street)) {
+                errors.street = 'Please enter a valid street address';
+            }
 
-    if (altPhone && isInvalidPhone(altPhone)) {
-        errors.altPhone = 'Invalid alternate phone number';
-    }
+            if (isInvalidPin(pincode)) {
+                errors.pincode = 'Invalid PIN: Please enter a valid pincode';
+            }
 
-    return errors;
-}
+            if (isInvalidPhone(phone)) {
+                errors.phone = 'Invalid phone number';
+            }
+
+            if (altPhone && isInvalidPhone(altPhone)) {
+                errors.altPhone = 'Invalid alternate phone number';
+            }
+
+            return errors;
+        }
 
     
 /* ---------- helpers ---------- */

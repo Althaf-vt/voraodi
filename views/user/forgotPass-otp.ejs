@@ -32,7 +32,7 @@
         </div>
       <% } %>
 
-      <form id="verify-otp-form" action="/verify-passForgot-otp" method="POST" onsubmit="return validateOtpForm()">
+      <form id="verify-otp-form" action="/forgot-pass-otp" method="POST" onsubmit="return validateOtpForm()">
         <div class="form-field">
           <label for="otp">OTP</label>
           <input type="text" id="otp" name="otp" required />
@@ -67,7 +67,7 @@
       const otpInput = document.getElementById('otp').value;
       $.ajax({
         type: 'POST',
-        url: '/verify-passForgot-otp',
+        url: '/forgot-pass-otp',
         data: { otp: otpInput },
         success: function(response) {
           if (response.success) {
