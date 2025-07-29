@@ -996,7 +996,7 @@ const orderPage = async (req, res) => {
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId })
 
-        const orders = await Order.find({ userId: userId })
+        const orders = await Order.find({ userId: userId }).sort({createdOn : -1})
 
         res.render('order', {
             orders: orders,

@@ -83,7 +83,9 @@ const loadCheckout = async(req,res)=>{
         
         await userCart.save();
 
-        const coupons = await Coupon.find({isListed:true,isPublic:true,minimumPrice:{$lt: subtotal}});
+        const coupons = await Coupon.find(
+            {isListed:true,isPublic:true,amount:{$lte: subtotal}}
+        ).sort({amount: -1})
 
         const availableCoupons = coupons.filter(c => !c.usedBy.includes(userId));
 
@@ -435,7 +437,10 @@ const verifyRazorpayPayment = async(req,res)=>{
 
 const orderSuccess = async(req,res)=>{
     try {
+        const  userId = req.session.user;
         const {id} = req.params;
+
+        const user = await User.findOne({_id:userId});
 
         const order = await Order.findOne({orderId:id}).populate('orderedItems.product');
 
@@ -443,7 +448,10 @@ const orderSuccess = async(req,res)=>{
             return res.redirect('/pageNotFound');
         }
 
-        return res.render('orderSuccess',{order:order});
+        return res.render('orderSuccess',{
+            order:order,
+            user,
+        });
     } catch (error) {
         
     }
@@ -451,7 +459,10 @@ const orderSuccess = async(req,res)=>{
 
 const paymentFailed = async(req,res)=>{
     try {
-        res.render('payment-failed');
+        const userId = req.session.user;
+
+        const user = await User.findOne({_id:userId});
+        res.render('payment-failed',{user});
     } catch (error) {
         console.log("Error while rendering payment failed",error);
         res.redirect('/pageNotFound');

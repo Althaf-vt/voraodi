@@ -355,7 +355,7 @@ const getSalesData = async (filter) => {
         const formattedSalesReport = salesReport.map(order => ({
             orderId: order.orderId || 'N/A',
             orderDate: order.createdOn ? moment(order.createdOn).format('DD/MM/YYYY') : moment().format('DD/MM/YYYY'),
-            userName: order.user?.name || 'Unknown',
+            userName: order.userId?.name || 'Unknown',
             finalAmount: order.finalAmount || 0,
             discount: order.discount || 0,
             couponCode: order.couponApplied ? 'Applied' : 'None',

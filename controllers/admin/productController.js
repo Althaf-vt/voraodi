@@ -134,6 +134,13 @@ const addProductOffer = async(req,res)=>{
         if (!productId || !percentage) {
             return res.status(400).json({ success: false, message: "Product ID and percentage are required" });
         }
+        if(parseInt(percentage) < 1){
+            return res.status(400).json({success:false,message:'Percentage must be greater than 0.'});
+        }
+        if(parseInt(percentage) > 100){
+            return res.status(400).json({success:false,message:"Percentage cannot be greater than 100."});
+        }
+
 
         const product = await Product.findOne({_id:productId});
         if (!product) {
@@ -164,10 +171,10 @@ const addProductOffer = async(req,res)=>{
 
         await product.save();
 
-        return res.status(200).json({status: true});
+        return res.status(200).json({success: true,message:'Offer added successfully'});
     } catch (error) {
         console.log(error)
-        return res.status(500).json({status:false, message:"Internal Server Error"})
+        return res.status(500).json({success:false, message:"Internal Server Error"})
     }
 }
 
@@ -176,12 +183,12 @@ const removeProductOffer = async (req,res)=>{
         const {productId} = req.body;
 
         if (!productId) {
-            return res.status(400).json({ status: false, message: "Product ID is required" });
+            return res.status(400).json({ success: false, message: "Product ID is required" });
         }
 
         const product = await Product.findOne({_id:productId});
         if (!product) {
-            return res.status(400).json({ status: false, message: "Product not found" });
+            return res.status(400).json({ success: false, message: "Product not found" });
         }
         
         const category = await Category.findOne({_id: product.category});
@@ -200,7 +207,7 @@ const removeProductOffer = async (req,res)=>{
 
         await product.save();
 
-        return res.status(200).json({status:true});
+        return res.status(200).json({success:true,message:'Offer removed successfully.'});
 
     } catch (error) {
         console.log(error)
@@ -213,11 +220,11 @@ const blockProduct = async(req,res)=>{
     try {
         let id = req.query.id;
         await Product.updateOne({_id:id},{$set:{isBlocked:true}});
-       res.json({ success: true });
+        res.json({ success: true, message:'Product blocked successfully'});
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false , message:'Internal Server Error'});
     }
 }
 
@@ -225,10 +232,10 @@ const unblockProduct = async (req,res) =>{
     try {
         let id = req.query.id;
         await Product.updateOne({_id:id},{$set:{isBlocked:false}});
-        res.json({ success: true });
+        res.json({ success: true ,message:'Product unblocked successfully'});
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false,message:'Internal Server Error' });
     }
 }
 

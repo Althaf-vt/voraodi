@@ -213,6 +213,25 @@
     }
 
   });
+
+  async function toastMessage(data, type) {
+    const message = data?.message ?? (type ? "Something went wrong" : "Updated successfully");
+
+    Toastify({
+      text: message,
+      duration: 2000,
+      close: true,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: true,
+      style: {
+        background: type === "error" ? "#dc3545" : "#28a745",
+        borderRadius: "10px",
+        padding: "10px 20px",
+        fontWeight: "500",
+      }
+    }).showToast();
+  }
     
   // Clear Search
   function clearSearch() {
@@ -251,39 +270,27 @@
         try {
           const response = await fetch(`/admin/deleteCategory?id=${categoryId}`,{
             method: 'GET',
+            headers:{
+              'Content-Type':'application/json'
+            }
           });
 
-          if(response.redirected && response.url.includes('/admin/category')){
-            reloadCategoryTable();
-            Swal.fire({
-              toast: true,
-              title: 'Deleted',
-              text: 'The category has been deleted',
-              icon: 'success',
-              position: 'center',
-              showConfirmButton: true,
-              confirmButtonText: 'OK',
-              timer: 1500,
-              timerProgressBar: true,
-              customClass: {
-                popup: 'premium-toast',
-                confirmButton: 'premium-btn',
-                title: 'premium-title'
-              }
-            });
+          const data = await response.json();
 
+          if(data.success){
+            toastMessage(data)
+            reloadCategoryTable();
           }else{
-            Swal.fire('Failed', 'Could not delete the category', 'error');
+            toastMessage(data)
           }
         } catch (error) {
           console.error('Error in delete category',error);
-          Swal.fire('Error', 'Something went wrong whilte deleting.', 'error');
+          toastMessage(error,'error')
         }
       }
     }
 
     //Add category fetch
-
     document.getElementById('add-category-form').addEventListener('submit', async(e)=>{
       e.preventDefault();
       if(!validateForm()) return;
@@ -305,13 +312,7 @@
         const data = await response.json();
 
         if(response.ok){
-          Swal.fire({
-            toast: true,
-            icon: 'success',
-            title: 'Category Added',
-            text: data.message,
-            confirmButtonColor: '#004d00'
-          });
+          toastMessage(data)
 
           // Reset form
           e.target.reset();
@@ -330,24 +331,12 @@
           document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
 
         }else{
-          Swal.fire({
-            toast: true,
-            icon: 'error',
-            title: 'Add Failed',
-            text: data.message || 'Something went wrong.',
-            confirmButtonColor: '#ff4040'
-          });
+          toastMessage(data,'error')
         }
 
       } catch (error) {
         console.error('Add category error',error);
-        Swal.fire({
-          toast: true,
-          icon: 'error',
-          title: 'Server Error',
-          text: 'Failed to add category',
-          confirmButtonColor: '#ff4040'
-        });
+        toastMessage(error,'error')
       }
     });
 
@@ -427,14 +416,14 @@
           .then(res => res.json())
           .then(data =>{
             if(data.success){
-              Swal.fire('Offer Added', '', 'success');
+              toastMessage(data)
               reloadCategoryTable();
             }else{
-              Swal.fire('Failed to add offer', '', 'error');
+              toastMessage(data,'error');
             }
           })
           .catch(err =>{
-            Swal.fire('Error!', 'Something went wrong', 'error');
+            toastMessage(err,'error');
             console.error('Add offer error:',err);
           })
         }
@@ -467,14 +456,14 @@
           .then(res => res.json())
           .then(data =>{
             if(data.success){
-              Swal.fire('Offer Removed', '', 'success');
+              toastMessage(data)
               reloadCategoryTable();
             }else{
-              Swal.fire('Failed to remove offer', '', 'error');
+              toastMessage(data,'error')
             }
           })
           .catch(err =>{
-            Swal.fire('Error!', 'Something went wrong.', 'error');
+            toastMessage(err,'error')
             console.error('Remove offer error:',err);
           });
         }
@@ -499,14 +488,14 @@ function confirmListCategory(id) {
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            Swal.fire('Listed!', '', 'success');
+            toastMessage(data)
             reloadCategoryTable();
           } else {
-            Swal.fire('Failed to list!', '', 'error');
+            toastMessage(data,'error')
           }
         })
         .catch(err => {
-          Swal.fire('Error!', 'Something went wrong.', 'error');
+          toastMessage(err,'error')
           console.error('List category error:', err);
         });
     }
@@ -532,14 +521,14 @@ function confirmUnlistCategory(id) {
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            Swal.fire('Unlisted!', '', 'success');
+            toastMessage(data)
             reloadCategoryTable();
           } else {
-            Swal.fire('Failed to unlist!', '', 'error');
+            toastMessage(data,'error')
           }
         })
         .catch(err => {
-          Swal.fire('Error!', 'Something went wrong.', 'error');
+          toastMessage(err,'error')
           console.error('Unlist category error:', err);
         });
     }

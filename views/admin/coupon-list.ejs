@@ -347,6 +347,25 @@
           }
         });
 
+
+        // Toast for from validation
+        async function toastMessage(message) {
+            Toastify({
+                text: message,
+                duration: 1500,
+                close: true,
+                gravity: "top",
+                position: "right",
+                stopOnFocus: true,
+                style: {
+                    background: "#dc3545",
+                    borderRadius: "10px",
+                    padding: "10px 20px",
+                    fontWeight: "500",
+                }
+            }).showToast();
+        }
+
         // Edit Form Submission
         document.getElementById('editCouponForm').addEventListener('submit', function (e) {
           e.preventDefault();
@@ -382,12 +401,20 @@
 
           // Basic validation
           if (parseInt(data.amount) >= parseInt(data.minimumPrice)) {
-            Swal.fire('Error!', 'Discount amount should be less than minimum cart value', 'error');
+            toastMessage('Discount amount should be less than minimum cart value')
+            return;
+          }
+          if (data.maxUsage && parseInt(data.maxUsage) < 0) {
+            toastMessage('Max usage count cannot be negative')
             return;
           }
 
           if (new Date(data.expireOn) <= new Date()) {
-            Swal.fire('Error!', 'Expiry date should be in the future', 'error');
+            toastMessage('Expiry date should be in the future')
+            return;
+          }
+          if (data.hasRewardThreshold && data.rewardThreshold && parseInt(data.rewardThreshold) < 0) {
+            toastMessage('Reward threshold cannot be negative')
             return;
           }
 

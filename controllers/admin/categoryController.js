@@ -36,18 +36,18 @@ const addCategory = async (req,res) =>{
         });
         
         if(existingCategory){
-            return res.status(400).json({status: false, message: "Category already exists"});
+            return res.status(400).json({success: false, message: "Category already exists"});
         }
         const newCategory = new Category({
             name:categoryName,
             description,
         })
         await newCategory.save();
-        return res.json({status: true, message: 'Category added successfully!'});
+        return res.status(200).json({success: true, message: 'Category added successfully!'});
     } catch (error) {
-    console.error('Error in addCategory:', error); // Add this
-    return res.status(500).json({status: false, message: 'Internal Server Error'});
-        }
+        console.error('Error in addCategory:', error);
+        return res.status(500).json({success: false, message: 'Internal Server Error'});
+    }
 }
 
 
@@ -59,9 +59,16 @@ const addCategoryOffer = async (req,res)=>{
             return res.status(400).json({success:false,message:'Category ID and percentage are required'});
         }
         
+        if(parseInt(percentage) < 1){
+            return res.status(400).json({success:false,message:'Percentage must be greater than 0.'});
+        }
+
+        if(parseInt(percentage) > 100){
+            return res.status(400).json({success:false,message:"Percentage cannot be greater than 100."});
+        }
         const category = await Category.findOne({_id:id});
         if(!category){
-            return res.status(404).json({status:false, message:'Category not found'});
+            return res.status(404).json({success:false, message:'Category not found'});
         }
 
         const categoryOffer = parseInt(percentage);
@@ -88,30 +95,14 @@ const addCategoryOffer = async (req,res)=>{
             product.offerType = offerType;
             product.salePrice = salePrice;
 
-            // let offerToApply = categoryOffer;
-            // let offerType = 'category';
-
-            
-
-            // // If product offer is greater, prefer it
-            // if(product.productOffer > categoryOffer){
-            //     offerToApply = product.productOffer;
-            //     offerType = 'product'
-            // }
-
-            // let salePrice = Math.floor(product.regularPrice * (1 - offerToApply / 100));
-            // product.appliedOffer = offerToApply;
-            // product.offerType = offerType;
-            // product.salePrice = salePrice
-
             await product.save()
         }
         
 
-       res.status(200).json({ success: true });
+        return res.status(200).json({ success: true,message:'Offer added successful'});
     } catch (error) {
         console.log('Error in add categoty offer : ',error);
-        res.status(500).json({ success: false, message:'Internal Server Error'});
+        return res.status(500).json({ success: false, message:'Internal Server Error'});
     }
 }
 
@@ -122,7 +113,7 @@ const removeCategoryOffer = async(req,res)=>{
         const category = await Category.findById(categoryId);
 
         if(!category){
-            return res.status(404).json({status:false,message:"Category not found"});
+            return res.status(404).json({success:false,message:"Category not found"});
         }
         const percentage = category.categoryOffer;
         const products = await Product.find({category:category._id});
@@ -146,11 +137,11 @@ const removeCategoryOffer = async(req,res)=>{
         }
         category.categoryOffer = 0;
         await category.save();
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true , message: 'Offer removed successful'});
 
     } catch (error) {
         console.error("Error in remove CategoryOffer:", error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message:'Internal Server Error' });
     }
 }
 
@@ -159,12 +150,16 @@ const getListCategory = async (req,res)=>{
     try {
         let id = req.query.id;
 
+        if(!id){
+            return res.status(400).json({success:false,message:'Category Id is required'})
+        }
+
         await Category.updateOne({_id:id},{$set:{isListed:false}});
 
-        res.json({ success: true });
+        return res.status(200).json({ success: true,message: 'Categoty unlisted successful'});
     }catch(error) {
         console.error('List category error:', error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message:'Internal Server Error'});
     }
 }
 
@@ -172,12 +167,16 @@ const getUnlistCategory = async (req,res)=>{
     try {
         let id = req.query.id;
 
+        if(!id){
+            return res.status(400).json({success:false,message:'Category Id is required'})
+        }
+
         await Category.updateOne({_id:id},{$set:{isListed:true}});
 
-        res.json({ success: true });
+        return res.status(200).json({ success: true ,message: 'Categoty listed successful'});
     }catch(error) {
         console.error('Unlist category error:', error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message:'Internal Server Error'});
     }
 }
 
@@ -188,7 +187,7 @@ const getEditCategory = async(req,res)=>{
         const category = await Category.findOne({_id:id});
         return res.render('edit-category',{category:category});
     } catch (error) {
-        console.log('Internal Server Error',error);
+        console.log('Error in loading edit category',error);
         return res.redirect('/pageError');
     }
 }
@@ -215,6 +214,7 @@ const editCategory = async(req,res) =>{
             res.status(404).json({error:'Category not found'});
         }
     } catch (error) {
+        console.log('Error in edit category',error)
         return res.status(500).json({error:'Internal Server Error'})
     }
 }
@@ -223,12 +223,16 @@ const deleteCategory = async(req,res)=>{
     try {
         const id = req.query.id;
 
+        if(!id){
+            return res.status(400).json({success:false,message:'Category Id is required'})
+        }
+
         await Category.deleteOne({_id:id});
 
-        return res.redirect('/admin/category');
+        return res.status(200).json({success:true,message:'Category deleted successful'})
     } catch (error) {
         console.error('Error in delete Category',error);
-        return res.redirect('/admin/pageError');
+        return res.status(500).json({success:false,message:'Internal Server Error'});
     }
 }
 

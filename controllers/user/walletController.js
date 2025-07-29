@@ -29,6 +29,7 @@ const loadWallet = async(req,res)=>{
         const debitTotal = debitTxn.reduce((acc,txn) => acc + txn.amount ,0);
 
         res.render('wallet',{
+            user,
             wallet,
             creditTotal,
             debitTotal,
