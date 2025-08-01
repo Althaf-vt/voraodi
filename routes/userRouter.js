@@ -69,7 +69,10 @@ router.post('/forgot-pass-otp',profileController.verifyForgotPassOtp);
 router.post('/resend-forgot-otp',profileController.resendOtp);
 router.get('/reset-password',profileController.getResetPassword);
 router.post('/reset-password',profileController.NewPassword);
+
 router.get('/userProfile',userAuth,profileController.userProfile);
+router.get('/account',userAuth,profileController.userAccount)
+
 router.get('/change-email',userAuth,profileController.changeEmail);
 router.post('/change-email',userAuth,profileController.changeEmailValid);
 router.get('/verify-email-otp',userAuth,profileController.emailOtpPage);

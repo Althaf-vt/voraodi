@@ -8,7 +8,7 @@ const Wishlist = require('../../models/whishlistSchema');
 const productDetails = async(req,res)=>{
     try {
         const userId = req.session.user;
-        const userData = await User.findById(userId);
+        const userData = await User.findOne({_id:userId});
         const productId = req.params.id;
         const product = await Product.findById(productId).populate('category');
         const findCategory = product.category;
@@ -26,7 +26,6 @@ const productDetails = async(req,res)=>{
         .limit(4)
         .sort({ createdAt: -1 });
 
-        
         res.render('product-details',{
             user: userData,
             product: product,

@@ -1,5 +1,8 @@
 /* Payment Failed Page: Matching theme with order details */
 /* Retain color theme (#d4af37, #2f3a44, #f5f5e8) and typography (Cinzel, Montserrat) */
+*{
+    font-family: 'Montserrat', sans-serif;
+}
 
 .payment-failed-container {
     display: flex;

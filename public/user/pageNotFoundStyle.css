@@ -1,3 +1,7 @@
+*{
+    font-family: 'Montserrat', sans-serif;
+}
+
 /* 404 Page Not Found Section */
 .not-found-section {
   min-height: 100vh;

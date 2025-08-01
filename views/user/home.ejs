@@ -4,110 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VOGUE - Old Money Menswear</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/user/homeStyle.css">
-    <link rel="stylesheet" href="/user/headerStyle.css" />
     <link rel="stylesheet" href="/user/footerStyle.css" />
-
 </head>
 <body>
     <%- include('../../views/partials/user/header') %>
 
-    <!-- Hero Section -->
-    <div class="hero">
-        <video autoplay muted loop playsinline class="hero-video">
-            <source src="https://player.vimeo.com/external/488678763.hd.mp4?s=ae0f0a1e7c9e4a58e37e7b7e7c7f7b7e7c7f7b7e&profile_id=174" type="video/mp4">
-        </video>
-        <div class="text-container">
-            <h1 id="typewriter">Forge Your Legacy</h1>
-            <div class="subtitle">Timeless Elegance for the Modern Gentleman</div>
-            <p>Power in Every Thread</p>
-            <button class="cta-button" aria-label="Shop Now">Conquer the Elite</button>
-        </div>
-    </div>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Hero Banner -->
+        <section class="hero-banner">
+            <div class="hero-content">
+                <h1>Timeless Elegance for the Modern Gentleman</h1>
+                <p>Discover our curated collection of premium menswear</p>
+                <a href="/shop" class="cta-button">Shop Now</a>
+            </div>
+        </section>
 
-
-    <!-- Category Section: Linen Trousers -->
-<div class="category-section">
-    <h2>New Arrivals</h2>
-
-    <!-- Explore Button -->
-    <div class="explore-collections-wrapper">
-      <a href="/shop" class="explore-collections-button">Explore Collections</a>
-    </div>
-
-    
-    <div class="product-carousel" id="linen-carousel">
-        <div class="product-grid">
-            <% if (products && products.length > 0) { %>
-                
-                <% for (let i = 0; i < products.length; i++) { %>
-
-                    <div class="product-card">
-                        <a href="/addToWishlist?<%= products[i]._id %>" style="text-decoration: none;">
-                            <div class="wishlist" aria-label="Add to Wishlist">♡</div>
-                            
-                        </a>
-                        <div class="image-container">
-                            <a href="/productDetails/<%=products[i]._id%>">
-                            <img class="primary-img" 
-                                 src="<%= products[i].productImage[0] %>" 
-                                 alt="<%= products[i].productName %>">
-                             </a>
-                        </div>
-                        <div class="details">
-                            <h3><%= products[i].productName %></h3>
-                            <p>$<%= products[i].salePrice %></p>
-                            <% if (products[i].regularPrice > products[i].salePrice) { %>
-                                <p><span style="color: rgb(219, 75, 9);" class="text-muted"><strike>₹<%=products[i].regularPrice.toLocaleString('en-IN')%></strike></span></p>
-                            <% } else { %>
-                                <br>
-                            <% } %>
-
-                            <button class="quick-view-btn" onclick="openQuickViewModal('<%= products[i]._id %>')">
-                                <i class="fas fa-eye"></i> Quick View
-                            </button>
-                        </div>
+        <!-- Featured Categories -->
+        <section class="featured-section">
+            <div class="section-header">
+                <h2>Featured Categories</h2>
+                <div class="divider"></div>
+            </div>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=736&q=80" alt="Formal Wear">
+                    <div class="category-overlay">
+                        <h3>Formal Wear</h3>
+                        <a href="/shop?category=formal" class="category-link">Explore</a>
                     </div>
+                </div>
+                
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=725&q=80" alt="Casual Wear">
+                    <div class="category-overlay">
+                        <h3>Casual Wear</h3>
+                        <a href="/shop?category=casual" class="category-link">Explore</a>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <img src="https://images.unsplash.com/photo-1473966968600-fa801b869a1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Accessories">
+                    <div class="category-overlay">
+                        <h3>Accessories</h3>
+                        <a href="/shop?category=accessories" class="category-link">Explore</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Arrivals -->
+        <section class="new-arrivals">
+            <div class="section-header">
+                <h2>New Arrivals</h2>
+                <div class="divider"></div>
+                <a href="/shop" class="explore-all">View All</a>
+            </div>
+            
+            <div class="product-grid">
+                <% if (products && products.length > 0) { %>
+                    <% for (let i = 0; i < products.length; i++) { %>
+                        <div class="product-card">
+                            <a href="/addToWishlist?<%= products[i]._id %>" style="text-decoration: none;">
+                                <div class="wishlist" aria-label="Add to Wishlist">
+                                    <i class="far fa-heart"></i>
+                                </div>
+                            </a>
+                            <div class="image-container">
+                                <a href="/productDetails/<%=products[i]._id%>">
+                                    <img class="primary-img" 
+                                         src="<%= products[i].productImage[0] %>" 
+                                         alt="<%= products[i].productName %>">
+                                </a>
+                            </div>
+                            <div class="details">
+                                <h3><%= products[i].productName %></h3>
+                                <div class="price-container">
+                                    <span class="sale-price">₹<%=products[i].salePrice.toLocaleString('en-IN')%></span>
+                                    <% if (products[i].regularPrice > products[i].salePrice) { %>
+                                        <span class="regular-price"><strike>₹<%=products[i].regularPrice.toLocaleString('en-IN')%></strike></span>
+                                    <% } %>
+                                </div>
+                                <button class="quick-view-btn" onclick="openQuickViewModal('<%= products[i]._id %>')">
+                                    <i class="fas fa-eye"></i> Quick View
+                                </button>
+                            </div>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <p class="no-products">No products available.</p>
                 <% } %>
-            <% } else { %>
-                <p>No products available.</p>
-            <% } %>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about-section">
+            <div class="about-content">
+                <h2>Crafting Timeless Elegance</h2>
+                <p>At VOGUE, we believe in the power of well-crafted clothing to transform not just your appearance, but your confidence. Each piece in our collection is carefully selected to embody the perfect balance of tradition and modernity.</p>
+                <a href="/about" class="learn-more">Learn More</a>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1607346256330-dee7af15f7c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1206&q=80" alt="About VOGUE">
+            </div>
+        </section>
+    </div>
+
+    <!-- Quick View Modal -->
+    <div id="quickViewModal" class="quick-view-modal">
+        <div class="quick-view-content">
+            <span class="close-modal" onclick="closeQuickViewModal()">×</span>
+            <div id="quickViewDetails">
+                <!-- Content will be dynamically injected -->
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Quick View Modal -->
-<div id="quickViewModal" class="quick-view-modal">
-<div class="quick-view-content">
-    <span class="close-modal" onclick="closeQuickViewModal()">×</span>
-    <div id="quickViewDetails">
-    <!-- Content will be dynamically injected -->
-    </div>
-</div>
-</div>
-
-<!-- Referral Modal -->
-<div id="referralModal" class="referral-modal">
-    <div class="referral-modal-content">
-        <h2>Enter Referral Code</h2>
-        <p>Do you have a referral code? Enter it below to unlock exclusive benefits!</p>
-        <input type="text" id="referralInput" class="referral-input" placeholder="Enter referral code" maxlength="20">
-        <div class="referral-buttons">
-            <button class="referral-submit" onclick="submitReferralCode(document.getElementById('referralInput').value)">Submit</button>
-            <button class="referral-skip" onclick="skipReferralCode()">Skip</button>
+    <!-- Referral Modal -->
+    <div id="referralModal" class="referral-modal">
+        <div class="referral-modal-content">
+            <h2>Enter Referral Code</h2>
+            <p>Do you have a referral code? Enter it below to unlock exclusive benefits!</p>
+            <input type="text" id="referralInput" class="referral-input" placeholder="Enter referral code" maxlength="20">
+            <div class="referral-buttons">
+                <button class="referral-submit" onclick="submitReferralCode(document.getElementById('referralInput').value)">Submit</button>
+                <button class="referral-skip" onclick="skipReferralCode()">Skip</button>
+            </div>
         </div>
     </div>
-</div>
-
   
     <%- include('../../views/partials/user/footer') %>
 
     <script>
-
         async function toastMessage(data, type) {
             const message = data?.message ?? (type ? "Something went wrong" : "Updated successfully");
 
@@ -152,6 +185,7 @@
                 document.body.classList.add("blur-bg"); // Apply blur
             }
         });
+        
         async function submitReferralCode(code){
             const res = await fetch('/submit-referral',{
                 method: "POST",
@@ -167,9 +201,7 @@
             }else{
                 toastMessage(result,'error')
             }
-
         }
-
 
         function openQuickViewModal(productId) {
             fetch(`/quickView?id=${productId}`)
@@ -195,6 +227,7 @@
                     console.error('Quick View Error:', err);
                 });
         }
+        
         function closeQuickViewModal() {
             document.getElementById('quickViewModal').style.display = 'none';
         }

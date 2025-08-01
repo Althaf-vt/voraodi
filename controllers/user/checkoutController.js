@@ -14,6 +14,7 @@ const Wallet = require('../../models/walletSchema');
 
 const checkStock = async(req,res)=>{
     try {
+        console.log('checking....');
         const userId = req.session.user;
         const userCart = await Cart.findOne({userId:userId});
 
@@ -45,6 +46,7 @@ const checkStock = async(req,res)=>{
                 })
             } 
         }
+        console.log('checked!')
 
         return res.status(200).json({success:true,stockAvailable: true,});
 
@@ -59,9 +61,12 @@ const loadCheckout = async(req,res)=>{
 
         //session handling
         if (req.session.orderSuccess) {
+            console.log('in  order session check...')
             req.session.orderSuccess = null;
             return res.redirect('/shop');
         }
+
+         console.log('not in  order session check...')
 
         const userId = req.session.user;
 
@@ -317,7 +322,7 @@ const placeOrder = async (req,res)=>{
         await cart.save();
 
         //session handling
-        req.session.orderSuccess = true;
+        req.session.orderSuccess = null;
         return res.status(200).json({success:true,orderId:newOrder.orderId});
     } catch (error) {
         console.error('Order placement error:', error);

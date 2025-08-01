@@ -4,84 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VOGUE - Order Confirmation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="/user/orderSuccessStyle.css">
-    <link rel="stylesheet" href="/user/headerStyle.css">
     <link rel="stylesheet" href="/user/footerStyle.css">
 </head>
 <body>
     <%- include('../../views/partials/user/header') %>
 
-    <div class="confirmation-container">
-        <div class="confirmation-content">
-            <!-- Header: Amazon/Flipkart-inspired with checkmark and delivery estimate -->
+    <div class="order-success-container">
+        <div class="order-success-content">
+            <!-- Confirmation Header -->
             <div class="confirmation-header">
-                <div class="confirmation-icon">✓</div>
-                <h1 class="confirmation-title">Order Confirmed</h1>
-                <p class="confirmation-subtitle">Thank you for your purchase! Your order has been received.</p>
-                <p class="delivery-estimate">Estimated Delivery: <span><%= new Date(order.invoiceDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></span></p>
-            </div>
-
-            <!-- Order Info: Single card with order details, address removed -->
-            <div class="order-info">
-                <h2 class="section-title">Order Details</h2>
-                <div class="detail-item">
-                    <span class="detail-label">Order Number:</span>
-                    <span class="detail-value"><%= order.orderId %></span>
+                <div class="confirmation-icon">
+                    <i data-lucide="check-circle"></i>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">Order Date:</span>
-                    <span class="detail-value"><%= new Date(order.invoiceDate).toLocaleDateString() %></span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Total Amount:</span>
-                    <span class="detail-value">₹<%= order.totalPrice.toFixed(2) %></span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Discount:</span>
-                    <span class="detail-value">₹<%= order.discount %>.00</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Delivery Charge</span>
-                    <span class="detail-value">₹<%= order.deliveryCharge.toFixed(2) %></span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Final Amount:</span>
-                    <span class="detail-value">₹<%= order.finalAmount.toFixed(2) %></span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Payment Method:</span>
-                    <span class="detail-value"><%= order.paymentMethod.toUpperCase() %></span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Payment Status:</span>
-                    <span class="detail-value" style="color: #006400; font-weight: 700;">Pending</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Order Status:</span>
-                    <span class="detail-value" style="color: #006400; font-weight: 700;"><%= order.status %></span>
-                </div>
-            </div>
-
-            <!-- Order Items: List with name at start, price/quantity at end, no image or sum -->
-            <div class="order-items">
-                <h2 class="section-title">Order Items</h2>
-                <% order.orderedItems.forEach(item => { %>
-                    <div class="order-item">
-                        <h3 class="item-name"><%= item.product.productName %></h3>
-                        <p class="item-price">₹<%= item.product.salePrice.toFixed(2) %> × <%= item.quantity %></p>
+                <h1>Order Confirmed</h1>
+                <p class="confirmation-message">Thank you for shopping with VOGUE</p>
+                <div class="delivery-info">
+                    <div class="delivery-estimate">
+                        <i data-lucide="truck"></i>
+                        <span>Estimated Delivery: <strong><%= new Date(order.invoiceDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></strong></span>
                     </div>
-                <% }) %>
+                    <div class="order-number">
+                        <i data-lucide="hash"></i>
+                        <span>Order #<%= order.orderId %></span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Action Buttons: Centered, Amazon/Flipkart-inspired -->
+            <!-- Order Summary Grid -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="card-header">
+                        <i data-lucide="file-text"></i>
+                        <h2>Order Summary</h2>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="summary-item">
+                            <span>Order Date</span>
+                            <span><%= new Date(order.invoiceDate).toLocaleDateString() %></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Subtotal</span>
+                            <span>₹<%= order.totalPrice.toFixed(2) %></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Discount</span>
+                            <span>-₹<%= order.discount %>.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Delivery</span>
+                            <span>₹<%= order.deliveryCharge.toFixed(2) %></span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>Total Paid</span>
+                            <span>₹<%= order.finalAmount.toFixed(2) %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-card">
+                    <div class="card-header">
+                        <i data-lucide="credit-card"></i>
+                        <h2>Payment Information</h2>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="summary-item">
+                            <span>Method</span>
+                            <span><%= order.paymentMethod.toUpperCase() %></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Status</span>
+                            <span class="status-badge pending">Pending</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Order Status</span>
+                            <span class="status-badge <%= order.status.toLowerCase() %>"><%= order.status %></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordered Items -->
+            <div class="items-card">
+                <div class="card-header">
+                    <i data-lucide="package"></i>
+                    <h2>Your Items (<%= order.orderedItems.length %>)</h2>
+                </div>
+                
+                <div class="card-body">
+                    <% order.orderedItems.forEach(item => { %>
+                        <div class="ordered-item">
+                            <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>" class="item-image">
+                            <div class="item-details">
+                                <h3><%= item.product.productName %></h3>
+                                <div class="item-meta">
+                                    <span class="item-price">₹<%= item.product.salePrice.toFixed(2) %></span>
+                                    <span class="item-quantity">Qty: <%= item.quantity %></span>
+                                </div>
+                            </div>
+                            <div class="item-total">
+                                ₹<%= (item.product.salePrice * item.quantity).toFixed(2) %>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
             <div class="action-buttons">
-                <a href="/order-details/<%= order.orderId %>" class="btn btn-secondary">Track Order</a>
-                <a href="/" class="btn btn-primary">Continue Shopping</a>
+                <a href="/order-details/<%= order.orderId %>" class="btn track-btn">
+                    <i data-lucide="package-search"></i> Track Order
+                </a>
+                <a href="/" class="btn continue-btn">
+                    <i data-lucide="shopping-bag"></i> Continue Shopping
+                </a>
             </div>
         </div>
     </div>
 
     <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

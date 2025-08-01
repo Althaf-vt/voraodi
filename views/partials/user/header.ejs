@@ -1,76 +1,262 @@
+<header>
+    <style>
+        :root {
+            --accent-gold: #c6a330;
+            --accent-dark: #2f3a44;
+            --accent-green: #004d00;
+            --accent-gray: #767675;
+            --accent-red: #c00000;
+            --text-primary: #2f3a44;
+            --text-secondary: #4a4a4a;
+            --text-tertiary: #666666;
+            --bg-primary: #f5f5e8;
+            --bg-secondary: #fffef4;
+        }
 
-<link rel="stylesheet" href="/user/headerStyle.css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script src="/re-use/toast.js"></script>
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background-color: var(--bg-secondary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
 
-<nav>
-    <div class="logo-container">
-        <div class="crest"></div>
-        <div class="logo">VORAODI</div>
-    </div>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/shop">Shop</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><a href="#">About</a></li>
-    </ul>
-    <div class="nav-buttons">
-        <a href="/wishlist"><button aria-label="Add to Wishlist">♡</button></a>
-        <a href="/cart"><button aria-label="View Cart">🛒</button></a>
-        <div class="user-profile-container">
-            <button class="user-profile" aria-label="User Profile">🧑</button>
+        .nav-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .brand span {
+            color: var(--accent-gold);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-gold);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .icon-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .icon-link:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .icon-link svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-primary);
+            stroke-width: 1.75;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            min-width: 160px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .user-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 8px 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--accent-red);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 900px) {
+            header {
+                padding: 0 20px;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .brand {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .nav-container {
+                justify-content: space-between;
+            }
+        }
+    </style>
+
+    <div class="nav-container">
+        <a href="/" class="brand">VORAODI</a>
+        
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/shop">Shop</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+        </div>
+        
+        <div class="nav-icons">
+            <a href="/wishlist" class="icon-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </a>
+            
+            <a href="/cart" class="icon-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                
+            </a>
+            
             <div class="user-dropdown">
-                <% if (locals.user) { %>
-                    <a href="/userProfile" class="auth-button logged-in-button">Profile</a>
-                    <a href="/logout" class="auth-button logged-in-button">Logout</a>
+               
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <img src="/<%= user?.image %>" alt="User Avatar" class="user-avatar">
                 <% } else { %>
-                    <a href="/signin" class="auth-button" aria-label="Sign In">Sign In</a>
-                    <a href="/signup" class="auth-button" aria-label="Sign Up">Sign Up</a>
+                    <div class="icon-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
                 <% } %>
+                
+                <div class="dropdown-menu">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <a href="/account">Account</a>
+                        <a href="/logout">Logout</a>
+                    <% } else { %>
+                        <a href="/signin">Sign In</a>
+                        <a href="/signup">Sign Up</a>
+                    <% } %>
+                </div>
+                
             </div>
         </div>
     </div>
-</nav>
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const success = params.get('success');
-
-if(success){
-    Toastify({
-    text: success || "Success!",
-    duration: 3000,
-    close: true,
-    gravity: "top", 
-    position: "right", 
-    backgroundColor: "#28a745",
-    stopOnFocus: true,
-    style: {
-        borderRadius: "12px",
-        transform: "translateX(100%)",
-        opacity: "0",
-        transition: "transform 0.5s ease, opacity 0.5s ease"
-    },
-    callback: function () {
-        const toast = document.querySelector(".toastify");
-        if (toast) {
-        toast.style.transform = "translateX(-100%)";
-        toast.style.opacity = "0";
-        }
-    }
-    }).showToast();
-
-    setTimeout(() => {
-    const toast = document.querySelector(".toastify");
-    if (toast) {
-        toast.style.transform = "translateX(0)";
-        toast.style.opacity = "1";
-    }
-    }, 100); // delay to trigger entry animation
-
-}
-window.history.replaceState({},document.title, window.location.pathname);
-
-
-
-</script>
+</header>

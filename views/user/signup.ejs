@@ -3,169 +3,208 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up</title>
+  <title>Sign Up | Althaf</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/user/signupStyle.css">
-  <link rel="stylesheet" href="/user/headerStyle.css" />
   <link rel="stylesheet" href="/user/footerStyle.css" />
-
-  <!-- Bootstrap 5 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Optional Bootstrap JS (for components like modal, dropdown, etc.) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
   <%- include('../../views/partials/user/header') %>
-  <section class="auth-section">
-    <div class="auth-container">
-      <h2>Sign Up</h2>
+  
+  <main class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <i data-lucide="user-plus" width="28" height="28" class="auth-icon"></i>
+        <h1>Create Account</h1>
+        <p>Join us to get started</p>
+      </div>
+
       <form id="signup-form" action="/signup" method="POST">
         <div class="form-field">
-          <label for="name">Full Name</label>
-          <input type="text" id="name" name="name">
+          <label for="name">
+            <i data-lucide="user" width="14" height="14"></i>
+            Full Name
+          </label>
+          <input type="text" id="name" name="name" placeholder="Your full name">
           <span class="error-message" data-field="name"></span>
         </div>
+        
         <div class="form-field">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email">
+          <label for="email">
+            <i data-lucide="mail" width="14" height="14"></i>
+            Email
+          </label>
+          <input type="email" id="email" name="email" placeholder="your@email.com">
           <span class="error-message" data-field="email"></span>
         </div>
+        
         <div class="form-field">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password">
+          <label for="password">
+            <i data-lucide="lock" width="14" height="14"></i>
+            Password
+          </label>
+          <input type="password" id="password" name="password" placeholder="••••••••">
           <span class="error-message" data-field="password"></span>
         </div>
+        
         <div class="form-field">
-          <label for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" name="cPassword">
+          <label for="confirm-password">
+            <i data-lucide="shield-check" width="14" height="14"></i>
+            Confirm Password
+          </label>
+          <input type="password" id="confirm-password" name="cPassword" placeholder="••••••••">
           <span class="error-message" data-field="confirm-password"></span>
         </div>
+        
         <div class="form-field">
-          <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" name="phone" pattern="\+?[1-9]\d{1,14}">
+          <label for="phone">
+            <i data-lucide="phone" width="14" height="14"></i>
+            Phone
+          </label>
+          <input type="tel" id="phone" name="phone" placeholder="+1 234 567 8900">
           <span class="error-message" data-field="phone"></span>
         </div>
-          <% if(locals.message && message.length>0){ %>
+
+        <% if(locals.message && message.length > 0) { %>
           <div class="alert alert-danger text-center">
-             
-            <%= message  %>
-          
+            <%= message %>
           </div>
-          <% } %>
-        <button type="submit" class="submit-btn">Sign Up</button>
+        <% } %>
+
+        <button type="submit" class="submit-btn">
+          Sign Up
+          <i data-lucide="arrow-right" width="16" height="16"></i>
+        </button>
       </form>
-      <div class="auth-divider">or</div>
+
+      <div class="auth-divider">
+        <span>or sign up with</span>
+      </div>
+
       <a href="/auth/google/signup" class="google-signin-btn" onclick="handleGoogleSignUp()">
         <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo">
-        Sign Up with Google
+        Google
       </a>
-      <p class="link">Already have an account? <a href="/signin">Sign In</a></p>
+
+      <div class="auth-footer">
+        Have an account? <a href="/signin">Sign in</a>
+      </div>
     </div>
-  </section>
+  </main>
+
   <%- include('../../views/partials/user/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="/user/google-signin.js"></script>
 
-
-   
-
+  <!-- All script content remains exactly the same -->
   <script>
-  document.getElementById('signup-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const isValid = validateForm();
-    if (isValid) this.submit();
-  });
-
-  function isInvalidPhone(phone) {
-    return (
-      /^(\d)\1{9}$/.test(phone) ||     
-      phone === '1234567890' || 
-      phone === '0123456789' || 
-      !/^[6-9]\d{9}$/.test(phone)
-    );
-  }
-
-  function validateName() {
-    const name = document.getElementById('name').value.trim();
-    if (name.length < 4) {
-      showError('name', 'Name must be at least 4 characters long');
-    } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(name)) {
-      showError('name', 'Name can only contain letters and single spaces between words');
-    } else {
-      clearError('name');
-    }
-  }
-
-  function validateEmail() {
-    const email = document.getElementById('email').value.trim();
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      showError('email', 'Please enter a valid email address');
-    } else {
-      clearError('email');
-    }
-  }
-
-  function validatePassword() {
-    const password = document.getElementById('password').value;
-    if (password.length < 8) {
-      showError('password', 'Password must be at least 8 characters long');
-    } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
-      showError('password', 'Password must contain at least one uppercase letter, one lowercase letter, and one number');
-    } else {
-      clearError('password');
-    }
-  }
-
-  function validateConfirmPassword() {
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-    if(confirmPassword.length >0){
-        if (password !== confirmPassword) {
-        showError('confirm-password', 'Passwords do not match');
-      } else {
-        clearError('confirm-password');
+    document.addEventListener('DOMContentLoaded', () => {
+      const alertBox = document.querySelector('.alert.alert-danger');
+      if (alertBox) {
+        setTimeout(() => {
+          alertBox.style.display = 'none';
+        }, 3000); 
       }
-    }else if(confirmPassword.length == 0){
-        clearError('confirm-password');
+      lucide.createIcons();
+    });
+
+    document.getElementById('signup-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const isValid = validateForm();
+      if (isValid) this.submit();
+    });
+
+    function isInvalidPhone(phone) {
+      return (
+        /^(\d)\1{9}$/.test(phone) ||     
+        phone === '1234567890' || 
+        phone === '0123456789' || 
+        !/^[6-9]\d{9}$/.test(phone)
+      );
     }
-  }
 
-  function validatePhone() {
-    const phone = document.getElementById('phone').value.trim();
-    if (isInvalidPhone(phone)) {
-      showError('phone', 'Invalid phone number');
-    } else {
-      clearError('phone');
+    function validateName() {
+      const name = document.getElementById('name').value.trim();
+      if (name.length < 4) {
+        showError('name', 'Name must be at least 4 characters long');
+      } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(name)) {
+        showError('name', 'Name can only contain letters and single spaces between words');
+      } else {
+        clearError('name');
+      }
     }
-  }
 
-  function showError(fieldId, message) {
-    const errorElement = document.querySelector(`.error-message[data-field="${fieldId}"]`);
-    errorElement.textContent = message;
-    errorElement.style.display = 'block';
-  }
+    function validateEmail() {
+      const email = document.getElementById('email').value.trim();
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        showError('email', 'Please enter a valid email address');
+      } else {
+        clearError('email');
+      }
+    }
 
-  function clearError(fieldId) {
-    const errorElement = document.querySelector(`.error-message[data-field="${fieldId}"]`);
-    errorElement.textContent = '';
-    errorElement.style.display = 'none';
-  }
+    function validatePassword() {
+      const password = document.getElementById('password').value;
+      if (password.length < 8) {
+        showError('password', 'Password must be at least 8 characters long');
+      } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+        showError('password', 'Password must contain at least one uppercase letter, one lowercase letter, and one number');
+      } else {
+        clearError('password');
+      }
+    }
 
-  function validateForm() {
-    validateName();
-    validateEmail();
-    validatePassword();
-    validateConfirmPassword();
-    validatePhone();
+    function validateConfirmPassword() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      if(confirmPassword.length >0){
+          if (password !== confirmPassword) {
+          showError('confirm-password', 'Passwords do not match');
+        } else {
+          clearError('confirm-password');
+        }
+      }else if(confirmPassword.length == 0){
+          clearError('confirm-password');
+      }
+    }
 
-    const errors = document.querySelectorAll('.error-message');
-    return [...errors].every(el => el.textContent === '');
-  }
+    function validatePhone() {
+      const phone = document.getElementById('phone').value.trim();
+      if (isInvalidPhone(phone)) {
+        showError('phone', 'Invalid phone number');
+      } else {
+        clearError('phone');
+      }
+    }
 
-  // Real-time validation listeners
-  document.addEventListener('DOMContentLoaded', () => {
+    function showError(fieldId, message) {
+      const errorElement = document.querySelector(`.error-message[data-field="${fieldId}"]`);
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    }
+
+    function clearError(fieldId) {
+      const errorElement = document.querySelector(`.error-message[data-field="${fieldId}"]`);
+      errorElement.textContent = '';
+      errorElement.style.display = 'none';
+    }
+
+    function validateForm() {
+      validateName();
+      validateEmail();
+      validatePassword();
+      validateConfirmPassword();
+      validatePhone();
+
+      const errors = document.querySelectorAll('.error-message');
+      return [...errors].every(el => el.textContent === '');
+    }
+
     document.getElementById('name').addEventListener('input', validateName);
     document.getElementById('email').addEventListener('input', validateEmail);
     document.getElementById('password').addEventListener('input', () => {
@@ -174,8 +213,6 @@
     });
     document.getElementById('confirm-password').addEventListener('input', validateConfirmPassword);
     document.getElementById('phone').addEventListener('input', validatePhone);
-  });
-</script>
-
+  </script>
 </body>
 </html>
