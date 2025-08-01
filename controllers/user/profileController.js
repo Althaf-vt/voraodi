@@ -1022,14 +1022,29 @@ const removeItem = async (req, res) => {
 const orderPage = async (req, res) => {
     try {
 
+        const page = parseInt(req.query.page) || 1;
+
+        const limit = 5;
+        const skip = (page - 1) * limit;
+
+
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId })
 
-        const orders = await Order.find({ userId: userId }).sort({createdOn : -1})
+        const orders = await Order.find({ userId: userId }).populate('orderedItems.product')
+        .sort({createdOn : -1})
+        .skip(skip)
+        .limit(limit);
+
+        const totalOrders = await Order.countDocuments({userId:userId});
+        const totalPages = Math.ceil(totalOrders/limit);
 
         res.render('order', {
             orders: orders,
-            user
+            user,
+            currentPage: page,
+            totalPages,
+            
         });
     } catch (error) {
         console.log('Error while loading order page', error);

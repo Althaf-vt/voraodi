@@ -40,7 +40,14 @@
                         <div class="order-card">
                             <div class="order-card-header">
                                 <div class="order-meta">
-                                    <span class="order-id">Order #<%= order.orderId %></span>
+                                    <span class="order-id">
+                                        <%= order.orderedItems[0].product.productName %>
+                                        <% if(order?.orderedItems[1]?.product.productName) {%>,<% } %>
+                                        <%= order?.orderedItems[1]?.product.productName %>
+                                    <% if(order.orderedItems.length > 2 ){%>
+                                        ...    
+                                    <% } %>
+                                    </span>
                                     <span class="order-date"><%= new Date(order.invoiceDate).toLocaleDateString() %></span>
                                 </div>
                                 <span class="order-status <%= order.status.toLowerCase().replace(' ', '-') %>">
@@ -69,6 +76,29 @@
                             </div>
                         </div>
                     <% }) %>
+                </div>
+                <!-- pagination -->
+                <div class="pagination">
+                    <% if(totalPages > 1) { %>
+                        <% if(currentPage > 1) { %>
+                            <a href="/orders?page=<%= currentPage - 1 %>" class="pagination-button">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        <% } %>
+
+                        <% for(let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) { %>
+                            <a href="/orders?page=<%= i %>"
+                                class="pagination-button <%= currentPage === i ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+                        <% } %>
+
+                        <% if(currentPage < totalPages) { %>
+                            <a href="/orders?page=<%= currentPage + 1 %>" class="pagination-button">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        <% } %>
+                    <% } %>
                 </div>
             <% } else { %>
                 <div class="no-orders">
