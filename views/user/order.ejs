@@ -42,9 +42,11 @@
                                 <div class="order-meta">
                                     <span class="order-id">
                                         <%= order.orderedItems[0].product.productName %>
+                                        <% if( order.orderedItems[1]?.product?.productName && order.orderedItems[0].product.productName !== order.orderedItems[1].product.productName) {%>
                                         <% if(order?.orderedItems[1]?.product.productName) {%>,<% } %>
                                         <%= order?.orderedItems[1]?.product.productName %>
-                                    <% if(order.orderedItems.length > 2 ){%>
+                                        <% } %>
+                                    <% if(order.orderedItems[1]?.product?.productName && order.orderedItems[0].product.productName !== order.orderedItems[1].product.productName && order.orderedItems.length > 2 ){%>
                                         ...    
                                     <% } %>
                                     </span>
@@ -59,7 +61,7 @@
                                 <div class="order-summary">
                                     <div class="order-total">
                                         <span>Total</span>
-                                        <strong>₹<%= order.totalPrice.toFixed(2) %></strong>
+                                        <strong>₹<%= order.finalAmount.toFixed(2) %></strong>
                                     </div>
                                     <% if (order.orderedItems && order.orderedItems.length > 0) { %>
                                         <div class="order-items-count">

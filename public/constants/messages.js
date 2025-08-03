@@ -15,7 +15,8 @@ const messages = {
   CART_NOT_FOUND: 'Cart not found',
   ITEM_NOT_FOUND: 'Product not found in cart',
   SOMETHING_WENT_WRONG: 'Something went wrong',
-  // ...add more as needed
+  SERVER_ERROR : 'Internal Server Error'
+    // ...add more as needed
 };
 
 module.exports = messages;

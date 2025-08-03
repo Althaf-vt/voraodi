@@ -323,7 +323,7 @@ const placeOrder = async (req,res)=>{
         
 
          const orderedItems = cart.items.map(item => {
-            const discountedPrice = item.productId.salePrice - couponAmountToEach;
+            const discountedPrice = (item.productId.salePrice * item.quantity) - couponAmountToEach;
             return {
                 product: item.productId._id,
                 quantity: item.quantity,
@@ -334,7 +334,7 @@ const placeOrder = async (req,res)=>{
             };
         });
     
-        const recalculatedTotal = orderedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const recalculatedTotal = orderedItems.reduce((sum, item) => sum + item.price, 0);
 
         const deliveryCharge = totalPrice >= 3000 ? 0 : 50;
         
@@ -532,8 +532,11 @@ const verifyRazorpayPayment = async (req, res) => {
       razorpay_payment_id,
       razorpay_order_id,
       razorpay_signature,
-      orderId // may be undefined for normal payment
+      orderId, // may be undefined for normal payment
+      couponCode
     } = req.body;
+
+    
 
     if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
       return res.status(400).json({ success: false, message: "Missing Razorpay credentials" });
@@ -554,19 +557,54 @@ const verifyRazorpayPayment = async (req, res) => {
       const order = await Order.findOne({ orderId });
       if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
 
-      // Coupon usage: Only now mark as used
-      if (order.couponApplied && order.discount > 0 && order.couponCode) {
-        const coupon = await Coupon.findOne({ code: order.couponCode });
-        if (coupon && !coupon.usedBy.includes(order.userId)) {
-          coupon.usedBy.push(order.userId);
-          await coupon.save();
-        }
-      }
+      
+        let discount = 0;
+        let couponApplied= false;
+        
+        if (couponCode) {
 
-      order.paymentStatus = 'Completed';
-      order.status = 'Pending';
-      order.razorpayPaymentId = razorpay_payment_id;
-      await order.save();
+            const coupon = await Coupon.findOne({ code: couponCode });
+            if(!coupon){
+                return res.status(400).json({ success: false, message: 'Invalid or inactive coupon' });
+            }
+
+            const now = new Date();
+            if(now > coupon.expireOn){
+                return res.status(400).json({success:false,message: 'Coupon has expired'});
+            }
+
+            if(coupon.usedBy.includes(order.userId)){
+                return res.status(400).json({ success: false, message: 'You have already used this coupon' });
+            }
+            if(order.totalPrice < coupon.minimumPrice){
+                return res.status(400).json({success: false, message: `Minimum order amount ₹${coupon.minimumPrice} required to use this coupon`})
+            }
+
+            discount = coupon.amount;
+            couponApplied = true;
+
+            coupon.usedBy.push(order.userId);
+            await coupon.save();
+        }
+
+        // calculating coupon amount for each item
+        const couponAmountToEach = discount/order.orderedItems.length;
+
+        order.orderedItems.map(item => item.price =  (item.price * item.quantity)  - couponAmountToEach);
+        order.orderedItems.map(item => item.status = 'Pending');
+
+        const currentOrderTotal = order.totalPrice;
+        const newTotal = currentOrderTotal - discount;
+
+        order.totalPrice = newTotal;
+        order.finalAmount = newTotal + order.deliveryCharge;
+        order.discount = discount;
+        order.couponApplied = couponApplied;
+        order.paymentStatus = 'Completed';
+        order.status = 'Pending';
+        order.razorpayPaymentId = razorpay_payment_id;
+
+        await order.save();
 
       return res.status(200).json({ success: true, message: 'Payment verified and order placed' });
     } else {

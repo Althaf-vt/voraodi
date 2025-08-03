@@ -16,6 +16,8 @@ const { response, link } = require('../../server');
 const Product = require('../../models/productSchema');
 const mongoose = require("mongoose");
 const Coupon = require('../../models/couponSchema');
+const messages = require('../../public/constants/messages');
+const statusCodes = require('../../public/constants/statusCodes');
 
 
 
@@ -181,7 +183,7 @@ const verifyForgotPassOtp = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ success: false, message: "An error occured. Please try again" });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -220,7 +222,7 @@ const resendOtp = async (req, res) => {
         }
     } catch (error) {
         console.error('Error in resend OTP', error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -317,7 +319,7 @@ const editImage = async (req, res) => {
 
     } catch (error) {
         console.error('Error in add image :', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -618,7 +620,7 @@ const changeName = async (req, res) => {
 
     } catch (error) {
         console.log('Error in Change name');
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 
 }
@@ -648,7 +650,7 @@ const changePhone = async (req, res) => {
 
     } catch (error) {
         console.log('Error in Change Phone');
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -704,7 +706,7 @@ const postAddAddress = async (req, res) => {
 
     } catch (error) {
         console.log("Error while adding address : ", error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -735,7 +737,7 @@ const getEditAddress = async (req, res) => {
 
     } catch (error) {
         console.error('GET /address error:', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -782,7 +784,7 @@ const editAddress = async (req, res) => {
 
     } catch (error) {
         console.error("Errorn in edit address", error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -814,7 +816,7 @@ const deleteAddress = async (req, res) => {
 
     } catch (error) {
         console.error('Error in delete Address', error);
-        return res.redirect('/pageNotFound');
+        return res.status(500).json({success:false,message: messages.SERVER_ERROR})
     }
 }
 
@@ -917,7 +919,7 @@ const addToCart = async (req, res) => {
 
     } catch (error) {
         console.error('Error adding to cart:', error);
-        return res.status(500).json({ success: false, message: 'Something went wrong' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -987,7 +989,7 @@ const updateQty = async (req, res) => {
 
     } catch (error) {
         console.error('Error updating cart quantity:', error);
-        return res.status(500).json({ success: false, message: 'Server error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -1015,7 +1017,7 @@ const removeItem = async (req, res) => {
 
     } catch (error) {
         console.error('Error in Delete item from cart', error);
-        return res.status(404).json({ success: false, message: "Something went wrong" });
+        return res.status(404).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
