@@ -319,6 +319,9 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         lucide.createIcons();
+
+        window.retryOrderId = "<%= retryOrderId || '' %>";
+
         
 
 
@@ -572,23 +575,36 @@
             const paymentMethod = selectedPaymentInput ? selectedPaymentInput.value : null;
             const couponCode = couponCodeInput && couponCodeInput.value.trim() !== '' ? couponCodeInput.value.trim() : '';
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const retryOrderId = urlParams.get('orderId'); // If retrying payment
+
             if (!addressId || !paymentMethod) {
                 showMessage('Please select both address and payment method');
                 return;
             }
 
             if(paymentMethod === 'razorpay'){
+                // If retrying payment, send orderId
+                let body = {
+                    userId,
+                    addressId,
+                    couponCode
+                };
+
+                let endpoint = '/create-razorpay-order';
+
+                if (retryOrderId) {
+                    body = { orderId: retryOrderId,couponCode };
+                    endpoint = '/retry-razorpay-order';
+                }
+
                 // Call backend to create Razorpay order
-                fetch('/create-razorpay-order',{
+                fetch(endpoint,{
                     method: "POST",
                     headers: {
                         'Content-Type':'application/json'
                     },
-                    body: JSON.stringify({
-                        userId,
-                        addressId,
-                        couponCode
-                    })
+                    body: JSON.stringify(body)
                 })
                 .then(res => res.json())
                 .then(order => {
@@ -607,7 +623,6 @@
                         image: '/images/voraodi.png',
                         order_id: order.id,
                         handler: async function (response){
-                            // Handle successful payment
                             fetch('/verify-razorpay-payment',{
                                 method: 'POST',
                                 headers: {
@@ -617,41 +632,48 @@
                                     razorpay_payment_id: response.razorpay_payment_id,
                                     razorpay_order_id: response.razorpay_order_id,
                                     razorpay_signature: response.razorpay_signature,
+                                    orderId: retryOrderId, // will be undefined for normal payment
                                     addressId,
                                     userId,
-                                    couponCode
+                                    couponCode,
                                 })
                             })
                             .then(res => res.json())
                             .then(data => {
                                 if(data.success){
-                                    fetch('/place-order',{
-                                        method: "POST",
-                                        headers: {
-                                            'Content-Type':'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                            userId,
-                                            addressId,
-                                            paymentMethod,
-                                            couponCode
+                                    if (retryOrderId) {
+                                        // Retry payment: order already exists, just redirect
+                                        window.location.href = `/order-success/${retryOrderId}`;
+                                    } else {
+                                        // Normal payment: create order from cart
+                                        fetch('/place-order',{
+                                            method: "POST",
+                                            headers: {
+                                                'Content-Type':'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                userId,
+                                                addressId,
+                                                paymentMethod,
+                                                couponCode
+                                            })
                                         })
-                                    })
-                                    .then(result => result.json())
-                                    .then(info => {
-                                        if(info.success){
-                                            const orderId = info.orderId
-                                            window.location.href = `/order-success/${orderId}`;
-                                        }else{
-                                            alert(info.message || 'Order failed');
-                                        }
-                                    })
-                                    .catch(err => {
-                                        console.log("order error: ",err);
-                                        alert('Something went wrong, please try again later');
-                                    })
-                                    // window.location.href = '/place-order';
+                                        .then(result => result.json())
+                                        .then(info => {
+                                            if(info.success){
+                                                const orderId = info.orderId
+                                                window.location.href = `/order-success/${orderId}`;
+                                            }else{
+                                                alert(info.message || 'Order failed');
+                                            }
+                                        })
+                                        .catch(err => {
+                                            console.log("order error: ",err);
+                                            alert('Something went wrong, please try again later');
+                                        })
+                                    }
                                 }else{
+                                    alert(data.message)
                                     alert('Payment Verification failed')
                                 }
                             });
@@ -667,11 +689,25 @@
                     }
                     const rzp = new Razorpay(options);
                     rzp.on('payment.failed', function (response) {
-                        alert("Payment failed");
-
-                        // Redirect to payment failed page
-                        window.location.href = '/payment-failed';
-                    });
+                        fetch('/payment-failed', {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                            userId,
+                            addressId,
+                            paymentMethod,
+                            couponCode,
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                            window.location.href = `/payment-failed?orderId=${data.orderId}`;
+                            } else {
+                            alert('Failed to save failed order');
+                            }
+                        });
+                        });
                     rzp.open()
                 })
                 .catch(err => {
@@ -698,6 +734,7 @@
                         const orderId = data.orderId
                         window.location.href = `/order-success/${orderId}`;
                     }else{
+                        alert(".....")
                         alert(data.message || 'Order failed');
                     }
                 })
@@ -746,6 +783,8 @@
                     
                     const couponCode = document.getElementById('coupon-code').value.trim();
                     const selectedCoupon = document.querySelector('input[name="coupon"]:checked');
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const retryOrderId = urlParams.get('orderId'); // <-- get orderId from URL
                     
                     if (couponCode || (selectedCoupon && selectedCoupon.value)) {
                         const codeToApply = couponCode || selectedCoupon.value;
@@ -758,14 +797,15 @@
                             },
                             body: JSON.stringify({
                                 couponCode: codeToApply,
-                                userId: '<%= user._id %>'
+                                userId: '<%= user._id %>',
+                                orderId: retryOrderId || undefined // <-- send orderId if retry
                             })
                         })
                         .then(response => response.json())
                         .then(data => {
                             console.log("Data : ",data); 
                             if (data.success) {
-                                document.getElementById('coupon-code').value = codeToApply; // ✅ This sets the input field
+                                document.getElementById('coupon-code').value = codeToApply; // This sets the input field
                                 showMessage(`Coupon "${codeToApply}" applied successfully!`, false);
                                 // Update the UI with the new totals from backend
                                 if (data.newTotals) {

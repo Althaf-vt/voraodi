@@ -229,6 +229,30 @@
     border: none;
 }
 
+.retry-payment-button{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    background: linear-gradient(45deg, var(--accent-red), #de0c0c);
+    color: var(--bg-secondary);
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.retry-payment-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+    background: linear-gradient(45deg, #ec1919, var(--accent-red));
+}
+
 .view-details-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);

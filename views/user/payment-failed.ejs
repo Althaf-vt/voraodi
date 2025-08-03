@@ -3,77 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Failed - VOGUE</title>
+    <title>Retry Payment - VOGUE</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/user/paymentFailed.css">
     <link rel="stylesheet" href="/user/footerStyle.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <%- include('../../views/partials/user/header') %>
 
-    <div class="payment-failed-container">
-        <div class="payment-failed-card">
-            <!-- Payment Failed Icon -->
-            <div class="payment-failed-icon">
-                ✕
+    <div class="retry-payment-container">
+        <div class="retry-payment-card">
+            <div class="retry-payment-header">
+                <div class="retry-payment-icon">
+                    ✕
+                </div>
+                <h1 class="retry-payment-title">Payment Failed</h1>
+                <p class="retry-payment-subtitle">
+                    Your payment was declined by the bank. Please try a different payment method or contact your bank.
+                </p>
             </div>
 
-            <!-- Title -->
-            <h1 class="payment-failed-title">Payment Failed</h1>
-
-            <!-- Error Message -->
-            <div class="payment-failed-message">
-                <strong>Payment Declined:</strong> Your payment was declined by the bank. Please try a different payment method or contact your bank for assistance.
-            </div>
-
-            <!-- Order Summary (Optional - if order details are available) -->
-            <% if (typeof order !== 'undefined' && order) { %>
-            <div class="order-summary">
-                <h3 class="order-summary-title">Order Summary</h3>
-                <div class="payment-details">
-                    <div class="payment-detail-item">
-                        <span class="payment-detail-label">Order ID:</span>
-                        <span class="payment-detail-value"><%= order.orderId %></span>
+            <!-- Order Details -->
+            <div class="order-details-section">
+                <h3 class="section-title">
+                    <i data-lucide="file-text" width="20" height="20"></i>
+                    Order Summary
+                </h3>
+                
+                <% if (typeof order !== 'undefined' && order) { %>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Order ID</div>
+                        <div class="detail-value"><%= order.orderId %></div>
                     </div>
-                    <div class="payment-detail-item">
-                        <span class="payment-detail-label">Amount:</span>
-                        <span class="payment-detail-value">₹<%= order.totalPrice.toFixed(2) %></span>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Amount</div>
+                        <div class="detail-value">₹<%= order.totalPrice.toFixed(2) %></div>
                     </div>
-                    <div class="payment-detail-item">
-                        <span class="payment-detail-label">Payment Method:</span>
-                        <span class="payment-detail-value"><%= order.paymentMethod || 'Card' %></span>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Payment Method</div>
+                        <div class="detail-value"><%= order.paymentMethod || 'Credit Card' %></div>
                     </div>
-                    <div class="payment-detail-item">
-                        <span class="payment-detail-label">Date:</span>
-                        <span class="payment-detail-value"><%= new Date().toLocaleDateString() %></span>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">Date</div>
+                        <div class="detail-value"><%= new Date().toLocaleDateString() %></div>
                     </div>
                 </div>
+                <% } %>
             </div>
-            <% } %>
 
             <!-- Action Buttons -->
-            <div class="payment-failed-actions">
+            <div class="payment-actions">
                 <% if (typeof order !== 'undefined' && order) { %>
-                    <a href="/retry-payment/<%= order.orderId %>" class="btn-payment btn-payment-primary">
-                        🔄 Retry Payment
+                    <a href="/orders" style="text-decoration: none;">
+                        <button class="action-btn btn-primary">
+                            <i data-lucide="rotate-ccw" width="18" height="18"></i>
+                            Retry Payment
+                        </button>
                     </a>
                 <% } else { %>
-                    <a href="/checkout" class="btn-payment btn-payment-primary">
+                    <a href="/checkout" class="action-btn btn-primary">
+                        <i data-lucide="credit-card" width="18" height="18"></i>
                         Go to Checkout
                     </a>
                 <% } %>
                 
-                <a href="/" class="btn-payment btn-payment-secondary">
-                    Home
+                <a href="/" class="action-btn btn-secondary">
+                    <i data-lucide="home" width="18" height="18"></i>
+                    Return Home
                 </a>
             </div>
 
-            <!-- Additional Help Text -->
-            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
-                <p style="font-family: 'Montserrat', sans-serif; font-size: 13px; color: #666; margin: 0;">
-                    Need help? Contact our support team or try a different payment method.
-                </p>
+            <!-- Support Text -->
+            <div class="support-text">
+                Need assistance? Contact our <a href="/support" class="support-link">support team</a> 
+                or try a different payment method.
             </div>
         </div>
     </div>
@@ -81,39 +90,31 @@
     <%- include('../../views/partials/user/footer') %>
 
     <script>
-        // Auto-focus on retry button for better UX
+        lucide.createIcons();
+        
         document.addEventListener('DOMContentLoaded', function() {
-            const retryButton = document.querySelector('.btn-payment-primary');
+            const retryButton = document.querySelector('.btn-primary');
             if (retryButton) {
                 retryButton.focus();
             }
         });
 
-        // Optional: Add click tracking or analytics
-        document.querySelectorAll('.btn-payment').forEach(button => {
-            button.addEventListener('click', function(e) {
-                // Add any tracking or analytics code here
-                console.log('Payment action clicked:', this.textContent.trim());
-            });
-        });
-
-        // Show confirmation dialog for retry payment
-        function confirmRetryPayment(orderId) {
-            Swal.fire({
-                title: 'Retry Payment?',
-                text: 'You will be redirected to the payment page.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#d4af37',
-                cancelButtonColor: '#2f3a44',
-                confirmButtonText: 'Yes, retry payment',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `/retry-payment/${orderId}`;
-                }
-            });
-        }
+        // function confirmRetryPayment(orderId) {
+        //     Swal.fire({
+        //         title: 'Retry Payment?',
+        //         text: 'You will be redirected to the payment page.',
+        //         icon: 'question',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#d4af37',
+        //         cancelButtonColor: '#2f3a44',
+        //         confirmButtonText: 'Confirm Payment',
+        //         cancelButtonText: 'Cancel'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             window.location.href = `/orders`;
+        //         }
+        //     });
+        // }
     </script>
 </body>
 </html>

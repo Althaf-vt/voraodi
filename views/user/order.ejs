@@ -70,9 +70,17 @@
                             </div>
                             
                             <div class="order-card-footer">
+                                <% if(order.status !== 'Payment Failed') {%>
+
                                 <a href="/order-details/<%= order.orderId %>" class="view-details-button">
                                     View Details <i class="fas fa-chevron-right"></i>
                                 </a>
+                                    <% } else{%>
+                                        <a href="/checkout?orderId=<%= order.orderId %>" class="retry-payment-button">
+                                            Retry Payment <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                        <% } %>
+                                
                             </div>
                         </div>
                     <% }) %>

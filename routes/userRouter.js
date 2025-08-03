@@ -126,7 +126,9 @@ router.post('/cart/check-stock',userAuth,checkoutController.checkStock);
 router.post('/verify-razorpay-payment',userAuth,checkoutController.verifyRazorpayPayment);
 router.post('/place-order',userAuth,checkoutController.placeOrder);
 router.get('/order-success/:id',userAuth,checkoutController.orderSuccess);
-router.get('/payment-failed',userAuth,checkoutController.paymentFailed)
+router.post('/payment-failed',userAuth,checkoutController.paymentFailed)
+router.get('/payment-failed',userAuth,checkoutController.getPaymentFailed)
+router.post('/retry-razorpay-order',userAuth,checkoutController.retryRazorpayOrder);
 router.post('/create-razorpay-order',userAuth,checkoutController.createRazorpayOrder);
 
 // Wallet & referral code

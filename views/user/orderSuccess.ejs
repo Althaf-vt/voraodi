@@ -78,7 +78,13 @@
                         </div>
                         <div class="summary-item">
                             <span>Status</span>
+                            <% if(order.paymentStatus === 'Pending') {%>
                             <span class="status-badge pending">Pending</span>
+                            <% }else if(order.paymentStatus === 'Completed') {%>
+                                <span class="status-badge completed">Completed</span>
+                                <% } else{%>
+                                    <span class="status-badge failed">Failed</span>
+                                    <% } %>
                         </div>
                         <div class="summary-item">
                             <span>Order Status</span>

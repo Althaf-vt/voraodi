@@ -91,7 +91,11 @@ const updateOrderStatus = async(req,res)=>{
         }
 
         const updateStatus = order.status = status;
-        order.orderedItems.map(item=> item.status = status);
+        order.orderedItems.map(item=> {
+            if(item.status !== 'Cancelled'){
+                item.status = status
+            }
+        });
 
         if(!updateStatus){
             console.log('status not updated');
