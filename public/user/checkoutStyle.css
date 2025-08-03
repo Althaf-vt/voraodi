@@ -240,6 +240,12 @@ body {
 .address-card.selected {
     border: 2px solid var(--accent-green);
     background: rgba(0, 77, 0, 0.05);
+    box-shadow: 0 0 0 2px rgba(0, 77, 0, 0.1);
+}
+
+/* Add this new style */
+.address-card input[type="radio"]:checked + .address-details {
+    background: transparent;
 }
 
 .address-card input[type="radio"] {

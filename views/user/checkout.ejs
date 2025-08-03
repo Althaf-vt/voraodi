@@ -716,6 +716,7 @@
                 });
             
             }else{
+                const orderId = retryOrderId;
                 fetch('/place-order',{
                     method:'POST',
                      headers: {
@@ -725,7 +726,8 @@
                         userId,
                         addressId,
                         paymentMethod,
-                        couponCode
+                        couponCode,
+                        orderId,
                     })
                 })
                 .then(res => res.json())
@@ -856,6 +858,26 @@
                 }
             });
         });
+
+
+        //
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle address selection
+            document.querySelectorAll('.address-card input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Remove selected class from all cards
+                    document.querySelectorAll('.address-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to the parent card of the checked radio
+                    if (this.checked) {
+                        this.closest('.address-card').classList.add('selected');
+                    }
+                });
+            });
+        });
+
         function showMessage(message, isError = true) {
             const msgBox = document.getElementById('form-message');
             msgBox.textContent = message;
