@@ -130,6 +130,24 @@
         </div>
       <% } %>
     </div>
+
+    <!-- Top Selling Products & Categories Charts -->
+    <div class="top-selling-charts-section">
+      <div class="top-selling-charts-container">
+        <!-- Top Products Chart -->
+        <div class="top-selling-chart-card">
+          <h2>Top Selling Products</h2>
+          <h4 class="chart-subtitle">Top Products by Revenue</h4>
+          <canvas id="topProductsChart"></canvas>
+        </div>
+        <!-- Top Categories Chart -->
+        <div class="top-selling-chart-card">
+          <h2>Top Selling Categories</h2>
+          <h4 class="chart-subtitle">Top Categories by Revenue</h4>
+          <canvas id="topCategoriesChart"></canvas>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -401,6 +419,99 @@
         });
       <% } %>
     });
+
+
+    <% if (topProducts && topProducts.length > 0) { %>
+  const topProductsLabels = <%- JSON.stringify(topProducts.map(p => p.productName)) %>;
+  const topProductsData = <%- JSON.stringify(topProducts.map(p => p.salePrice * p.totalSold)) %>;
+  const topProductsChart = new Chart(document.getElementById('topProductsChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: topProductsLabels,
+      datasets: [{
+        label: 'Revenue',
+        data: topProductsData,
+        backgroundColor: 'rgba(201, 160, 34, 0.4)',
+        borderColor: 'rgba(201, 160, 34, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'x',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#1a252f',
+            font: { size: 12 },
+            callback: function(value, index, values) {
+              return this.getLabelForValue(value);
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#1a252f',
+            callback: function(value) {
+              return '₹' + value.toLocaleString('en-IN');
+            }
+          }
+        }
+      }
+    }
+  });
+<% } %>
+
+<% if (topCategories && topCategories.length > 0) { %>
+  const topCategoriesLabels = <%- JSON.stringify(topCategories.map(c => c.categoryName)) %>;
+  const topCategoriesData = <%- JSON.stringify(topCategories.map(c => c.totalRevenue)) %>;
+  const topCategoriesChart = new Chart(document.getElementById('topCategoriesChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: topCategoriesLabels,
+      datasets: [{
+        label: 'Revenue',
+        data: topCategoriesData,
+        backgroundColor: 'rgba(201, 160, 34, 0.4)',
+        borderColor: 'rgba(201, 160, 34, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'x',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#1a252f',
+            font: { size: 12 },
+            callback: function(value, index, values) {
+              return this.getLabelForValue(value);
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#1a252f',
+            callback: function(value) {
+              return '₹' + value.toLocaleString('en-IN');
+            }
+          }
+        }
+      }
+    }
+  });
+<% } %>
   </script>
 </body>
 </html>

@@ -12,6 +12,85 @@ const bcrypt = require('bcrypt');
 
 
 
+// Top selling products
+async function getTopSellingProducts(limit = 10) {
+    const topProducts = await Order.aggregate([
+        { $unwind: "$orderedItems" },
+        { $group: {
+            _id: "$orderedItems.product",
+            totalSold: { $sum: "$orderedItems.quantity" }
+        }},
+        { $sort: { totalSold: -1 } },
+        { $limit: limit },
+        {
+            $lookup: {
+                from: "products",
+                localField: "_id",
+                foreignField: "_id",
+                as: "product"
+            }
+        },
+        { $unwind: "$product" },
+        {
+            $project: {
+                _id: 0,
+                productId: "$product._id",
+                productName: "$product.productName",
+                productImage: { $arrayElemAt: ["$product.productImage", 0] },
+                totalSold: 1,
+                salePrice: "$product.salePrice"
+            }
+        }
+    ]);
+    return topProducts;
+}
+
+// Top selling categories
+async function getTopSellingCategories(limit = 10) {
+    const topCategories = await Order.aggregate([
+        { $unwind: "$orderedItems" },
+        // Lookup product to get its category
+        {
+            $lookup: {
+                from: "products",
+                localField: "orderedItems.product",
+                foreignField: "_id",
+                as: "product"
+            }
+        },
+        { $unwind: "$product" },
+        // Group by category and sum revenue and quantity
+        {
+            $group: {
+                _id: "$product.category",
+                totalSold: { $sum: "$orderedItems.quantity" },
+                totalRevenue: { $sum: { $multiply: ["$orderedItems.price", "$orderedItems.quantity"] } }
+            }
+        },
+        { $sort: { totalRevenue: -1 } }, // Sort by revenue
+        { $limit: limit },
+        // Lookup category details
+        {
+            $lookup: {
+                from: "categories",
+                localField: "_id",
+                foreignField: "_id",
+                as: "category"
+            }
+        },
+        { $unwind: "$category" },
+        {
+            $project: {
+                _id: 0,
+                categoryId: "$category._id",
+                categoryName: "$category.name",
+                totalSold: 1,
+                totalRevenue: 1
+            }
+        }
+    ]);
+    return topCategories;
+}
 
 const loadAdminSignin = async (req, res) => {
     if (req.session.admin) {
@@ -82,8 +161,13 @@ const loadDashboard = async (req, res, next) => {
 
         const data = await getSalesData(filter);
 
+        const topProducts = await getTopSellingProducts(10);
+        const topCategories = await getTopSellingCategories(10)
+
         res.render('dashboard', {
             ...data,
+            topProducts,
+            topCategories,
             message: req.session.message || null,
             selectedPeriod: filter.period,
             filter,
