@@ -6,7 +6,7 @@ const Wallet = require('../../models/walletSchema');
 const loadOrders = async(req,res)=>{
     try {
 
-        const page = req.query.page || 1;
+        const page = parseInt(req.query.page) || 1;
         const limit = 4;
         const skip = (page-1)*limit;
 
@@ -25,7 +25,8 @@ const loadOrders = async(req,res)=>{
             paymentMethod: order.paymentMethod,
             totalAmount: order.totalPrice,
             status: order.status,
-            returnStatus: order.returnStatus
+            returnStatus: order.returnStatus,
+            hasReturnRequest: order.orderedItems.some(item => item.returnStatus === 'Requested')
             // viewLink: `/admin/orders/orderDetails/${order.orderId}`
         }));
 

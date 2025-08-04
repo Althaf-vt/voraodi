@@ -1,3 +1,16 @@
+:root {
+    --accent-gold: #d4af37;
+    --accent-dark: #2f3a44;
+    --accent-green: #004d00;
+    --accent-gray: #767675;
+    --accent-red: #c00000;
+    --text-primary: #2f3a44;
+    --text-secondary: #4a4a4a;
+    --text-tertiary: #666666;
+    --bg-primary: #f5f5e8;
+    --bg-secondary: #fffef4;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -142,10 +155,10 @@ td {
   border-radius: 10px;
 }
 
-.status-select:hover {
+/* .status-select:hover {
   background: linear-gradient(135deg, #004d00, #1a661a);
   color: #f5f5e8;
-}
+} */
 
 .action-btn {
   padding: 8px 16px;
@@ -398,38 +411,134 @@ td {
   }
 }
 /* Status Color Styles - Add this to your CSS file */
+/* Add this to your existing CSS */
 .status-select {
-  padding: 5px;
-  border-radius: 4px;
+  padding: 6px 10px;
+  border-radius: 20px;
   border: none;
   font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  text-transform: uppercase;
+  font-size: 11px;
+  /* text-transform: uppercase; */
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
   font-weight: 600;
   color: white;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  min-width: 90px;
+  text-align: center;
 }
 
 /* Status-specific colors */
 .status-pending {
-  background: linear-gradient(135deg, #ff8c00, #ff7700);
+  background-color: #ff8c00;
+  background-image: linear-gradient(135deg, #ff8c00, #ff5e00);
 }
 
 .status-processing {
-  background: linear-gradient(135deg, #ffd700, #ffcc00);
-  color: #333;
+  background-color: #ffd700;
+  background-image: linear-gradient(135deg, #ffd700, #ffb700);
+  color: #1a252f;
 }
 
 .status-shipped {
-  background: linear-gradient(135deg, #4169e1, #1e90ff);
+  background-color: #4169e1;
+  background-image: linear-gradient(135deg, #4169e1, #2a52be);
 }
 
 .status-delivered {
-  background: linear-gradient(135deg, #32cd32, #228b22);
+  background-color: #32cd32;
+  background-image: linear-gradient(135deg, #32cd32, #228b22);
+}
+
+.status-cancelled {
+  background-color: #e74c3c;
+  background-image: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.status-select option {
+  background: #1a252f;
+  color: #f5f5e8;
+  padding: 10px;
+  font-weight: 500;
+}
+
+.status-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 160, 34, 0.5);
 }
 
 .status-select:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.return-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 14px;
+    height: 14px;
+    background: #e74c3c;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    z-index: 2;
+    box-shadow: 0 0 2px #0002;
+}
+
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.pagination-button {
+    padding: 8px 14px;
+    background: linear-gradient(45deg, var(--accent-gold), #b8972e);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 36px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pagination-button:hover {
+    background: linear-gradient(135deg, #004d00, #1a661a);
+    color: #f5f5e8;
+    transform: translateY(-2px);
+}
+
+.pagination-button.active {
+    background: #006400;
+    color: #f5f5e8;
+    cursor: default;
+    transform: none;
+}
+
+.pagination-button i {
+    font-size: 12px;
+}
+.pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 8px;
+    color: var(--text-tertiary);
+    font-weight: 600;
 }
