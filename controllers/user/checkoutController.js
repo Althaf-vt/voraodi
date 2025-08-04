@@ -389,6 +389,7 @@ const placeOrder = async (req,res)=>{
 
             const totalPrice = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
 
+
             //coupon handling
             let discount = 0;
 
@@ -436,6 +437,10 @@ const placeOrder = async (req,res)=>{
             });
         
             const recalculatedTotal = orderedItems.reduce((sum, item) => sum + item.price, 0);
+
+            if(paymentMethod === 'cod' && recalculatedTotal > 2000){
+                return res.status(400).json({success:false,message: 'COD is not available for orders above ₹2000.'})
+            }
 
             const deliveryCharge = totalPrice >= 3000 ? 0 : 50;
             

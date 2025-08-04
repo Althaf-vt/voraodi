@@ -16,6 +16,8 @@ const { userAuth } = require('../middlewares/auth');
 router.get('/',userController.loadHomepage);
 router.get('/shop',userController.loadShoppingPage);
 router.get('/quickView',productController.quickView);
+router.get('/about',userController.aboutPage);
+router.get('/contact',userController.contactPage)
 
 // Signup
 router.get('/signup',userController.loadSignup);

@@ -259,7 +259,7 @@
         let currentQty = parseInt(qtyElement.textContent);
         const newQty = currentQty + change;
 
-        if (newQty >= 1) {
+        if (newQty >= 1 && newQty <= 3) {
             qtyElement.textContent = newQty;
         }
     }

@@ -206,11 +206,15 @@
                                             <span>Razorpay (Cards/UPI/NetBanking)</span>
                                         </label>
                                     </div>
-                                    <div class="payment-option">
-                                        <input type="radio" id="cod" name="paymentMethod" value="cod">
+                                    <div class="payment-option <%= total > 2000 ? 'disabled' : '' %> ">
+                                        <input type="radio" id="cod" name="paymentMethod" value="cod" <%= total.toFixed(2) > 2000 ? 'disabled' : '' %> >
                                         <label for="cod">
                                             <i data-lucide="package"></i>
-                                            <span>Cash on Delivery</span>
+                                            <% if(total > 2000) {%>
+                                                <span>Cash on Delivery</span><span style="color: crimson; font-size: x-small;">Unavailable</span>
+                                            <% }else{%>
+                                                <span>Cash on Delivery</span><span style="color: darkgreen; font-size: x-small;">Available</span>
+                                            <% } %>
                                         </label>
                                     </div>
                                     <div class="payment-option <%= wallet.balance < total ? 'disabled' : '' %>">
@@ -222,7 +226,12 @@
                                             <%= wallet.balance < total ? 'disabled' : '' %>>
                                         <label for="wallet">
                                             <i data-lucide="wallet"></i>
-                                            <span>Wallet (₹<%= wallet.balance.toFixed(2) %> available)</span>
+                                            
+                                            <% if(wallet.balance < total) {%>
+                                                <span> Wallet ₹<%= wallet.balance.toFixed(2) %></span><span style="color: crimson; font-size: x-small;">Insufficient find</span>
+                                            <% }else {%>
+                                                <span>Wallet ₹<%= wallet.balance.toFixed(2) %></span><span style="color: darkgreen; font-size: x-small;">available</span>
+                                            <% } %>
                                         </label>
                                     </div>
                                 </div>
@@ -321,6 +330,28 @@
         lucide.createIcons();
 
         window.retryOrderId = "<%= retryOrderId || '' %>";
+
+        // Toast message
+        async function toastMessage(data, type) {
+            console.log('data in toast : ',data.message)
+            console.log('TYpe : ,',type)
+            const message = data?.message ?? (type ? "Something went wrong" : "Updated successfully");
+
+            Toastify({
+            text: message,
+            duration: 2000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            style: {
+                background: type === "error" ? "#dc3545" : "#28a745",
+                borderRadius: "10px",
+                padding: "10px 20px",
+                fontWeight: "500",
+            }
+            }).showToast();
+        }
 
         
 
@@ -579,7 +610,8 @@
             const retryOrderId = urlParams.get('orderId'); // If retrying payment
 
             if (!addressId || !paymentMethod) {
-                showMessage('Please select both address and payment method');
+                let data = {message : 'Please select both address and payment method'}
+                toastMessage(data,'error');
                 return;
             }
 
@@ -608,9 +640,9 @@
                 })
                 .then(res => res.json())
                 .then(order => {
-                    console.log("order:  ", order);
                     if(!order || !order.id){
-                        alert('Failed to initiate razorpay payment');
+                        let data = {message : 'Failed to initiate razorpay payment'}
+                        toastMessage(data,'error');
                         return;
                     }
 
@@ -664,17 +696,17 @@
                                                 const orderId = info.orderId
                                                 window.location.href = `/order-success/${orderId}`;
                                             }else{
-                                                alert(info.message || 'Order failed');
+                                                toastMessage(info,'error')
                                             }
                                         })
                                         .catch(err => {
                                             console.log("order error: ",err);
-                                            alert('Something went wrong, please try again later');
+                                            let data = {message : 'Something went wrong'}
+                                            toastMessage(data,'error')
                                         })
                                     }
                                 }else{
-                                    alert(data.message)
-                                    alert('Payment Verification failed')
+                                    toastMessage(data,'error')
                                 }
                             });
                         },
@@ -704,7 +736,7 @@
                             if (data.success) {
                             window.location.href = `/payment-failed?orderId=${data.orderId}`;
                             } else {
-                            alert('Failed to save failed order');
+                                toastMessage(data,'error')
                             }
                         });
                         });
@@ -712,7 +744,8 @@
                 })
                 .catch(err => {
                     console.log(err);
-                    alert('Error initiating Razorpay');
+                    let data = {message : 'Error initiating Razorpay'}
+                    toastMessage(data,'error')
                 });
             
             }else{
@@ -736,13 +769,13 @@
                         const orderId = data.orderId
                         window.location.href = `/order-success/${orderId}`;
                     }else{
-                        alert(".....")
-                        alert(data.message || 'Order failed');
+                        toastMessage(data|| 'Order failed','error');
                     }
                 })
                 .catch(err => {
                     console.log("order error: ",err);
-                    alert('Something went wrong, please try again later');
+                    let data = {message : 'Something went wrong. Please try again later'}
+                    toastMessage(data,'error')
                 })
                 // Set hidden form values
                 // document.getElementById('hidden-address-id').value = addressId;
@@ -805,10 +838,9 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            console.log("Data : ",data); 
                             if (data.success) {
                                 document.getElementById('coupon-code').value = codeToApply; // This sets the input field
-                                showMessage(`Coupon "${codeToApply}" applied successfully!`, false);
+                                toastMessage(data);
                                 // Update the UI with the new totals from backend
                                 if (data.newTotals) {
                                     const summaryItems = document.querySelectorAll('.summary-item span:last-child');
@@ -829,15 +861,16 @@
                                     `;
                                 }
                             } else {
-                                showMessage(data.message || 'Invalid coupon code');
+                                toastMessage(data,'error')
                             }
                         })
                         .catch(error => {
-                            console.error('Error applying coupon:', error);
-                            showMessage('Error applying coupon. Please try again.');
+                            let data = {message : 'Error applying coupon. Please try again.'}
+                            toastMessage(data,'error')
                         });
                     } else {
-                        showMessage('Please enter or select a coupon code');
+                        let data = { message : 'Please enter or select a coupon code'}
+                        toastMessage(data,'error')
                     }
                 });
             }
