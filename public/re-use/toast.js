@@ -7,13 +7,13 @@ async function toast (data,type){
     sessionStorage.setItem('toastMessage', data?.message ?? "Updated successfully");
     sessionStorage.setItem('toastType',"success");
     }
-    window.location.reload();
+     window.setTimeout(() => window.location.reload(), 10);
 }
-
-window.addEventListener('DOMContentLoaded', () => {
+ window.addEventListener('DOMContentLoaded', () => {
     const message = sessionStorage.getItem('toastMessage');
     const type = sessionStorage.getItem('toastType');
     if (message) {
+        console.log('in if...')
         Toastify({
             text: message,
             duration: 1500,
@@ -29,8 +29,10 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }).showToast();
 
+        console.log('out if')
         // Remove message after showing once
         sessionStorage.removeItem('toastMessage');
         sessionStorage.removeItem('toastType');
+        console.log('delete sesssion strg')
     }
 });

@@ -16,6 +16,8 @@ const { response, link } = require('../../server');
 const Product = require('../../models/productSchema');
 const mongoose = require("mongoose");
 const Coupon = require('../../models/couponSchema');
+const messages = require('../../public/constants/messages');
+const statusCodes = require('../../public/constants/statusCodes');
 
 
 
@@ -181,7 +183,7 @@ const verifyForgotPassOtp = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ success: false, message: "An error occured. Please try again" });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -220,7 +222,7 @@ const resendOtp = async (req, res) => {
         }
     } catch (error) {
         console.error('Error in resend OTP', error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -275,6 +277,18 @@ const userProfile = async (req, res) => {
     }
 }
 
+const userAccount = async(req,res)=>{
+    try {
+        const userId = req.session.user;
+        const user = await User.findOne({_id:userId});
+
+        return res.render('userAccount',{user});
+    } catch (error) {
+        console.log("Error in loading user account",error);
+        return res.redirect('/pageNotFound');
+    }
+}
+
 //Edit image
 const editImage = async (req, res) => {
     try {
@@ -305,7 +319,7 @@ const editImage = async (req, res) => {
 
     } catch (error) {
         console.error('Error in add image :', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -374,10 +388,13 @@ const changeEmailValid = async (req, res) => {
 
 const emailOtpPage = async(req,res)=>{
     try {
+        const userId = req.session.user;
+        const user = await User.findOne({_id:userId});
+
         if(req.session.step !== 'otp-verify'){
             return res.redirect('/userProfile')
         }
-        return res.render('change-email-otp');
+        return res.render('change-email-otp',{userData:user});
     } catch (error) {
         console.log('Error in rendering otp page : ',error);
         return res.redirect('/pageNotFound');
@@ -386,6 +403,9 @@ const emailOtpPage = async(req,res)=>{
 
 const verifyOtp = async (req, res) => {
     try{
+
+        const userId = req.session.user;
+        const user = await User.findOne({_id:userId});
         
         const enteredOtp = req.body.otp;
 
@@ -400,12 +420,12 @@ const verifyOtp = async (req, res) => {
             req.session.userData = req.body.userData;
 
             return res.render('new-email', {
-                userData: req.session.userData,
+                userData: user
             })
         } else {
             return res.render('change-email-otp', {
                 message: "OTP not mathcing",
-                userData: req.session.userData
+                userData: user
             })
         }
     } catch (error) {
@@ -427,7 +447,7 @@ const UpdateEmail = async (req, res) => {
         const user = await User.findOne({ _id: userId });
 
         if (user.email === newEmail) {
-            res.render('new-email', { message: 'Please enter an email that different from the old one' })
+            res.render('new-email', { message: 'Please enter an email that different from the old one' ,userData:user})
         }
         await User.findByIdAndUpdate(userId, { email: newEmail });
 
@@ -448,8 +468,10 @@ const UpdateEmail = async (req, res) => {
 
 const changePassword = async (req, res) => {
     try {
+        const userId = req.session.user;
+        const user = await User.findOne({_id:userId});
         req.session.step = 'change-pass'; 
-        return res.render('change-password');
+        return res.render('change-password',{userData:user});
     } catch (error) {
         console.log('Error in loading change password');
         return res.redirect('/pageNotFound');
@@ -465,7 +487,7 @@ const changePasswordValid = async (req, res) => {
 
         if (userExists) {
             if (userExists.email !== user.email) {
-                return res.render('change-password', { message: 'Please enter your own email id' })
+                return res.render('change-password', { message: 'Please enter your own email id',userData:user })
             }
             const otp = generateOtp();
             const emailSend = await sendVerificationEmail(email, otp);
@@ -485,7 +507,8 @@ const changePasswordValid = async (req, res) => {
             }
         } else {
             return res.render('change-password', {
-                message: "User with this Email does not exist"
+                message: "User with this Email does not exist",
+                userData:user
             })
         }
     } catch (error) {
@@ -496,10 +519,13 @@ const changePasswordValid = async (req, res) => {
 
 const passOtpPage = async(req,res)=>{
     try {
+        const userId = req.session.user;
+        const user = await User.findOne({_id:userId});
+
         if(req.session.step !== 'change-pass-otp'){
             return res.redirect('/userProfile')
         }
-        return res.render('change-pass-otp');
+        return res.render('change-pass-otp',{userData:user});
     } catch (error) {
         console.log('Error when loading change pass otp page : ',error);
         return res.redirect('/pageNotFound');
@@ -508,19 +534,23 @@ const passOtpPage = async(req,res)=>{
 
 const verifyChangePassOtp = async (req, res) => {
     try {
+
+        const userId = req.session.user;
+        const user = await User.findOne({_id:userId});
+
         const enteredOtp = req.body.otp;
         if (enteredOtp === req.session.userOtp) {
 
             req.session.step = 'new-pass';
 
             return res.render('new-password', {
-                userData: req.session.userData,
+                userData: user,
             })
 
         } else {
             return res.render('change-pass-otp', {
                 message: "OTP not mathcing",
-                userData: req.session.userData
+                userData: user
             })
         }
     } catch (error) {
@@ -545,7 +575,7 @@ const UpdatePassword = async (req, res) => {
             const passwordHash = await securePassword(newPass1);
 
             if (passwordHash === user.password) {
-                return res.render('new-password', { message: 'Password must be different from you old password' });
+                return res.render('new-password', { message: 'Password must be different from you old password' ,userData:user});
             }
 
             await User.findByIdAndUpdate(userId, { password: passwordHash });
@@ -557,7 +587,7 @@ const UpdatePassword = async (req, res) => {
             req.session.step = null;
             return res.redirect('/userProfile?success=' + encodeURIComponent('Password Updated Successfully'));
         } else {
-            return res.render('new-password', { message: 'Password do not match' })
+            return res.render('new-password', { message: 'Password do not match' ,userData:user})
         }
     } catch (error) {
         console.log('Error in Update password', error);
@@ -590,7 +620,7 @@ const changeName = async (req, res) => {
 
     } catch (error) {
         console.log('Error in Change name');
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 
 }
@@ -620,7 +650,7 @@ const changePhone = async (req, res) => {
 
     } catch (error) {
         console.log('Error in Change Phone');
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -676,7 +706,7 @@ const postAddAddress = async (req, res) => {
 
     } catch (error) {
         console.log("Error while adding address : ", error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -707,7 +737,7 @@ const getEditAddress = async (req, res) => {
 
     } catch (error) {
         console.error('GET /address error:', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -754,7 +784,7 @@ const editAddress = async (req, res) => {
 
     } catch (error) {
         console.error("Errorn in edit address", error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -786,12 +816,13 @@ const deleteAddress = async (req, res) => {
 
     } catch (error) {
         console.error('Error in delete Address', error);
-        return res.redirect('/pageNotFound');
+        return res.status(500).json({success:false,message: messages.SERVER_ERROR})
     }
 }
 
 const loadCart = async (req, res) => {
     try {
+        req.session.orderSuccess = null;
         const userId = req.session.user;
         const userData = await User.findOne({ _id: userId });
 
@@ -888,7 +919,7 @@ const addToCart = async (req, res) => {
 
     } catch (error) {
         console.error('Error adding to cart:', error);
-        return res.status(500).json({ success: false, message: 'Something went wrong' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -958,7 +989,7 @@ const updateQty = async (req, res) => {
 
     } catch (error) {
         console.error('Error updating cart quantity:', error);
-        return res.status(500).json({ success: false, message: 'Server error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -986,21 +1017,36 @@ const removeItem = async (req, res) => {
 
     } catch (error) {
         console.error('Error in Delete item from cart', error);
-        return res.status(404).json({ success: false, message: "Something went wrong" });
+        return res.status(404).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
 const orderPage = async (req, res) => {
     try {
 
+        const page = parseInt(req.query.page) || 1;
+
+        const limit = 5;
+        const skip = (page - 1) * limit;
+
+
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId })
 
-        const orders = await Order.find({ userId: userId }).sort({createdOn : -1})
+        const orders = await Order.find({ userId: userId }).populate('orderedItems.product')
+        .sort({createdOn : -1})
+        .skip(skip)
+        .limit(limit);
+
+        const totalOrders = await Order.countDocuments({userId:userId});
+        const totalPages = Math.ceil(totalOrders/limit);
 
         res.render('order', {
             orders: orders,
-            user
+            user,
+            currentPage: page,
+            totalPages,
+            
         });
     } catch (error) {
         console.log('Error while loading order page', error);
@@ -1075,4 +1121,5 @@ module.exports = {
     getCoupons,
     emailOtpPage,
     passOtpPage,
+    userAccount
 }

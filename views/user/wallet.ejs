@@ -3,208 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wallet</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>wallet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/user/wallet.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <%- include('../../views/partials/user/header') %>
+
     <div class="wallet-container">
-        <div class="sidebar">
-            <h2 class="sidebar-title">My Account</h2>
-            <ul class="sidebar-nav">
-                <li><a href="/userProfile">Profile</a></li>
-                <li><a href="/userAddress" >Address</a></li>
-                <li><a href="/orders">Orders</a></li>
-                <li><a href="/wishlist">Wishlist</a></li>
-                <li><a href="/wallet" class="active">Wallet</a></li>
-                <li><a href="/coupons">Coupons</a></li>
-                <li><a href="/referrals">Referrals</a></li>
-                <li><a href="/logout">Logout</a></li>
-            </ul>
-        </div>
-        <div class="wallet-content">
-            <!-- Wallet Header -->
-            <div class="wallet-header">
-                <h1 class="wallet-title">My Wallet</h1>
-                <!-- <div class="wallet-actions">
-                    <button class="action-button primary">
-                        <i class="fas fa-plus"></i>
-                        Add Money
-                    </button>
-                    <button class="action-button secondary">
-                        <i class="fas fa-download"></i>
-                        Statement
-                    </button>
-                </div> -->
+        <div class="header">
+            <div class="profile-section">
+                <img src="<%= user.image %>" alt="image" class="profile-image">
+                <div class="profile-text">
+                    <h1>YOUR WALLET <span><%= user.name %></span></h1>
+                    <p>Manage your wallet and transactions</p>
+                </div>
             </div>
-
-            <!-- Main Wallet Layout -->
-            <div class="wallet-main">
-                <!-- Wallet Balance Card -->
-                <div class="wallet-balance-section">
-                    <div class="balance-card">
-                        <div class="balance-header">
-                            <div class="balance-icon">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                            <div class="balance-info">
-                                <h3>Available Balance</h3>
-                                <p class="balance-amount">₹ <span id="walletBalance"><%= wallet.balance || 0 %></span></p>
-                            </div>
+        </div>
+        
+        <div class="wallet-content">
+            <!-- Wallet Summary Cards -->
+            <div class="wallet-cards">
+                <!-- Balance Card -->
+                <div class="wallet-card balance-card">
+                    <div class="icon-container">
+                        <i class="card-icon" data-lucide="wallet"></i>
+                    </div>
+                    <h3>Wallet Balance</h3>
+                    <p class="balance-amount">₹ <span id="walletBalance"><%= wallet.balance || 0 %></span></p>
+                    <div class="balance-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Credited</span>
+                            <span class="stat-value credit">₹ <%= creditTotal %></span>
                         </div>
-                        
-                        <div class="balance-stats">
-                            <div class="stat-item">
-                                <i class="fas fa-arrow-up stat-icon credit"></i>
-                                <div class="stat-details">
-                                    <span class="stat-label">Total Credited</span>
-                                    <span class="stat-value credit">₹ <%= creditTotal %></span>
-                                </div>
-                            </div>
-                            <div class="stat-item">
-                                <i class="fas fa-arrow-down stat-icon debit"></i>
-                                <div class="stat-details">
-                                    <span class="stat-label">Total Debited</span>
-                                    <span class="stat-value debit">₹ <%= debitTotal %></span>
-                                </div>
-                            </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Debited</span>
+                            <span class="stat-value debit">₹ <%= debitTotal %></span>
                         </div>
-
-                        <div class="balance-footer">
-                            <span class="last-updated">Last updated: <time><%= new Date(lastUpdated).toLocaleDateString() %></time></span>
-                        </div>
+                    </div>
+                    <div class="last-updated">
+                        <i data-lucide="clock"></i>
+                        Last updated: <time><%= new Date(lastUpdated).toLocaleDateString() %></time>
                     </div>
                 </div>
                 
-
-                <!-- Transaction History Section -->
-<div class="transaction-history-section">
-    <!-- Filters -->
-    <div class="transaction-filters">
-        <div class="filter-group">
-            <label for="typeFilter">Transaction Type</label>
-            <select id="typeFilter" class="filter-select">
-                <option value="all">All Transactions</option>
-                <option value="credit">Credit</option>
-                <option value="debit">Debit</option>
-                <option value="refund">Refund</option>
-                <option value="cashback">Cashback</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="timeFilter">Time Period</label>
-            <select id="timeFilter" class="filter-select">
-                <option value="30">Last 30 Days</option>
-                <option value="7">Last 7 Days</option>
-                <option value="365">Last Year</option>
-                <option value="all">All Time</option>
-            </select>
-        </div>
-        <button class="filter-reset" onclick="resetFilters()">
-            <i class="fas fa-refresh"></i>
-            Reset
-        </button>
-    </div>
-
-    <!-- Transaction List -->
-    <div class="transaction-list">
-        <div class="transaction-header"></div>
-
-        <div class="transactions-container">
-            <% if (wallet.transactions.length === 0) { %>
-                <p>No transactions yet.</p>
-            <% } else { %>
-                <% wallet.transactions.slice().reverse().forEach((txn, index) => { %>
-                    <div class="transaction-item <%= txn.type %>" 
-                         data-type="<%= txn.type %>" 
-                         data-date="<%= txn.createdAt.toISOString().split('T')[0] %>"
-                         data-index="<%= index %>"
-                         style="<%= index >= 4 ? 'display: none;' : '' %>">
-                        
-                        <div class="transaction-icon <%= txn.type %>">
-                            <% if (txn.type === 'credit') { %>
-                                <i class="fas fa-plus"></i>
-                            <% } else { %>
-                                <i class="fas fa-minus"></i>
-                            <% } %>
-                        </div>
-                        
-                        <div class="transaction-details">
-                            <h4 class="transaction-title">
-                                <% if (txn.reason && txn.reason !== "Wallet transaction") { %>
-                                    <%= txn.reason %>
-                                <% } else if (txn.type === 'credit') { %>
-                                    Money Added
-                                <% } else { %>
-                                    Purchase Payment
-                                <% } %>
-                            </h4>
-                            <p class="transaction-description">
-                                <% if (txn.orderId) { %>
-                                    Payment for Order #<%= txn.orderId %>
-                                <% } else { %>
-                                    Added to wallet
-                                <% } %>
-                            </p>
-                            <span class="transaction-date">
-                                <i class="far fa-calendar"></i>
-                                <%= new Date(txn.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %>
-                            </span>
-                        </div>
-                        
-                        <div class="transaction-amount <%= txn.type %>">
-                            <span class="amount"><%= txn.type === 'credit' ? '+' : '-' %>₹<%= txn.amount.toFixed(2) %></span>
-                            <span class="transaction-id">#TXN<%= txn._id.toString().slice(-9).toUpperCase() %></span>
-                        </div>
+                <!-- Referral Card -->
+                <div class="wallet-card referral-card">
+                    <div class="icon-container">
+                        <i class="card-icon" data-lucide="gift"></i>
                     </div>
-                <% }) %>
-
-                <!-- Load More Button -->
-                <div class="load-more-section">
-                    <button class="load-more-btn">
-                        <i class="fas fa-chevron-down"></i>
-                        Load More Transactions
-                    </button>
+                    <h3>Your Referral Code</h3>
+                    <p>Share your code with friends and earn rewards</p>
+                    <div class="referral-code-display">
+                        <span class="referral-code" id="referralCode"><%= user.referralCode %></span>
+                        <button class="copy-code-btn" onclick="copyReferralCode()">
+                            <i data-lucide="copy"></i>
+                        </button>
+                    </div>
+                    <span class="reward-text">Earn ₹100 for each successful referral</span>
                 </div>
-            <% } %>
-        </div>
-    </div>
-</div>
-
             </div>
-            <!-- Referral Section -->
-            <div class="referral-section">
-                <div class="referral-card">
-                    <div class="referral-header">
-                        <div class="referral-icon">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <div class="referral-info">
-                            <h3>Your Referral Code</h3>
-                            <p class="referral-description">Share your code with friends and earn rewards when they make their first purchase!</p>
-                        </div>
-                    </div>
-                    
-                    <div class="referral-code-section">
-                        <div class="referral-code-display">
-                            <span class="referral-code" id="referralCode"><%= referralCode %></span>
-                            <button class="copy-code-btn" onclick="copyReferralCode()">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="referral-reward">
-                        <span class="reward-text">Earn ₹100 for each successful referral</span>
+            
+            <!-- Transaction Section -->
+            <div class="transaction-section">
+                <div class="section-header">
+                    <h2>Transaction History</h2>
+                    <div class="transaction-filters">
+                        <select id="typeFilter" class="filter-select">
+                            <option value="all">All Transactions</option>
+                            <option value="credit">Credit</option>
+                            <option value="debit">Debit</option>
+                            <option value="refund">Refund</option>
+                            <option value="cashback">Cashback</option>
+                        </select>
+                        <select id="timeFilter" class="filter-select">
+                            <option value="30">Last 30 Days</option>
+                            <option value="7">Last 7 Days</option>
+                            <option value="365">Last Year</option>
+                            <option value="all">All Time</option>
+                        </select>
+                        <button class="filter-reset" onclick="resetFilters()">
+                            <i data-lucide="refresh-ccw"></i>
+                            Reset
+                        </button>
                     </div>
                 </div>
+                
+                <div class="transactions-container">
+                    <% if (wallet.transactions.length === 0) { %>
+                        <div class="empty-state">
+                            <i data-lucide="wallet"></i>
+                            <p>No transactions yet</p>
+                        </div>
+                    <% } else { %>
+                        <% wallet.transactions.slice().reverse().forEach((txn, index) => { %>
+                            <div class="transaction-item <%= txn.type %>" 
+                                 data-type="<%= txn.type %>" 
+                                 data-date="<%= txn.createdAt.toISOString().split('T')[0] %>"
+                                 data-index="<%= index %>"
+                                 style="<%= index >= 4 ? 'display: none;' : '' %>">
+                                
+                                <div class="transaction-icon <%= txn.type %>">
+                                    <% if (txn.type === 'credit') { %>
+                                        <i data-lucide="plus-circle"></i>
+                                    <% } else { %>
+                                        <i data-lucide="minus-circle"></i>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="transaction-details">
+                                    <h4 class="transaction-title">
+                                        <% if (txn.reason && txn.reason !== "Wallet transaction") { %>
+                                            <%= txn.reason %>
+                                        <% } else if (txn.type === 'credit') { %>
+                                            Money Added
+                                        <% } else { %>
+                                            Purchase Payment
+                                        <% } %>
+                                    </h4>
+                                    <p class="transaction-description">
+                                        <% if (txn.orderId) { %>
+                                            Order #<%= txn.orderId %>
+                                        <% } else { %>
+                                            Wallet transaction
+                                        <% } %>
+                                    </p>
+                                    <span class="transaction-date">
+                                        <i data-lucide="calendar"></i>
+                                        <%= new Date(txn.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %>
+                                    </span>
+                                </div>
+                                
+                                <div class="transaction-amount <%= txn.type %>">
+                                    <span class="amount"><%= txn.type === 'credit' ? '+' : '-' %>₹<%= txn.amount.toFixed(2) %></span>
+                                    <span class="transaction-id">#<%= txn._id.toString().slice(-6).toUpperCase() %></span>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } %>
+                </div>
+                
+                <% if (wallet.transactions.length > 4) { %>
+                    <div class="load-more-section">
+                        <button class="load-more-btn">
+                            <i data-lucide="chevron-down"></i>
+                            Load More Transactions
+                        </button>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>
 
     <script>
+        lucide.createIcons();
+        
         // Filter functionality
         function resetFilters() {
             document.getElementById('typeFilter').value = 'all';
@@ -230,12 +185,6 @@
                     }
                 }
                 
-                // Time filter (simplified for demo)
-                if (timeFilter !== 'all') {
-                    // In real implementation, you would parse the date and compare
-                    // For demo, we'll show all transactions
-                }
-                
                 if (showTransaction) {
                     transaction.style.display = 'flex';
                     visibleCount++;
@@ -243,24 +192,13 @@
                     transaction.style.display = 'none';
                 }
             });
-            
-            document.getElementById('transactionCount').textContent = visibleCount;
         }
 
         // Add event listeners
         document.getElementById('typeFilter').addEventListener('change', filterTransactions);
         document.getElementById('timeFilter').addEventListener('change', filterTransactions);
 
-
-        // Hide the load-more  if trasaction lessthan 4 
-        window.addEventListener('DOMContentLoaded', () => {
-            const totalTxn = document.querySelectorAll('.transaction-item').length;
-            if (totalTxn <= visibleTransactions) {
-                document.querySelector('.load-more-section').style.display = 'none';
-            }
-        });
-
-        // Load more functionality (demo)
+        // Load more functionality
         let visibleTransactions = 4;
         const TRANSACTIONS_PER_LOAD = 4;
 
@@ -276,36 +214,45 @@
 
             visibleTransactions = nextVisibleCount;
 
-            // Hide load more button if all transactions are visible
             if (visibleTransactions >= allTransactions.length) {
                 document.querySelector('.load-more-section').style.display = 'none';
             }
         }
 
-        document.querySelector('.load-more-btn').addEventListener('click', function () {
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-            setTimeout(() => {
-                showMoreTransactions();
-                this.innerHTML = '<i class="fas fa-chevron-down"></i> Load More Transactions';
-            }, 500);
-        });
-
-        // Update filterTransactions() to only work on visible items if needed
-
+        if (document.querySelector('.load-more-btn')) {
+            document.querySelector('.load-more-btn').addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                const originalIcon = icon.dataset.lucide;
+                
+                icon.dataset.lucide = 'loader-2';
+                icon.classList.add('animate-spin');
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    showMoreTransactions();
+                    icon.dataset.lucide = originalIcon;
+                    icon.classList.remove('animate-spin');
+                    lucide.createIcons();
+                }, 500);
+            });
+        }
 
         // Copy referral code functionality
         function copyReferralCode() {
             const referralCode = document.getElementById('referralCode').textContent;
             navigator.clipboard.writeText(referralCode).then(() => {
                 const copyBtn = document.querySelector('.copy-code-btn');
-                const originalHTML = copyBtn.innerHTML;
+                const icon = copyBtn.querySelector('i');
+                const originalIcon = icon.dataset.lucide;
                 
-                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
-                copyBtn.style.background = 'linear-gradient(135deg, #28a745, #1e7e34)';
+                icon.dataset.lucide = 'check';
+                lucide.createIcons();
+                copyBtn.classList.add('copied');
                 
                 setTimeout(() => {
-                    copyBtn.innerHTML = originalHTML;
-                    copyBtn.style.background = 'linear-gradient(135deg, #d4af37, #b8972e)';
+                    icon.dataset.lucide = originalIcon;
+                    lucide.createIcons();
+                    copyBtn.classList.remove('copied');
                 }, 2000);
             }).catch(() => {
                 alert('Failed to copy referral code');

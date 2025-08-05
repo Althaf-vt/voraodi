@@ -86,7 +86,7 @@
           <div class="checkbox-section">
             <div class="checkbox-group">
               <div class="checkbox-item">
-                <input type="checkbox" id="isPublic" name="isPublic" class="form-checkbox">
+                <input type="checkbox" id="isPublic" name="isPublic" class="form-checkbox" checked required>
                 <label for="isPublic" class="checkbox-label">
                   <span class="checkbox-custom"></span>
                   Public Coupon
@@ -95,12 +95,13 @@
               </div>
 
               <div class="checkbox-item">
-                <input type="checkbox" id="hasRewardThreshold" name="hasRewardThreshold" class="form-checkbox">
+                <input type="checkbox" id="hasRewardThreshold" name="hasRewardThreshold" class="form-checkbox" disabled>
                 <label for="hasRewardThreshold" class="checkbox-label">
                   <span class="checkbox-custom"></span>
                   Reward Threshold
                 </label>
-                <div class="field-hint">Enable reward threshold for this coupon</div>
+                <!-- <div class="field-hint">Enable reward threshold for this coupon</div> -->
+                <p class="unavailable">This feature is currently Unavailable</p>
                 <div class="threshold-input-container" style="display: none;">
                   <input type="number" id="rewardThreshold" name="rewardThreshold" class="threshold-input" min="1" placeholder="Enter threshold amount">
                 </div>
@@ -134,7 +135,7 @@
         thresholdContainer.style.display = 'none';
         document.getElementById('rewardThreshold').value = '';
       } else {
-        rewardThresholdCheckbox.disabled = false;
+        // rewardThresholdCheckbox.disabled = false;
       }
     });
 
@@ -254,7 +255,6 @@
                 toast: true,
                 icon: 'success',
                 title: 'Coupon added',
-                text: data.success || 'Coupon added successfully',
                 position: 'top-end', // toast-style position (usually top-end)
                 showConfirmButton: false, //  no confirm button for toast
                 timer: 2000,

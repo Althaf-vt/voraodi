@@ -1,3 +1,7 @@
+*{
+    font-family: 'Montserrat', sans-serif;
+}
+
 /* Footer Section */
 footer {
   background: linear-gradient(135deg, #2f3a44, #3a4651);

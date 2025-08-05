@@ -38,6 +38,7 @@ app.use((req,res,next) =>{
 app.set('view engine','ejs');
 app.set('views',[path.join(__dirname,'views/user'),path.join(__dirname,'views/admin')]);
 app.use(express.static(path.join(__dirname,'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 

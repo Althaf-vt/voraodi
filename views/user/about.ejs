@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About VORAODI | Timeless Old Money Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/user/about.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="container">
+        <div class="hero-section">
+            <div class="hero-content">
+                <img src="/images/voraodi.png" alt="VORAODI Logo" class="brand-logo">
+                <h1>Timeless Elegance, <span>Old Money Style</span></h1>
+                <p class="hero-subtitle">Crafting sophisticated menswear that transcends trends since 2015</p>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Our Heritage</h2>
+                    <p>Founded in the heart of Milan, VORAODI was born from a passion for timeless menswear that embodies the quiet confidence of old money aesthetics. We blend traditional craftsmanship with contemporary comfort to create pieces that become wardrobe staples.</p>
+                    <p>Our designs are inspired by the understated elegance of European aristocracy and American Ivy League style, reimagined for the modern gentleman.</p>
+                </div>
+                <div class="about-image">
+                    <img src="/images/about-img1.png" alt="VORAODI craftsmanship">
+                </div>
+            </div>
+        </div>
+
+        <div class="values-section">
+            <h2 class="section-title">The VORAODI Difference</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="icon-container">
+                        <i class="card-icon" data-lucide="award"></i>
+                    </div>
+                    <h3>Exceptional Quality</h3>
+                    <p>We source only the finest fabrics and employ master tailors to ensure each piece meets our exacting standards.</p>
+                </div>
+                
+                <div class="value-card card-security">
+                    <div class="icon-container">
+                        <i class="card-icon" data-lucide="leaf"></i>
+                    </div>
+                    <h3>Sustainable Luxury</h3>
+                    <p>Our commitment to ethical production means your clothing is as kind to the planet as it is elegant.</p>
+                </div>
+                
+                <div class="value-card card-address">
+                    <div class="icon-container">
+                        <i class="card-icon" data-lucide="clock"></i>
+                    </div>
+                    <h3>Timeless Design</h3>
+                    <p>We create clothing that never goes out of style, ensuring your investment lasts for years.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-section">
+            <h2 class="section-title">Meet Our Founders</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="/images/about-model1.png" alt="Alessandro Voraodi" class="member-photo">
+                    <h3>Alessandro Voraodi</h3>
+                    <p class="position">Creative Director</p>
+                    <p class="bio">With a background in Florentine tailoring, Alessandro brings an artist's eye to every design.</p>
+                </div>
+                
+                <div class="team-member">
+                    <img src="/images/about-model2.png" alt="James Harrington" class="member-photo">
+                    <h3>James Harrington</h3>
+                    <p class="position">CEO</p>
+                    <p class="bio">Former financier who left Wall Street to pursue his passion for classic menswear.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2>Experience the VORAODI Difference</h2>
+            <p>Join our community of discerning gentlemen who appreciate true style.</p>
+            <div class="cta-buttons">
+                <a href="/shop" class="cta-btn">Shop Collection</a>
+                <a href="/contact" class="cta-btn secondary">Contact Us</a>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

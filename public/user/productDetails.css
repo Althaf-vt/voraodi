@@ -13,7 +13,7 @@ body {
 }
 
 .main {
-    padding-top: 70px;
+    padding-top: 80px;
 }
 
 /* Container */
@@ -123,6 +123,7 @@ body {
 
 .product-title {
     font-family: 'Cinzel', serif;
+    font-weight: 300;
     font-size: 28px;
     color: #2f3a44;
     margin-bottom: 15px;
@@ -316,8 +317,8 @@ body {
 }
 
 .section-header {
-    font-family: 'Cinzel', serif;
-    font-size: 24px;
+    /* font-family: 'Cinzel', serif; */
+    font-size: 20px;
     color: #2f3a44;
     margin-bottom: 30px;
     padding-bottom: 10px;
@@ -356,7 +357,8 @@ body {
 }
 
 .related-product-title {
-    font-size: 16px;
+    
+    font-size: 15px;
     margin-bottom: 5px;
     color: #2f3a44;
 }

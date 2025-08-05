@@ -411,6 +411,24 @@ const loadShoppingPage = async (req,res)=>{
     }
 }
 
+const aboutPage = async(req,res)=>{
+    try {
+        return res.render('about');
+    } catch (error) {
+        console.log('Error in loading about page : ',error);
+        return res.redirect('/pageNotFound');
+    }
+}
+
+const contactPage = async(req,res)=>{
+    try {
+        return res.render('contact');
+    } catch (error) {
+        console.log('Error in loading contact page : ',error);
+        return res.redirect('/pageNotFound');
+    }
+}
+
 
 module.exports = {
     loadHomepage,
@@ -423,6 +441,8 @@ module.exports = {
     signin,
     logout,
     loadShoppingPage,
+    aboutPage,
+    contactPage
     // filterProduct,
     // filterByPrice,
     // searchProducts,
