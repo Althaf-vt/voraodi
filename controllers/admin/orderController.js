@@ -244,11 +244,9 @@ const approveReturnItem = async(req,res)=>{
                 }
             }
         )
-        const saved =  await order.save();
 
-        if(saved){
-            console.log('Saved order: ',order)
-        }
+        order.finalAmount -= refundAmount;
+        await order.save();
 
         return res.status(200).json({success:true,message:'Return request approved'});
     } catch (error) {

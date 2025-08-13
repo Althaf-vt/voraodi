@@ -4,6 +4,7 @@ const User = require('../../models/userSchema');
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
 const Wallet = require('../../models/walletSchema');
+const Cart = require('../../models/cartSchema')
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const { search } = require('../../server');
@@ -325,6 +326,7 @@ const loadShoppingPage = async (req,res)=>{
         req.session.filteredProducts = null;
         // const searchQuery = req.query.search;
 
+        
         const user = req.session.user;
         const userData = await User.findOne({_id:user});
         const categories = await Category.find({isListed:true});
@@ -390,6 +392,21 @@ const loadShoppingPage = async (req,res)=>{
         const sortBy = sort || '';
         const selectedPriceFilters = priceFilter ? [priceFilter] : [];
         
+
+//         const cart = await Cart.find({userId:user});
+//         console.log(cart)
+
+//         let totalItems = 0
+//         if(cart && cart.items.length > 1){
+            
+
+//           for(let item of cart.items){
+//             totalItems += item.quantity
+//           }
+
+         
+//         }
+//  console.log(totalItems)
 
         res.render('shop',{
             user: userData,

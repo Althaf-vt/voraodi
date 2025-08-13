@@ -382,228 +382,270 @@
         });
 
       // Initialize sales chart
-      <% if (incomeData && incomeData.length > 0) { %>
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
-          const salesChart = new Chart(salesCtx, {
-            type: 'line',
-            data: {
-              labels: <% - JSON.stringify(incomeData.map(item => item.date)) %>,
-              datasets: [{
-                label: 'Sales Income (₹)',
-                data: <% - JSON.stringify(incomeData.map(item => item.income)) %>,
-                backgroundColor: 'rgba(201, 160, 34, 0.2)',
-                borderColor: 'rgba(201, 160, 34, 1)',
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true
-              }]
-            },
-            options: {
-              responsive: true,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    callback: function (value) {
-                      return '₹' + value.toLocaleString('en-IN');
-                    }
-                  }
-                }
-              },
-              plugins: {
-                tooltip: {
-                  callbacks: {
-                    label: function (context) {
-                      return '₹' + context.raw.toLocaleString('en-IN');
-                    }
-                  }
+    <% if (incomeData && incomeData.length > 0) { %>
+      const salesCtx = document.getElementById('salesChart').getContext('2d');
+      new Chart(salesCtx, {
+        type: 'line',
+        data: {
+          labels: <%- JSON.stringify(incomeData.map(item => item.date)) %>,
+          datasets: [{
+            label: 'Sales Income (₹)',
+            data: <%- JSON.stringify(incomeData.map(item => item.income)) %>,
+            backgroundColor: 'rgba(201, 160, 34, 0.2)',
+            borderColor: 'rgba(201, 160, 34, 1)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return '₹' + value.toLocaleString('en-IN');
                 }
               }
             }
-          });
-      <% } %>
-
-      // Initialize category chart if data exists
-      <% if (categorySalesData && categorySalesData.length > 0) { %>
-        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-          const categoryChart = new Chart(categoryCtx, {
-            type: 'doughnut',
-            data: {
-              labels: <% - JSON.stringify(categorySalesData.map(cat => cat.category)) %>,
-              datasets: [{
-                data: <% - JSON.stringify(categorySalesData.map(cat => cat.totalSold)) %>,
-                backgroundColor: [
-                  'rgba(201, 160, 34, 0.7)',
-                  'rgba(26, 37, 47, 0.7)',
-                  'rgba(47, 58, 68, 0.7)',
-                  'rgba(117, 117, 117, 0.7)',
-                  'rgba(169, 169, 169, 0.7)'
-                ],
-                borderColor: [
-                  'rgba(201, 160, 34, 1)',
-                  'rgba(26, 37, 47, 1)',
-                  'rgba(47, 58, 68, 1)',
-                  'rgba(117, 117, 117, 1)',
-                  'rgba(169, 169, 169, 1)'
-                ],
-                borderWidth: 1
-              }]
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'right',
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function (context) {
-                      return context.label + ': ' + context.raw;
-                    }
-                  }
-                }
-              }
-            }
-          });
-      <% } %>
-    });
-
-
-    <% if (topProducts && topProducts.length > 0) { %>
-  const topProductsLabels = <% - JSON.stringify(topProducts.map(p => p.productName)) %>;
-        const topProductsData = <% - JSON.stringify(topProducts.map(p => p.salePrice * p.totalSold)) %>;
-        const topProductsChart = new Chart(document.getElementById('topProductsChart').getContext('2d'), {
-          type: 'bar',
-          data: {
-            labels: topProductsLabels,
-            datasets: [{
-              label: 'Revenue',
-              data: topProductsData,
-              backgroundColor: 'rgba(201, 160, 34, 0.4)',
-              borderColor: 'rgba(201, 160, 34, 1)',
-              borderWidth: 1
-            }]
           },
-          options: {
-            indexAxis: 'x',
-            responsive: true,
-            plugins: {
-              legend: { display: false },
-              title: { display: false }
-            },
-            scales: {
-              x: {
-                ticks: {
-                  color: '#1a252f',
-                  font: { size: 12 },
-                  callback: function (value, index, values) {
-                    return this.getLabelForValue(value);
-                  }
-                }
-              },
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  color: '#1a252f',
-                  callback: function (value) {
-                    return '₹' + value.toLocaleString('en-IN');
-                  }
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return '₹' + context.raw.toLocaleString('en-IN');
                 }
               }
             }
           }
-        });
-<% } %>
+        }
+      });
+    <% } %>
 
-<% if (topCategories && topCategories.length > 0) { %>
-  const topCategoriesLabels = <% - JSON.stringify(topCategories.map(c => c.categoryName)) %>;
-        const topCategoriesData = <% - JSON.stringify(topCategories.map(c => c.totalRevenue)) %>;
-        const topCategoriesChart = new Chart(document.getElementById('topCategoriesChart').getContext('2d'), {
-          type: 'bar',
-          data: {
-            labels: topCategoriesLabels,
-            datasets: [{
-              label: 'Revenue',
-              data: topCategoriesData,
-              backgroundColor: 'rgba(201, 160, 34, 0.4)',
-              borderColor: 'rgba(201, 160, 34, 1)',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            indexAxis: 'x',
-            responsive: true,
-            plugins: {
-              legend: { display: false },
-              title: { display: false }
-            },
-            scales: {
-              x: {
-                ticks: {
-                  color: '#1a252f',
-                  font: { size: 12 },
-                  callback: function (value, index, values) {
-                    return this.getLabelForValue(value);
-                  }
-                }
-              },
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  color: '#1a252f',
-                  callback: function (value) {
-                    return '₹' + value.toLocaleString('en-IN');
-                  }
-                }
-              }
-            }
-          }
-        });
-<% } %>
-
-<% if (summary) { %>
-  const pieData = {
+    // Initialize pie chart
+    <% if (summary) { %>
+      const pieCtx = document.getElementById('salesPieChart').getContext('2d');
+      new Chart(pieCtx, {
+        type: 'pie',
+        data: {
           labels: ['Gross Sales', 'Discounts', 'Net Sales'],
           datasets: [{
             data: [
-        <%= summary.orderAmount %>,
-        <%= summary.discount %>,
-        <%= summary.orderAmount - summary.discount %>
-      ],
+              <%- summary.orderAmount %>,
+              <%- summary.discount %>,
+              <%- summary.orderAmount - summary.discount %>
+            ],
             backgroundColor: [
-              '#42a5f5', // blue
-              '#ffd54f', // yellow
-              '#26c6da'  // teal
+              'rgba(66, 165, 245, 0.7)',
+              'rgba(255, 213, 79, 0.7)',
+              'rgba(38, 198, 218, 0.7)'
             ],
             borderColor: [
-              '#42a5f5',
-              '#ffd54f',
-              '#26c6da'
+              'rgba(66, 165, 245, 1)',
+              'rgba(255, 213, 79, 1)',
+              'rgba(38, 198, 218, 1)'
             ],
             borderWidth: 1
           }]
-        };
-
-        const pieOptions = {
+        },
+        options: {
           responsive: true,
           plugins: {
             legend: {
-              display: true,
-              position: 'bottom',
-              labels: {
-                font: { size: 15 }
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  return `${label}: ₹${value.toLocaleString('en-IN')}`;
+                }
               }
             }
           }
-        };
+        }
+      });
+    <% } %>
 
-        const pieCtx = document.getElementById('salesPieChart').getContext('2d');
-        const salesPieChart = new Chart(pieCtx, {
-          type: 'pie',
-          data: pieData,
-          options: pieOptions
+    // Initialize top products chart
+    <% if (topProducts && topProducts.length > 0) { %>
+      const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+      new Chart(topProductsCtx, {
+        type: 'bar',
+        data: {
+          labels: <%- JSON.stringify(topProducts.map(p => p.productName)) %>,
+          datasets: [{
+            label: 'Revenue (₹)',
+            data: <%- JSON.stringify(topProducts.map(p => p.salePrice * p.totalSold)) %>,
+            backgroundColor: 'rgba(201, 160, 34, 0.4)',
+            borderColor: 'rgba(201, 160, 34, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '₹' + value.toLocaleString('en-IN');
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return '₹' + context.raw.toLocaleString('en-IN');
+                }
+              }
+            }
+          }
+        }
+      });
+    <% } %>
+
+    // Initialize top categories chart
+    <% if (topCategories && topCategories.length > 0) { %>
+      const topCategoriesCtx = document.getElementById('topCategoriesChart').getContext('2d');
+      new Chart(topCategoriesCtx, {
+        type: 'bar',
+        data: {
+          labels: <%- JSON.stringify(topCategories.map(c => c.categoryName)) %>,
+          datasets: [{
+            label: 'Revenue (₹)',
+            data: <%- JSON.stringify(topCategories.map(c => c.totalRevenue)) %>,
+            backgroundColor: 'rgba(201, 160, 34, 0.4)',
+            borderColor: 'rgba(201, 160, 34, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '₹' + value.toLocaleString('en-IN');
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return '₹' + context.raw.toLocaleString('en-IN');
+                }
+              }
+            }
+          }
+        }
+      });
+    <% } %>
+
+    // Fix export functions
+    document.getElementById('export-pdf').addEventListener('click', async function() {
+      const period = document.querySelector('.filter-btn.active').dataset.period;
+      const body = { period };
+      
+      if (period === 'custom') {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        
+        if (!startDate || !endDate) {
+          alert('Please select both start and end dates');
+          return;
+        }
+        
+        body.startDate = startDate;
+        body.endDate = endDate;
+      }
+
+      try {
+        const response = await fetch('/admin/download-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
         });
-<% } %>
+
+        if (!response.ok) {
+          throw new Error('Failed to generate PDF');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sales-report-${new Date().toISOString().slice(0, 10)}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (error) {
+        console.error('Error exporting PDF:', error);
+        alert('Failed to export PDF: ' + error.message);
+      }
+    });
+
+    document.getElementById('export-excel').addEventListener('click', async function() {
+      const period = document.querySelector('.filter-btn.active').dataset.period;
+      const body = { period };
+      
+      if (period === 'custom') {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        
+        if (!startDate || !endDate) {
+          alert('Please select both start and end dates');
+          return;
+        }
+        
+        body.startDate = startDate;
+        body.endDate = endDate;
+      }
+
+      try {
+        const response = await fetch('/admin/download-excel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate Excel');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sales-report-${new Date().toISOString().slice(0, 10)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (error) {
+        console.error('Error exporting Excel:', error);
+        alert('Failed to export Excel: ' + error.message);
+      }
+    });
+  });
     </script>
 </body>
 

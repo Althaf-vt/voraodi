@@ -172,12 +172,12 @@
                                 </span>
                             </div>
                             <div class="item-actions">
-                                <% if (item.status !== 'Cancelled' && item.status !== 'Delivered' && order.status !== 'Cancelled' && order.status !== 'Delivered' && item.status !== 'Return Request' && item.returnStatus !== 'Returned' && item.returnStatus !== 'Rejected' && item.returnStatus !== 'Requested') { %>
+                                <% if (order.orderedItems.length > 1 && item.status !== 'Cancelled' && item.status !== 'Delivered' && order.status !== 'Cancelled' && order.status !== 'Delivered' && item.status !== 'Return Request' && item.returnStatus !== 'Returned' && item.returnStatus !== 'Rejected' && item.returnStatus !== 'Requested') { %>
                                     <button class="action-button cancel" onclick="cancelItem('<%= order.orderId %>', '<%= item.sku %>')">
                                         Cancel Item
                                     </button>
                                 <% } else { %>
-                                    <% if (item.status === 'Delivered') { %>
+                                    <% if (order.orderedItems.length > 1 && item.status === 'Delivered') { %>
                                         <button class="action-button return" onclick="returnItem('<%= order.orderId %>', '<%= item.sku %>')">
                                             Return Item
                                         </button>

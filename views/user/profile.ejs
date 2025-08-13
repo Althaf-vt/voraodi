@@ -51,7 +51,7 @@
                     <label>Phone:</label>
                     <span><%= user && user.phone ? user.phone : 'Not Provided' %></span>
                     <button class="edit-button" onclick="openModal('newPhone', '<%= user.phone %>')" aria-label="Edit">
-                        <i data-lucide="edit-2" width="16" height="16"></i>
+                        <i  data-lucide="edit-2" width="16" height="16"></i>
                     </button>
                 </div>
             </div>
@@ -64,16 +64,20 @@
                 <div class="profile-item">
                     <label>Email:</label>
                     <span><%= user ? user.email : 'Not Provided' %></span>
+                    <% if (!user.googleId) { %>
                     <a href="/change-email" class="edit-button" aria-label="Edit">
                         <i data-lucide="edit-2" width="16" height="16"></i>
                     </a>
+                    <% } %>
                 </div>
                 <div class="profile-item change-password">
                     <label>Password:</label>
                     <span>••••••••</span>
+                     <% if (!user.googleId && user.password) { %>
                     <a href="/change-password" class="edit-button" aria-label="Edit">
                         <i data-lucide="edit-2" width="16" height="16"></i>
                     </a>
+                    <% } %>
                 </div>
             </div>
             

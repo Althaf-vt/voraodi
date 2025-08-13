@@ -199,43 +199,38 @@
         document.getElementById('timeFilter').addEventListener('change', filterTransactions);
 
         // Load more functionality
-        let visibleTransactions = 4;
-        const TRANSACTIONS_PER_LOAD = 4;
+let visibleTransactions = 4;
+const TRANSACTIONS_PER_LOAD = 4;
 
-        function showMoreTransactions() {
-            const allTransactions = document.querySelectorAll('.transaction-item');
-            const nextVisibleCount = visibleTransactions + TRANSACTIONS_PER_LOAD;
+function showMoreTransactions() {
+    const allTransactions = document.querySelectorAll('.transaction-item');
+    const nextVisibleCount = visibleTransactions + TRANSACTIONS_PER_LOAD;
 
-            allTransactions.forEach((txn, index) => {
-                if (index < nextVisibleCount) {
-                    txn.style.display = 'flex';
-                }
-            });
-
-            visibleTransactions = nextVisibleCount;
-
-            if (visibleTransactions >= allTransactions.length) {
-                document.querySelector('.load-more-section').style.display = 'none';
-            }
+    allTransactions.forEach((txn, index) => {
+        if (index < nextVisibleCount) {
+            txn.style.display = 'flex';
         }
+    });
 
-        if (document.querySelector('.load-more-btn')) {
-            document.querySelector('.load-more-btn').addEventListener('click', function() {
-                const icon = this.querySelector('i');
-                const originalIcon = icon.dataset.lucide;
-                
-                icon.dataset.lucide = 'loader-2';
-                icon.classList.add('animate-spin');
-                lucide.createIcons();
-                
-                setTimeout(() => {
-                    showMoreTransactions();
-                    icon.dataset.lucide = originalIcon;
-                    icon.classList.remove('animate-spin');
-                    lucide.createIcons();
-                }, 500);
-            });
-        }
+    visibleTransactions = nextVisibleCount;
+
+    if (visibleTransactions >= allTransactions.length) {
+        document.querySelector('.load-more-section').style.display = 'none';
+    }
+}
+
+if (document.querySelector('.load-more-btn')) {
+    document.querySelector('.load-more-btn').addEventListener('click', function() {
+        // Directly show more transactions without icon animation
+        showMoreTransactions();
+        
+        // Optional: Add a simple visual feedback
+        this.classList.add('clicked');
+        setTimeout(() => {
+            this.classList.remove('clicked');
+        }, 300);
+    });
+}
 
         // Copy referral code functionality
         function copyReferralCode() {

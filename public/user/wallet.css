@@ -503,6 +503,14 @@ body {
     to { transform: rotate(360deg); }
 }
 
+.load-more-btn {
+    transition: transform 0.2s ease;
+}
+
+.load-more-btn.clicked {
+    transform: scale(0.95);
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .wallet-cards {

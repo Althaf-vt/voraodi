@@ -660,7 +660,7 @@ const getSalesData = async (filter) => {
         const totalSale = summary.orderAmount;
         const totalIncome = summary.orderAmount - summary.discount;
 
-        return {
+         return {
             totalSale,
             totalOrders,
             totalCustomers,
@@ -673,11 +673,10 @@ const getSalesData = async (filter) => {
                 limit,
                 totalRecords: totalSalesRecords
             },
-            categorySalesData: topCategories,
-            incomeData,
-            topProducts,
-            // topBrands,
-            topCategories
+            categorySalesData: topCategories, // Make sure this is populated
+            incomeData, // Make sure this is populated
+            topProducts, // Make sure this is populated
+            topCategories // Make sure this is populated
         };
     } catch (error) {
         return {
