@@ -1,212 +1,336 @@
-/* Order Confirmation Page Styles: Inspired by Amazon and Flipkart */
-/* Retain color theme (#d4af37, #2f3a44, #f5f5e8) and typography (Cinzel, Montserrat) */
-.confirmation-container {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5f5e8, #fffcf4);
-    padding: 60px 20px; /* Compact padding for Amazon/Flipkart-like layout */
+:root {
+    --accent-gold: #d4af37;
+    --accent-dark: #2f3a44;
+    --accent-green: #004d00;
+    --accent-gray: #767675;
+    --accent-red: #c00000;
+    --text-primary: #2f3a44;
+    --text-secondary: #4a4a4a;
+    --text-tertiary: #666666;
+    --bg-primary: #f5f5e8;
+    --bg-secondary: #fffef4;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Main content container */
-.confirmation-content {
-    max-width: 1000px; /* Narrower for compactness */
+*{
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Base Styles */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.order-success-container {
+    padding: 40px 20px 60px;
+    max-width: 1200px;
     margin: 0 auto;
-    background: white;
-    border-radius: 8px;
-    border: 2px solid #d4af37;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 25px; /* Reduced from 30px for tighter layout */
 }
 
-/* Header: Centered with checkmark and delivery estimate */
+.order-success-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Confirmation Header */
 .confirmation-header {
     text-align: center;
-    margin-bottom: 25px; /* Reduced from 30px */
+    padding: 40px;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 .confirmation-icon {
-    font-size: 60px;
-    color: #006400;
-    margin-bottom: 15px;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 77, 0, 0.1);
+    border-radius: 50%;
+    color: var(--accent-green);
 }
 
-.confirmation-title {
-    font-family: 'Cinzel', serif;
-    font-size: 32px;
-    color: #2f3a44;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+.confirmation-icon i {
+    width: 40px;
+    height: 40px;
+    stroke-width: 1.5;
 }
 
-.confirmation-subtitle {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
-    color: #2f3a44;
-    margin-bottom: 15px;
-}
-
-.delivery-estimate {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    color: #2f3a44;
-}
-
-.delivery-estimate span {
+.confirmation-header h1 {
+    font-size: 2rem;
     font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--accent-green);
 }
 
-/* Order Info: Single card for order details, address removed */
-.order-info {
-    background: #f5f5e8;
-    border-radius: 8px;
-    border: 1px solid #d4af37;
+.confirmation-message {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.delivery-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.delivery-estimate, .order-number {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.delivery-estimate i, .order-number i {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-gold);
+}
+
+.delivery-estimate strong {
+    color: var(--accent-green);
+}
+
+/* Summary Grid Layout */
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.summary-card, .payment-card, .items-card {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     padding: 20px;
-    margin-bottom: 25px; /* Reduced from 30px */
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    background: rgba(212, 175, 55, 0.03);
 }
 
-.section-title {
-    font-family: 'Cinzel', serif;
-    font-size: 18px;
-    color: #2f3a44;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 2px solid #d4af37;
-    padding-bottom: 8px;
+.card-header i {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-gold);
 }
 
-.detail-item {
+.card-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.summary-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-}
-
-.detail-label {
-    font-weight: 700;
-    color: #2f3a44;
-}
-
-.detail-value {
-    color: #2f3a44;
-    text-align: right;
-}
-
-/* Order Items: List with name at start, price/quantity at end, no image or sum */
-.order-items {
-    margin-bottom: 15px; /* Reduced from 20px */
-}
-
-.order-item {
-    display: flex;
-    justify-content: space-between; /* Name at start, price/quantity at end */
     align-items: center;
-    padding: 10px; /* Reduced from 12px */
-    border: 1px solid #d4af37;
-    border-radius: 5px;
-    margin-bottom: 8px; /* Reduced from 10px */
-    background: #fffcf4;
+    padding: 12px 0;
+    border-bottom: 1px dashed rgba(212, 175, 55, 0.1);
 }
 
-.item-name {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item span:first-child {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.summary-item.total {
+    padding-top: 15px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    margin-top: 5px;
+}
+
+.summary-item.total span:last-child {
     font-weight: 700;
-    color: #2f3a44;
-    margin: 0; /* Remove default margin */
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.pending {
+    background: rgba(255, 165, 0, 0.1);
+    color: #b78103;
+}
+
+.status-badge.completed, 
+.status-badge.delivered {
+    background: rgba(0, 77, 0, 0.1);
+    color: var(--accent-green);
+}
+
+.status-badge.cancelled {
+    background: rgba(192, 0, 0, 0.1);
+    color: var(--accent-red);
+}
+
+/* Ordered Items */
+.ordered-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    gap: 20px;
+}
+
+.ordered-item:last-child {
+    border-bottom: none;
+}
+
+.item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-details h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.item-meta {
+    display: flex;
+    gap: 15px;
 }
 
 .item-price {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    color: #2f3a44;
-    white-space: nowrap; /* Prevent wrapping of price/quantity */
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
-/* Action Buttons: Centered and prominent */
+.item-quantity {
+    color: var(--text-tertiary);
+}
+
+.item-total {
+    font-weight: 600;
+    min-width: 80px;
+    text-align: right;
+}
+
+/* Action Buttons */
 .action-buttons {
     display: flex;
-    justify-content: center;
     gap: 15px;
-    margin-top: 25px; /* Reduced from 30px */
+    justify-content: center;
+    margin-top: 20px;
 }
 
 .btn {
-    padding: 10px 25px;
-    border-radius: 5px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: var(--border-radius);
+    font-weight: 600;
     text-decoration: none;
-    text-align: center;
     transition: all 0.3s ease;
 }
 
-.btn-primary {
-    background: linear-gradient(45deg, #d4af37, #b8972e);
-    color: #2f3a44;
-    border: none;
+.btn i {
+    width: 18px;
+    height: 18px;
 }
 
-.btn-primary:hover {
-    background: linear-gradient(45deg, #b8972e, #d4af37);
+.track-btn {
+    background: rgba(47, 58, 68, 0.1);
+    color: var(--accent-dark);
+    border: 1px solid rgba(47, 58, 68, 0.2);
+}
+
+.track-btn:hover {
+    background: rgba(47, 58, 68, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
 }
 
-.btn-secondary {
-    background: #2f3a44;
+.continue-btn {
+    background: var(--accent-gold);
+    color: var(--text-primary);
+}
+
+.continue-btn:hover {
+    background: #b8972e;
     color: white;
-    border: none;
-}
-
-.btn-secondary:hover {
-    background: #1a2026;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(47, 58, 68, 0.4);
 }
 
-/* Responsive Design: Stack vertically on mobile */
-@media (max-width: 768px) {
-    .confirmation-container {
-        padding: 20px;
+/* Responsive Design */
+@media (max-width: 900px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .order-success-container {
+        padding: 100px 15px 40px;
     }
     
-    .confirmation-content {
-        padding: 20px;
+    .confirmation-header {
+        padding: 30px 20px;
     }
     
-    .action-buttons {
+    .delivery-info {
         flex-direction: column;
         gap: 10px;
     }
     
-    .btn {
+    .ordered-item {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .item-total {
+        text-align: left;
         width: 100%;
-        padding: 12px;
+        padding-left: 90px; /* Match image width + gap */
     }
     
-    .confirmation-icon {
-        font-size: 50px;
+    .action-buttons {
+        flex-direction: column;
     }
     
-    .confirmation-title {
-        font-size: 28px;
-    }
-    
-    .confirmation-subtitle, .delivery-estimate {
-        font-size: 14px;
-    }
-    
-    .order-item {
-        flex-direction: column; /* Stack name and price/quantity on mobile */
-        align-items: flex-start;
-        gap: 5px;
-    }
-    
-    .item-price {
-        text-align: left; /* Align left on mobile for readability */
+    .btn {
+        justify-content: center;
     }
 }

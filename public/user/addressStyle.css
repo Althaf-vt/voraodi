@@ -1,506 +1,464 @@
-/* Address Container */
-.address-container {
-    display: flex;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5f5e8, #fffcf4);
-    padding: 80px 20px;
+:root {
+    --accent-gold: #d4af37;
+    --accent-dark: #2f3a44;
+    --accent-green: #004d00;
+    --accent-gray: #767675;
+    --accent-red: #c00000;
+    --text-primary: #2f3a44;
+    --text-secondary: #4a4a4a;
+    --text-tertiary: #666666;
+    --bg-primary: #f5f5e8;
+    --bg-secondary: #fffef4;
 }
 
-/* Sidebar */
-.sidebar {
-    width: 250px;
-    background: linear-gradient(135deg, #f5f5e8, #fffcf4);
-    padding: 30px 20px;
-    border-right: 2px solid #d4af37;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-title {
-    font-family: 'Cinzel', serif;
-    font-size: 24px;
-    color: #2f3a44;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
-    text-align: center;
-    position: relative;
-    white-space: nowrap;
-}
-
-.sidebar-title::after {
-    content: '';
-    position: absolute;
-    width: 60px;
-    height: 2px;
-    background-color: #d4af37;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.sidebar-nav {
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar-nav li {
-    margin-bottom: 20px;
-}
-
-.sidebar-nav a {
+*{
     font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
-    color: #2f3a44;
-    text-decoration: none;
+}
+
+body {
+    padding-top: 80px;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-primary);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    color: var(--text-primary);
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top: 100px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.5);
+    padding-bottom: 20px;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.profile-image-wrapper {
+    position: relative;
+    width: 70px;
+    height: 70px;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid #797e85d2;
+    object-fit: cover;
+    box-shadow: 0 8px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-icon {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #f5f5e8;
+    border: 1px solid #797e85d2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--text-primary);
+    box-shadow: 0 8px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-text h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.profile-text h1 span {
+    font-weight: 600;
+    color: var(--accent-gold);
+}
+
+.profile-text p {
+    margin: 0.5rem 0 0;
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.add-address-button {
+    background: linear-gradient(45deg, var(--accent-gold), #b8972e);
+    color: var(--text-primary);
+    border: none;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
     text-transform: uppercase;
-    display: block;
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.sidebar-nav a:hover,
-.sidebar-nav a.active {
-    background: linear-gradient(135deg, #d4af37, #b8972e);
-    color: #2f3a44;
-    transform: translateX(10px);
+.add-address-button:hover {
+    background: linear-gradient(135deg, var(--accent-green), #1a661a);
+    color: var(--bg-primary);
 }
 
-/* Address Content */
-.address-content {
-    flex: 1;
-    padding: 40px;
+.address-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.25rem;
+    margin-top: 20px;
+}
+
+.address-card {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 1rem;
 }
 
-.address-title {
-    font-family: 'Cinzel', serif;
-    font-size: 36px;
-    color: #2f3a44;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    position: relative;
-    text-align: center;
-}
-
-.address-title::after {
+.address-card::before {
     content: '';
     position: absolute;
-    width: 60px;
-    height: 2px;
-    background-color: #d4af37;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-gold);
 }
 
-.address-header {
-    display: flex;
-    justify-content: flex-end;
+.address-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent-gold);
+    background-color: rgba(212, 175, 55, 0.05);
+}
+
+.icon-container {
+    display: inline-flex;
     align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.address-header .address-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.address-card-container {
-    max-width: 1200px;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
     justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(212, 175, 55, 0.1);
+    transition: all 0.3s ease;
 }
 
-/* Address Card */
-.address-card {
-    background: #fff;
-    border-radius: 10px;
-    border: 2px solid #d4af37;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-    padding: 30px;
-    margin-bottom: 20px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    flex: 1 1 calc(50% - 10px);
-    box-sizing: border-box;
-    max-width: calc(50% - 10px);
+.address-card:hover .icon-container {
+    background-color: rgba(212, 175, 55, 0.2);
 }
 
-/* Address Details */
+.card-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-gold);
+    stroke-width: 1.75;
+}
+
 .address-details {
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .address-item {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 20px;
-    padding: 10px 15px;
-    background: #f5f5e8;
-    border-radius: 5px;
-    border: 1px solid #d4af37;
+    gap: 0.5rem;
+    font-size: 0.9rem;
 }
 
 .address-item label {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
-    color: #2f3a44;
-    font-weight: 700;
-    text-transform: uppercase;
-    width: 100px;
-    white-space: nowrap;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 80px;
 }
 
 .address-item span {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
-    color: #2f3a44;
+    color: var(--text-primary);
     flex: 1;
-    text-align: left;
-    padding-left: 20px;
 }
 
-/* No Address Section */
-.no-address {
-    text-align: center;
-    margin-bottom: 30px;
+.address-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
 }
 
-.no-address-icon {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 20px;
-}
-
-.no-address p {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 18px;
-    color: #2f3a44;
-    text-transform: uppercase;
-}
-
-/* Buttons */
-.edit-button, .add-address-button, .delete-button {
-    padding: 10px 30px;
+.edit-button, .delete-button {
+    flex: 1;
+    padding: 0.5rem;
     border: none;
-    border-radius: 5px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    text-transform: uppercase;
-    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
     cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: inline-block;
-    margin-top: 10px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
 }
 
-.edit-button, .add-address-button {
-    background: linear-gradient(45deg, #d4af37, #b8972e);
-    color: #2f3a44;
+.edit-button {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--accent-gold);
 }
 
 .delete-button {
-    background: linear-gradient(45deg, #2f3a44, #3a4651);
-    color: #f5f5e8;
-    margin-left: 15px;
+    background: rgba(192, 0, 0, 0.1);
+    color: var(--accent-red);
 }
 
-.add-address-button {
-    text-align: center;
-    max-width: 200px;
-}
-
-.edit-button::before, .add-address-button::before, .delete-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-}
-
-.edit-button:hover::before, .add-address-button::before, .delete-button:hover::before {
-    left: 100%;
-}
-
-.edit-button:hover, .add-address-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
-    background: linear-gradient(135deg, #006400, #228B22);
-    color: #f5f5e8;
+.edit-button:hover {
+    background: rgba(212, 175, 55, 0.2);
 }
 
 .delete-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(211, 47, 47, 0.7);
-    background: linear-gradient(135deg, #ff4040, #d32f2f);
+    background: rgba(192, 0, 0, 0.2);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .address-container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        border-right: none;
-        border-bottom: 2px solid #d4af37;
-        padding: 20px;
-    }
-
-    .address-content {
-        padding: 20px;
-    }
-
-    .address-card {
-        padding: 20px;
-        flex: 1 1 100%;
-        max-width: 100%;
-    }
-
-    .address-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .address-item label,
-    .address-item span {
-        width: 100%;
-        text-align: center;
-        padding-left: 0;
-    }
-
-    .address-item::before {
-        content: ':';
-        margin: 0;
-    }
-
-    .edit-button, .delete-button {
-        align-self: center;
-    }
-
-    .delete-button {
-        margin-left: 0;
-        margin-top: 15px;
-    }
-
-    .address-header {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .address-header .address-title {
-        position: static;
-        transform: none;
-    }
-
-    .add-address-button {
-        margin: 0;
-    }
+.no-address {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
-/* ───────── Edit‑Address Modal ───────── */
+.no-address h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.no-address p {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+/* Modal Styles */
 .modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .modal.hidden { display: none; }
 
 .modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
 }
 
 .modal-card {
-  position: relative;
-  width: 95%;
-  max-width: 700px;
-  background: #fff;
-  border: 2px solid #d4af37;
-  border-radius: 10px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-  padding: 35px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  animation: zoomIn 0.25s ease;
+    position: relative;
+    width: 95%;
+    max-width: 700px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent-gold);
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    z-index: 1;
+    animation: zoomIn 0.25s ease;
 }
 
 @keyframes zoomIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to   { transform: scale(1);   opacity: 1; }
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
 }
 
 .modal-title {
-  font-family: 'Cinzel', serif;
-  font-size: 30px;
-  color: #2f3a44;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-align: center;
-  position: relative;
-  margin-bottom: 10px;
-}
-
-.modal-title::after {
-  content: '';
-  position: absolute;
-  width: 60px;
-  height: 2px;
-  background-color: #d4af37;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* reuse form‑row / form‑group from Add‑Address so inputs look identical */
-.modal-form { display: flex; flex-direction: column; gap: 20px; }
-
-.modal-form .form-row   { display: flex; gap: 20px; flex-wrap: wrap; }
-.modal-form .form-group { flex: 1; min-width: 250px; display: flex; flex-direction: column; }
-
-.modal-form label {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #2f3a44;
-  margin-bottom: 6px;
-}
-
-.modal-form input {
-  padding: 10px;
-  border: 1px solid #d4af37;
-  border-radius: 5px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 16px;
-  color: #2f3a44;
-}
-
-.modal-form .form-message {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  padding: 7px;
-  border-radius: 5px;
-  text-align: center;
-  margin-bottom: 7px;
-  opacity: 0;
-}
-
-.modal-form .form-message.error   { color:#d32f2f; border:1px solid #d32f2f; background:#fffcf4; }
-.modal-form .form-message.success { color:#006400; border:1px solid #006400; background:#f5f5e8; }
-
-.modal-form .form-actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 5px;
-}
-
-.modal-form .action-button {
-  padding: 10px 30px;
-  background: linear-gradient(45deg,#d4af37,#b8972e);
-  color: #2f3a44;
-  border: none;
-  border-radius: 5px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: transform .3s ease, box-shadow .3s ease;
-}
-
-.modal-form .action-button.cancel {
-  background: linear-gradient(45deg,#2f3a44,#3a4651);
-  color:#f5f5e8;
-}
-
-.modal-form .action-button::before {
-  content:'';
-  position:absolute;
-  top:0; left:-100%; width:100%; height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
-  transition:left .5s ease;
-}
-.modal-form .action-button:hover::before { left:100%; }
-
-.modal-form .action-button:hover {
-  transform:scale(1.05);
-  box-shadow:0 8px 20px rgba(212,175,55,.7);
-  background:linear-gradient(135deg,#006400,#228b22);
-  color:#f5f5e8;
-}
-
-.modal-form .action-button.cancel:hover {
-  background:linear-gradient(135deg,#ff4040,#d32f2f);
-}
-
-/* responsive tweaks */
-@media (max-width:600px){
-  .modal-card      { padding:25px 20px; }
-  .modal-form .form-row { flex-direction:column; gap:15px; }
-  .modal-form .form-group{ min-width:100%; }
-}
-
-
-/* Modal Form Messages */
-.modal-form .form-message {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    padding: 10px;
-    border-radius: 5px;
+    font-size: 1.5rem;
+    color: var(--text-primary);
     text-align: center;
-    margin-bottom: 15px;
-    opacity: 1;
-    transition: all 0.3s ease;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
 }
 
-.modal-form .form-message.error {
-    color: #d32f2f;
-    border: 1px solid #d32f2f;
-    background: rgba(211, 47, 47, 0.1);
+.modal-title i {
+    color: var(--accent-gold);
 }
 
-.modal-form .form-message.success {
-    color: #006400;
-    border: 1px solid #006400;
-    background: rgba(0, 100, 0, 0.1);
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
-/* Toast */
-.toastify {
-  border-radius: 12px !important; /* or whatever curve you like */
-  font-family: 'Montserrat', sans-serif; /* optional, to match your VOGUE theme */
-  top: 80px !important; /* Adjust this value based on your navbar height */
-  z-index: 9999; /* Make sure it appears above content, but not over navbar */
+.form-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group label i {
+    color: var(--accent-gold);
+}
+
+.form-group input {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+.form-message {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+    margin: -0.5rem 0 0.5rem;
+}
+
+.form-message.error {
+    color: var(--accent-red);
+    border: 1px solid rgba(192, 0, 0, 0.2);
+    background-color: rgba(192, 0, 0, 0.05);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.action-button {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.action-button {
+    background: linear-gradient(45deg, var(--accent-gold), #b8972e);
+    color: var(--text-primary);
+}
+
+.action-button:hover {
+    background: linear-gradient(135deg, var(--accent-green), #1a661a);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+}
+
+.action-button.cancel {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.action-button.cancel:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .address-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+        padding-top: 70px;
+    }
+    
+    .header {
+        flex-direction: column;
+        gap: 1.25rem;
+        align-items: center;
+    }
+    
+    .profile-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .modal-card {
+        padding: 1.5rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .form-group {
+        min-width: 100%;
+    }
 }

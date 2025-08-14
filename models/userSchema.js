@@ -62,7 +62,7 @@ const userSchema = new Schema({
     },
     referralCode: {
         type: String,
-        required: true
+        default: false
     },
     referrals:[{
         type: Schema.Types.ObjectId,

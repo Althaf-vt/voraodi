@@ -6,7 +6,7 @@ const Wallet = require('../../models/walletSchema');
 const loadOrders = async(req,res)=>{
     try {
 
-        const page = req.query.page || 1;
+        const page = parseInt(req.query.page) || 1;
         const limit = 4;
         const skip = (page-1)*limit;
 
@@ -25,7 +25,8 @@ const loadOrders = async(req,res)=>{
             paymentMethod: order.paymentMethod,
             totalAmount: order.totalPrice,
             status: order.status,
-            returnStatus: order.returnStatus
+            returnStatus: order.returnStatus,
+            hasReturnRequest: order.orderedItems.some(item => item.returnStatus === 'Requested')
             // viewLink: `/admin/orders/orderDetails/${order.orderId}`
         }));
 
@@ -91,7 +92,11 @@ const updateOrderStatus = async(req,res)=>{
         }
 
         const updateStatus = order.status = status;
-        order.orderedItems.map(item=> item.status = status);
+        order.orderedItems.map(item=> {
+            if(item.status !== 'Cancelled'){
+                item.status = status
+            }
+        });
 
         if(!updateStatus){
             console.log('status not updated');
@@ -239,11 +244,9 @@ const approveReturnItem = async(req,res)=>{
                 }
             }
         )
-        const saved =  await order.save();
 
-        if(saved){
-            console.log('Saved order: ',order)
-        }
+        order.finalAmount -= refundAmount;
+        await order.save();
 
         return res.status(200).json({success:true,message:'Return request approved'});
     } catch (error) {
