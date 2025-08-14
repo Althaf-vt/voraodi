@@ -30,7 +30,6 @@ const orderDetailpage = async(req,res)=>{
 const cancelItem = async(req,res)=>{
     try {
         const {orderId,sku} = req.body;
-
         const userId = req.session.user;
 
         const findOrder = await Order.findOne({orderId:orderId});
@@ -50,13 +49,15 @@ const cancelItem = async(req,res)=>{
         if(item.status === 'Cancelled'){
             return res.status(400).json({success: false, message: "Item already cancelled"});
         }
+
         const cancelQty = item.quantity;
-        const unitPrice = item.price
+        const unitPrice = item.price / item.quantity; // Price per item
+        const totalItemPrice = unitPrice * cancelQty; // Total price for canceled items
         const productId = item.product;
 
         item.status = 'Cancelled';
 
-        // update quantity in product schema
+        // Update quantity in product schema
         const product = await Product.findOne({_id: productId});
 
         if (!product) {
@@ -67,23 +68,19 @@ const cancelItem = async(req,res)=>{
         // Find the variant by SKU and increment its quantity
         const variant = product.variants.find(variant => variant.sku === sku);
         if(!variant){
-            console.log('varient not found in product Schema');
+            console.log('variant not found in product Schema');
             return res.status(500).json({success: false, message:"Product variant not found"})
         }
 
         variant.quantity += cancelQty; // restock qty
         
-
         const allCancelled = findOrder.orderedItems.every(item => item.status === 'Cancelled');
         if(allCancelled && findOrder.status !== 'Cancelled'){
             findOrder.status = 'Cancelled';
-            await findOrder.save();
         }
 
-        console.log(findOrder.paymentMethod);
-
         if(findOrder.paymentMethod !== 'cod'){
-            const refundAmount = unitPrice * cancelQty;
+            const refundAmount = totalItemPrice;
             
             await Wallet.updateOne(
                 {userId},
@@ -100,9 +97,21 @@ const cancelItem = async(req,res)=>{
                         }
                     }
                 }
-            )
-            findOrder.totalPrice -= refundAmount;
-            findOrder.finalAmount -= refundAmount;
+            );
+            
+            // Recalculate order totals
+            const activeItems = findOrder.orderedItems.filter(item => item.status !== 'Cancelled');
+            const newTotalPrice = activeItems.reduce((sum, item) => sum + item.price, 0);
+            
+            findOrder.totalPrice = newTotalPrice;
+            findOrder.finalAmount = newTotalPrice - findOrder.discount + findOrder.deliveryCharge;
+        } else {
+            // For COD orders, just update the totals without refund
+            const activeItems = findOrder.orderedItems.filter(item => item.status !== 'Cancelled');
+            const newTotalPrice = activeItems.reduce((sum, item) => sum + item.price, 0);
+            
+            findOrder.totalPrice = newTotalPrice;
+            findOrder.finalAmount = newTotalPrice - findOrder.discount + findOrder.deliveryCharge;
         }
 
         await product.save();
