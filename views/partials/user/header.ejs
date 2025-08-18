@@ -234,13 +234,13 @@
                 </svg>
             </a>
             
-            <a href="/cart" class="icon-link">
+            <a href="/cart" class="icon-link" id="cartIcon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"></circle>
                     <circle cx="20" cy="21" r="1"></circle>
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                 </svg>
-                
+                <span class="cart-count" id="cartCount" style="display: none;"></span>
             </a>
             
             <div class="user-dropdown">
@@ -278,4 +278,31 @@
             </div>
         </div>
     </div>
+    <script>
+        // Function to fetch and update cart count
+        async function updateCartCount() {
+            try {
+                const response = await fetch('/cart/count');
+                if (!response.ok) throw new Error('Failed to fetch cart count');
+                
+                const data = await response.json();
+                const cartCountElement = document.getElementById('cartCount');
+                
+                if (cartCountElement) {
+                    if(data.count > 0){
+                    cartCountElement.textContent = data.count;
+                    cartCountElement.style.display ='flex';
+                    }
+                    else{
+                        cartCountElement.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating cart count:', error);
+            }
+        }
+
+        // Call this function when the page loads
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+    </script>
 </header>

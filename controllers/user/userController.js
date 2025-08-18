@@ -428,6 +428,26 @@ const loadShoppingPage = async (req,res)=>{
     }
 }
 
+const cartCount = async(req,res) =>{
+    try {
+        if (!req.session.user) {
+            return res.json({ count: 0 });
+        }
+
+        const cart = await Cart.findOne({ userId: req.session.user });
+        let count = 0;
+
+        if (cart && cart.items.length > 0) {
+            count = cart.items.reduce((total, item) => total + item.quantity, 0);
+        }
+
+        res.json({ count });
+    } catch (error) {
+        console.error('Error fetching cart count:', error);
+        res.status(500).json({ error: 'Failed to fetch cart count' });
+    }
+}
+
 const aboutPage = async(req,res)=>{
     try {
         return res.render('about');
@@ -459,7 +479,8 @@ module.exports = {
     logout,
     loadShoppingPage,
     aboutPage,
-    contactPage
+    contactPage,
+    cartCount
     // filterProduct,
     // filterByPrice,
     // searchProducts,

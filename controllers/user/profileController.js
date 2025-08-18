@@ -915,7 +915,13 @@ const addToCart = async (req, res) => {
         }
         await userCart.save();
 
-        return res.status(200).json({ success: true, message: 'Product added to cart' });
+        const totalItems = userCart.items.reduce((total, item) => total + item.quantity, 0);
+
+        return res.status(200).json({ 
+            success: true,
+            message: 'Product added to cart' ,
+            cartCount: totalItems,
+        });
 
     } catch (error) {
         console.error('Error adding to cart:', error);
