@@ -587,12 +587,12 @@
         const result = await Swal.fire({
           toast:true,
           title: 'Are you sure?',
-          text: "You won't be able to revert this!",
+          text: "Confirm your action!",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#9d0000',
           cancelButtonColor: '#c9a022',
-          confirmButtonText: 'Yes, delete it!'
+          confirmButtonText: 'Yes!'
         });
         try {
           if(result.isConfirmed){

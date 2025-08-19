@@ -6,14 +6,14 @@ const path = require('path');
 const sharp = require('sharp');
 // const { enabled } = require('../../server');
 
-const getAddProduct = async (req, res) => {
+const getAddProduct = async (req, res,next) => {
     try {
         const category = await Category.find({ isListed: true });
         res.render('add-product', {
             categories: category
         });
     } catch (error) {
-        res.redirect('/pageError');
+        next(error);
     }
 };
 
@@ -119,11 +119,13 @@ const getAllProducts = async (req, res) => {
                 // category: category
             });
         } else {
-            return res.redirect('/admin/pageError');
+            const err = new Error("No categories available");
+            err.statusCode = 404;
+            throw err;
         }
     } catch (error) {
         console.log(error)
-        return res.redirect('/admin/pageError');
+        next(error)
     }
 };
 
@@ -239,7 +241,7 @@ const unblockProduct = async (req,res) =>{
     }
 }
 
-const getEditProduct = async (req,res)=>{
+const getEditProduct = async (req,res,next)=>{
     try {
         const id = req.query.id;
         const product = await Product.findOne({_id:id});
@@ -262,7 +264,7 @@ const getEditProduct = async (req,res)=>{
         })
     } catch (error) {
         console.log(error);
-        res.redirect("/pageError");
+        next(error)
     }
 }
 
@@ -369,7 +371,7 @@ const deleteSingleImage = async(req,res)=>{
 }
 
 
-const searchProduct = async(req,res)=>{
+const searchProduct = async(req,res,next)=>{
     try {
         const search = (req.body?.query || req.query?.query || "").trim();
 
@@ -422,11 +424,11 @@ const searchProduct = async(req,res)=>{
 
     } catch (error) {
         console.log("Error in Search Products",error);
-        return res.redirect('/admin/pageError');
+        next(error)
     }
 }
 
-const deleteProduct = async(req,res)=>{
+const deleteProduct = async(req,res,next)=>{
     try {
         const productId = req.query.id;
         await Product.deleteOne({_id:productId});
@@ -435,7 +437,7 @@ const deleteProduct = async(req,res)=>{
         
     } catch (error) {
         console.error('Error in Delete product',error);
-        return res.redirect('/admin/pageError')
+        next(error);
     }
 }
 

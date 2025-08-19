@@ -16,10 +16,12 @@ const bcrypt = require('bcrypt');
 async function getTopSellingProducts(limit = 10) {
     const topProducts = await Order.aggregate([
         { $unwind: "$orderedItems" },
-        { $group: {
-            _id: "$orderedItems.product",
-            totalSold: { $sum: "$orderedItems.quantity" }
-        }},
+        {
+            $group: {
+                _id: "$orderedItems.product",
+                totalSold: { $sum: "$orderedItems.quantity" }
+            }
+        },
         { $sort: { totalSold: -1 } },
         { $limit: limit },
         {
@@ -92,49 +94,55 @@ async function getTopSellingCategories(limit = 10) {
     return topCategories;
 }
 
-const loadAdminSignin = async (req, res) => {
-    if (req.session.admin) {
-        return res.redirect('/admin/');
+const loadAdminSignin = async (req, res, next) => {
+    try {
+        if (req.session.admin) {
+            return res.redirect('/admin/');
+        }
+        res.render('adminSignin', { message: null })
+    } catch (error) {
+        next(error);
     }
-    res.render('adminSignin', { message: null })
 }
 
-const signin = async(req,res)=>{
+const signin = async (req, res, next) => {
     try {
-        const {email,password} = req.body;
-        const admin = await User.findOne({email,isAdmin:true});
-        if(admin){
-            const passwordMatch = await bcrypt.compare(password,admin.password);
-            if(passwordMatch){
+        const { email, password } = req.body;
+        const admin = await User.findOne({ email, isAdmin: true });
+        if (admin) {
+            const passwordMatch = await bcrypt.compare(password, admin.password);
+            if (passwordMatch) {
                 req.session.admin = true;
                 console.log('admin in session')
                 return res.redirect('/admin/')
-            }else{
+            } else {
                 res.render('adminSignin', { message: 'password incorrect' })
             }
-        }else{
+        } else {
             res.render('adminSignin', { message: 'Admin not found' })
         }
     } catch (error) {
-        console.log('login error',error);
-        return res.redirect('/pageError');
-        
+        console.log('login error', error);
+        next(error);
+
     }
 }
 
 
-const logout = async (req,res) =>{
+const logout = async (req, res, next) => {
     try {
-        req.session.destroy(err =>{
-            if(err){
-                console.log('Error destroying session',err);
-                return res.redirect('/pageError'); 
+        req.session.destroy(err => {
+            if (err) {
+                console.log('Error destroying session', err);
+                const error = new Error("Error destroying session");
+                error.statusCode = 500;
+                return next(error);
             }
             res.redirect('/admin/signin');
         })
     } catch (error) {
         console.log('unexpected error during logout', error);
-        res.redirect('/pageError')
+        next(error)
     }
 }
 
@@ -176,28 +184,29 @@ const loadDashboard = async (req, res, next) => {
         delete req.session.message;
     } catch (error) {
         console.error('Error loading dashboard:', error);
-        res.render('dashboard', {
-            totalSale: 0,
-            totalOrders: 0,
-            totalCustomers: 0,
-            totalIncome: 0,
-            summary: { salesCount: 0, orderAmount: 0, discount: 0 },
-            salesReport: [],
-            pagination: { currentPage: 1, totalPages: 1, limit: 5, totalRecords: 0 },
-            categorySalesData: [],
-            incomeData: [],
-            // topProducts: [],
-            // topBrands: [],
-            // topCategories: [],
-            message: 'Failed to load dashboard data. Please try again.',
-            selectedPeriod: 'monthly',
-            filter: { period: 'monthly', page: 1, limit: 5 }
-        });
+        next(error)
+        // res.render('dashboard', {
+        //     totalSale: 0,
+        //     totalOrders: 0,
+        //     totalCustomers: 0,
+        //     totalIncome: 0,
+        //     summary: { salesCount: 0, orderAmount: 0, discount: 0 },
+        //     salesReport: [],
+        //     pagination: { currentPage: 1, totalPages: 1, limit: 5, totalRecords: 0 },
+        //     categorySalesData: [],
+        //     incomeData: [],
+        //     // topProducts: [],
+        //     // topBrands: [],
+        //     // topCategories: [],
+        //     message: 'Failed to load dashboard data. Please try again.',
+        //     selectedPeriod: 'monthly',
+        //     filter: { period: 'monthly', page: 1, limit: 5 }
+        // });
     }
 };
 
 // Sales Report
-const saleReport = async (req, res, next) => { 
+const saleReport = async (req, res, next) => {
     try {
         if (!req.session.admin) {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
@@ -660,7 +669,7 @@ const getSalesData = async (filter) => {
         const totalSale = summary.orderAmount;
         const totalIncome = summary.orderAmount - summary.discount;
 
-         return {
+        return {
             totalSale,
             totalOrders,
             totalCustomers,
@@ -696,8 +705,8 @@ const getSalesData = async (filter) => {
     }
 };
 
-const pageError = async (req,res) =>{
-    res.render ('admin-error')
+const pageError = async (req, res) => {
+    res.render('admin-error')
 }
 module.exports = {
     loadAdminSignin,

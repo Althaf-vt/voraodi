@@ -4,50 +4,62 @@ const Product = require('../../models/productSchema');
 const Wallet = require('../../models/walletSchema');
 
 
-const orderDetailpage = async(req,res)=>{
+const orderDetailpage = async (req, res, next) => {
     try {
         const orderId = req.params.id;
         const userId = req.session.user;
 
-        const user = await User.findOne({_id:userId})
-        
-    
-        const order = await Order.findOne({orderId:orderId})
-        .populate('orderedItems.product')
+        const user = await User.findOne({ _id: userId })
 
-        return res.render('orderDetails',{
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
+        const order = await Order.findOne({ orderId: orderId })
+            .populate('orderedItems.product')
+
+        if (!order) {
+            const err = new Error("Order not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
+        return res.render('orderDetails', {
             order,
             user,
-            message : null
+            message: null
         });
 
 
     } catch (error) {
-        console.log('Catch in orderdetail',error)
+        console.log('Catch in orderdetail', error);
+        next(error);
     }
 }
 
-const cancelItem = async(req,res)=>{
+const cancelItem = async (req, res) => {
     try {
-        const {orderId,sku} = req.body;
+        const { orderId, sku } = req.body;
         const userId = req.session.user;
 
-        const findOrder = await Order.findOne({orderId:orderId});
+        const findOrder = await Order.findOne({ orderId: orderId });
 
-        if(!findOrder){
+        if (!findOrder) {
             console.log("Order not found");
             return res.status(400).json({ success: false, message: "Order not found" });
         }
 
-        const item = findOrder.orderedItems.find((item)=> item.sku === sku);
+        const item = findOrder.orderedItems.find((item) => item.sku === sku);
 
-        if(!item){
+        if (!item) {
             console.log('Item with SKU not found')
-            return res.status(500).json({success: false, message:'Item not found in ordered items'});
+            return res.status(500).json({ success: false, message: 'Item not found in ordered items' });
         }
 
-        if(item.status === 'Cancelled'){
-            return res.status(400).json({success: false, message: "Item already cancelled"});
+        if (item.status === 'Cancelled') {
+            return res.status(400).json({ success: false, message: "Item already cancelled" });
         }
 
         const cancelQty = item.quantity;
@@ -58,7 +70,7 @@ const cancelItem = async(req,res)=>{
         item.status = 'Cancelled';
 
         // Update quantity in product schema
-        const product = await Product.findOne({_id: productId});
+        const product = await Product.findOne({ _id: productId });
 
         if (!product) {
             console.log("Product not found");
@@ -67,28 +79,28 @@ const cancelItem = async(req,res)=>{
 
         // Find the variant by SKU and increment its quantity
         const variant = product.variants.find(variant => variant.sku === sku);
-        if(!variant){
+        if (!variant) {
             console.log('variant not found in product Schema');
-            return res.status(500).json({success: false, message:"Product variant not found"})
+            return res.status(500).json({ success: false, message: "Product variant not found" })
         }
 
         variant.quantity += cancelQty; // restock qty
-        
+
         const allCancelled = findOrder.orderedItems.every(item => item.status === 'Cancelled');
-        if(allCancelled && findOrder.status !== 'Cancelled'){
+        if (allCancelled && findOrder.status !== 'Cancelled') {
             findOrder.status = 'Cancelled';
         }
 
-        if(findOrder.paymentMethod !== 'cod'){
+        if (findOrder.paymentMethod !== 'cod') {
             const refundAmount = totalItemPrice;
-            
+
             await Wallet.updateOne(
-                {userId},
+                { userId },
                 {
-                    $inc:{balance:refundAmount},
-                    $push:{
-                        transactions:{
-                            type:'credit',
+                    $inc: { balance: refundAmount },
+                    $push: {
+                        transactions: {
+                            type: 'credit',
                             amount: refundAmount,
                             reason: 'Refund for Cancel Item',
                             orderId: orderId,
@@ -98,25 +110,25 @@ const cancelItem = async(req,res)=>{
                     }
                 }
             );
-            
+
             // Recalculate order totals
             const activeItems = findOrder.orderedItems.filter(item => item.status !== 'Cancelled');
             const newTotalPrice = activeItems.reduce((sum, item) => sum + item.price, 0);
-            
+
             findOrder.totalPrice = newTotalPrice;
             findOrder.finalAmount = newTotalPrice - findOrder.discount + findOrder.deliveryCharge;
         } else {
             // For COD orders, just update the totals without refund
             const activeItems = findOrder.orderedItems.filter(item => item.status !== 'Cancelled');
             const newTotalPrice = activeItems.reduce((sum, item) => sum + item.price, 0);
-            
+
             findOrder.totalPrice = newTotalPrice;
             findOrder.finalAmount = newTotalPrice - findOrder.discount + findOrder.deliveryCharge;
         }
 
         await product.save();
         await findOrder.save();
-        
+
         return res.status(200).json({ success: true, message: "Item cancelled successfully" });
     } catch (error) {
         console.error(" Error cancelling item:", error);
@@ -124,27 +136,27 @@ const cancelItem = async(req,res)=>{
     }
 }
 
-const cancelOrder = async (req,res)=>{
+const cancelOrder = async (req, res) => {
     try {
-        const {orderId} = req.body;
+        const { orderId } = req.body;
         const userId = req.session.user;
-        
-        const order = await Order.findOne({orderId:orderId});
 
-        if(!order){
+        const order = await Order.findOne({ orderId: orderId });
+
+        if (!order) {
             console.log('Order not found');
-            return res.status(500).json({success: false, message: 'Order not found'});
+            return res.status(500).json({ success: false, message: 'Order not found' });
         }
 
-        for(let item of order.orderedItems){
+        for (let item of order.orderedItems) {
             const product = await Product.findById(item.product);
-            
-            if(!product){
+
+            if (!product) {
                 console.log(`Product not found for item SKU: ${item.sku}`);
                 continue; // Skip to next item
             }
             const variant = product?.variants.find(v => v.sku === item.sku);
-            
+
             if (!variant) {
                 console.log(`Variant not found for SKU: ${item.sku}`);
                 continue;
@@ -155,20 +167,20 @@ const cancelOrder = async (req,res)=>{
         }
 
 
-        for(let item of order.orderedItems){
+        for (let item of order.orderedItems) {
             item.status = 'Cancelled';
         }
 
         order.status = 'Cancelled';
 
-        if(order.paymentMethod !== 'cod'){
+        if (order.paymentMethod !== 'cod') {
 
             const refundAmount = order.finalAmount;
 
             await Wallet.updateOne(
-                {userId},
+                { userId },
                 {
-                    $inc:{balance: refundAmount},
+                    $inc: { balance: refundAmount },
                     $push: {
                         transactions: {
                             type: 'credit',
@@ -185,30 +197,30 @@ const cancelOrder = async (req,res)=>{
 
         await order.save();
 
-        return res.status(200).json({success: true, message: 'Order Cancelled successfully'});
+        return res.status(200).json({ success: true, message: 'Order Cancelled successfully' });
     } catch (error) {
-        console.error('Error in Cancel Order',error);
-        return res.status(500).json({success: false, message: 'Internal Server Error'});
+        console.error('Error in Cancel Order', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
 
 
-const returnItem = async(req,res)=>{
+const returnItem = async (req, res) => {
     try {
-        const {orderId,sku,reason} = req.body;
+        const { orderId, sku, reason } = req.body;
         const userId = req.session.user;
 
-        const order = await Order.findOne({orderId:orderId})
-        if(!order){
+        const order = await Order.findOne({ orderId: orderId })
+        if (!order) {
             console.log('Order not found')
-            return res.status(400).json({success:false,message:'Order not found'});
+            return res.status(400).json({ success: false, message: 'Order not found' });
         }
 
-        const item = order.orderedItems.find((item)=> item.sku === sku);
+        const item = order.orderedItems.find((item) => item.sku === sku);
 
-        if(!item){
+        if (!item) {
             console.log('Item not found');
-            return res.status(400).json({success:false,message:'Item not found'})
+            return res.status(400).json({ success: false, message: 'Item not found' })
         }
 
 
@@ -218,26 +230,26 @@ const returnItem = async(req,res)=>{
 
         await order.save();
 
-        return res.status(200).json({success:true,message:'Return request submitted'})
+        return res.status(200).json({ success: true, message: 'Return request submitted' })
     } catch (error) {
-        console.log('Error in Return item',error);
-        return res.status(500).json({success:false, message:'Internal Server Error'});
+        console.log('Error in Return item', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
 
-const returnOrder = async(req,res)=>{
+const returnOrder = async (req, res) => {
     try {
-        const {orderId,reason} = req.body;
+        const { orderId, reason } = req.body;
         const user = req.session.user;
 
-        const order = await Order.findOne({orderId:orderId});
+        const order = await Order.findOne({ orderId: orderId });
 
-        if(!order){
+        if (!order) {
             console.log('Order not found');
-            return res.status(400).json({success:false, message:'Order not found'});
+            return res.status(400).json({ success: false, message: 'Order not found' });
         }
-        
-        order.orderedItems.forEach(item =>{
+
+        order.orderedItems.forEach(item => {
             item.status = 'Return Request'
         })
 
@@ -247,35 +259,35 @@ const returnOrder = async(req,res)=>{
 
         await order.save();
 
-        return res.status(200).json({success:true, message:'Return request submitted'})
+        return res.status(200).json({ success: true, message: 'Return request submitted' })
     } catch (error) {
-        console.log('Error in Return order : ',error);
-        return res.status(500).json({success:false,message:'Internal Server Error'});
+        console.log('Error in Return order : ', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
 
 
-const invoice = async(req,res)=>{
+const invoice = async (req, res, next) => {
     try {
         const orderId = req.query.id;
         const user = req.session.user;
 
-        const admin = await User.findOne({isAdmin:true});
-        const order = await Order.findOne({orderId:orderId}).populate('orderedItems.product');
+        const admin = await User.findOne({ isAdmin: true });
+        const order = await Order.findOne({ orderId: orderId }).populate('orderedItems.product');
 
-         if(!order){
-            console.log('Order not found')
-            return res.redirect('/pageNotFound');
-         }
-
-        return res.render('invoice',{
+        if (!order) {
+            const err = new Error("Order not found");
+            err.statusCode = 404;
+            throw err;
+        }
+        return res.render('invoice', {
             order,
             user,
             admin
         })
     } catch (error) {
-        console.log("Error while rendering invoice",error);
-        return res.redirect('/pageNotFound');
+        console.log("Error while rendering invoice", error);
+        next(error);
     }
 }
 

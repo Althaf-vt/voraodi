@@ -23,7 +23,7 @@
 </body>
 </html> -->
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="/user/footerStyle.css" />
 </head>
 <body>
-  <%- include('../../views/partials/user/header') %>
+  <%#- include('../../views/partials/user/header') %>
   <section class="not-found-section">
     <div class="not-found-container">
       <h1>404</h1>
@@ -44,7 +44,35 @@
       <a href="/" class="cta-button" aria-label="Return to Home">Return to Home</a>
     </div>
   </section>
-  <%- include('../../views/partials/user/footer') %>
+  <%#- include('../../views/partials/user/footer') %>
   
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= statusCode %> - <%= statusCode === 404 ? 'Page Not Found' : 'Error' %> | VOGUE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/user/pageNotFoundStyle.css">
+  <link rel="stylesheet" href="/user/headerStyle.css" />
+  <link rel="stylesheet" href="/user/footerStyle.css" />
+</head>
+<body>
+  <%- include('../../views/partials/user/header') %>
+  <section class="not-found-section">
+    <div class="not-found-container">
+      <h1><%= statusCode %></h1>
+      <div class="subtitle"><%= statusCode === 404 ? 'Page Not Found' : 'Error' %></div>
+      <p><%= message %></p>
+      <% if (error && process.env.NODE_ENV === 'development') { %>
+        <pre class="error-stack"><%= error %></pre>
+      <% } %>
+      <a href="/" class="cta-button" aria-label="Return to Home">Return to Home</a>
+    </div>
+  </section>
+  <%- include('../../views/partials/user/footer') %>
 </body>
 </html>

@@ -54,7 +54,14 @@ app.use('/admin',adminRouter);
 //     next(err);
 // });
 
-// app.use(errorHandler);
+
+app.use((req, res, next) => {
+  const err = new Error("Page Not Found");
+  err.statusCode = 404;
+  next(err);
+});
+
+app.use(errorHandler);
 
 
 app.listen(process.env.PORT, ()=>console.log("Server Running"));
