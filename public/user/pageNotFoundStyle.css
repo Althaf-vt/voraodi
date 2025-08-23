@@ -1,3 +1,7 @@
+*{
+    font-family: 'Montserrat', sans-serif;
+}
+
 /* 404 Page Not Found Section */
 .not-found-section {
   min-height: 100vh;
@@ -127,4 +131,17 @@
     padding: 10px 20px;
     font-size: 12px;
   }
+}
+.error-stack {
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #d32f2f;
+    font-size: 14px;
+    max-width: 100%;
+    overflow-x: auto;
 }

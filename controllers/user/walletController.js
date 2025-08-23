@@ -3,11 +3,17 @@ const Wallet = require('../../models/walletSchema');
 const { router } = require('../../server');
 
 
-const loadWallet = async(req,res)=>{
+const loadWallet = async(req,res,next)=>{
     try {
         const userId = req.session.user;
 
-        const user = await User.findOne({_id:userId})
+        const user = await User.findOne({_id:userId});
+
+        if(!user){
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
 
         const referralCode = user.referralCode;
 
@@ -40,7 +46,7 @@ const loadWallet = async(req,res)=>{
 
     } catch (error) {
         console.log("Error in rendering waller", error);
-        res.redirect('/pageNotFound');
+        next(error);
     }
 }
 

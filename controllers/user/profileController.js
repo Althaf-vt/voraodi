@@ -16,11 +16,11 @@ const { response, link } = require('../../server');
 const Product = require('../../models/productSchema');
 const mongoose = require("mongoose");
 const Coupon = require('../../models/couponSchema');
-
+const messages = require('../../public/constants/messages');
+const statusCodes = require('../../public/constants/statusCodes');
 
 
 // Generate OTP
-
 function generateOtp() {
     const digits = '1234567890';
     let otp = '';
@@ -31,7 +31,6 @@ function generateOtp() {
 }
 
 // Verification Email
-
 const sendVerificationEmail = async (email, otp) => {
     try {
 
@@ -64,7 +63,6 @@ const sendVerificationEmail = async (email, otp) => {
 }
 
 // Secure Password 
-
 const securePassword = async (password) => {
     try {
 
@@ -75,51 +73,24 @@ const securePassword = async (password) => {
     }
 }
 
-// Handle Session
-// async function handleSession(purpose,req,otp,email){
-//     try {
-//         if(purpose==='delete'){
-//             delete req.session.userOtp;
-//             delete req.session.OtpSession;
-//             delete req.session.email;
-
-//         }else if(purpose === 'create'){
-//             req.session.userOtp = otp;
-//             req.session.email = email;
-//             req.session.OtpSession = true;
-//         }
-//     } catch (error) {
-//         console.log("Error in HnadleSession function",error);
-//     } 
-// }
-
-// async function handleCache(res){
-//     // Prevent back navigation again
-//     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-//     res.setHeader('Pragma', 'no-cache');
-//     res.setHeader('Expires', '0');
-// }
-
-
-const getForgotPassword = async (req, res) => {
+const getForgotPassword = async (req, res, next) => {
     try {
 
-        if(req.session.user){
+        if (req.session.user) {
             return res.redirect('/')
         }
         req.session.step = 'forgot-pass';
         res.render('forgot-password');
     } catch (error) {
         console.log(error)
-        res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
-
-const forgotEmailValid = async (req, res) => {
+const forgotEmailValid = async (req, res, next) => {
     try {
 
-        if(req.session.step !== 'forgot-pass'){
+        if (req.session.step !== 'forgot-pass') {
             return redirect('/singin');
         }
 
@@ -149,23 +120,23 @@ const forgotEmailValid = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
-const forgotPassOtp = async(req,res)=>{
+const forgotPassOtp = async (req, res, next) => {
     try {
-        if(req.session.user){
+        if (req.session.user) {
             return res.redirect('/');
         }
-        if(req.session.step !== 'forgot-pass-otp'){
+        if (req.session.step !== 'forgot-pass-otp') {
             return res.redirect('/signin');
         }
 
         return res.render('forgotPass-otp');
     } catch (error) {
-        console.log('Error while rendering forgot password otp : ',error);
-        return res.redirect('/pageNotFound');
+        console.log('Error while rendering forgot password otp : ', error);
+        next(error)
     }
 }
 
@@ -181,26 +152,24 @@ const verifyForgotPassOtp = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ success: false, message: "An error occured. Please try again" });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
-
-const getResetPassword = async (req, res) => {
+const getResetPassword = async (req, res, error) => {
     try {
-        if(req.session.user){
+        if (req.session.user) {
             return res.redirect('/')
         }
-        if(req.session.step !== 'reset-pass'){
+        if (req.session.step !== 'reset-pass') {
             return res.redirect('/signin');
         }
         return res.render('reset-password');
     } catch (error) {
         console.error("Error while rendering reset password page");
-        return res.redirect('/pageNotFound');
+        next(error);
     }
 }
-
 
 const resendOtp = async (req, res) => {
     try {
@@ -220,16 +189,16 @@ const resendOtp = async (req, res) => {
         }
     } catch (error) {
         console.error('Error in resend OTP', error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
-const NewPassword = async (req, res) => {
+const NewPassword = async (req, res, next) => {
     try {
-        if(req.session.user){
+        if (req.session.user) {
             return res.redirect('/');
         }
-        if(req.session.step !== 'reset-pass'){
+        if (req.session.step !== 'reset-pass') {
             return res.redirect('/signin');
         }
         const { newPass1, newPass2 } = req.body;
@@ -254,24 +223,44 @@ const NewPassword = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
-const userProfile = async (req, res) => {
+const userProfile = async (req, res, next) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
-        // const addressData = await Address.findOne({userId:userId})
 
-
+        if (!userData) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
         return res.render('profile', {
             user: userData,
-            // userAddress: addressData,
         })
     } catch (error) {
         console.error('Error while loading Profile', error);
-        return res.redirect('/pageNotFound')
+        next(error);
+    }
+}
+
+const userAccount = async (req, res, next) => {
+    try {
+        const userId = req.session.user;
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
+        return res.render('userAccount', { user });
+    } catch (error) {
+        console.log("Error in loading user account", error);
+        next(error);
     }
 }
 
@@ -305,34 +294,47 @@ const editImage = async (req, res) => {
 
     } catch (error) {
         console.error('Error in add image :', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
-const changeEmail = async (req, res) => {
+const changeEmail = async (req, res, next) => {
     try {
 
         req.session.step = 'change-email'; // session created 
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
         return res.render('change-email', {
             userData: user,
         });
     } catch (error) {
         console.error('Error in loading change email page', error);
-        return res.redirect('/pageNotFound');
+        next(error)
     }
 }
 
-const changeEmailValid = async (req, res) => {
+const changeEmailValid = async (req, res, next) => {
     try {
-        if(req.session.step !== 'change-email'){
+        if (req.session.step !== 'change-email') {
             return res.redirect('/userProfile')
         }
-        
+
         const userId = req.session.user;
         const { email } = req.body;
         const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
         const userExists = await User.findOne({ email: email, isAdmin: false });
 
 
@@ -357,7 +359,9 @@ const changeEmailValid = async (req, res) => {
                 return res.redirect('/verify-email-otp');
 
             } else {
-                return res.json('email-error');
+                const err = new Error("Failed to send OTP");
+                err.statusCode = 500;
+                throw err;
             }
         } else {
             console.log('user not exist')
@@ -368,25 +372,43 @@ const changeEmailValid = async (req, res) => {
         }
     } catch (error) {
         console.error('error in loading chnage email otp page', error);
-        return res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
-const emailOtpPage = async(req,res)=>{
+const emailOtpPage = async (req, res, next) => {
     try {
-        if(req.session.step !== 'otp-verify'){
+        const userId = req.session.user;
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
+        if (req.session.step !== 'otp-verify') {
             return res.redirect('/userProfile')
         }
-        return res.render('change-email-otp');
+        return res.render('change-email-otp', { userData: user });
     } catch (error) {
-        console.log('Error in rendering otp page : ',error);
-        return res.redirect('/pageNotFound');
+        console.log('Error in rendering otp page : ', error);
+        next(error)
     }
 }
 
-const verifyOtp = async (req, res) => {
-    try{
-        
+const verifyOtp = async (req, res, next) => {
+    try {
+
+        const userId = req.session.user;
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
         const enteredOtp = req.body.otp;
 
         if (!req.session.userOtp || !req.session.email) {
@@ -400,21 +422,21 @@ const verifyOtp = async (req, res) => {
             req.session.userData = req.body.userData;
 
             return res.render('new-email', {
-                userData: req.session.userData,
+                userData: user
             })
         } else {
             return res.render('change-email-otp', {
                 message: "OTP not mathcing",
-                userData: req.session.userData
+                userData: user
             })
         }
     } catch (error) {
         console.log("Error in verify otp", error);
-        return res.redirect('/pageNotFound');
+        next(error)
     }
 }
 
-const UpdateEmail = async (req, res) => {
+const UpdateEmail = async (req, res, next) => {
     try {
 
         // check session
@@ -426,8 +448,14 @@ const UpdateEmail = async (req, res) => {
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId });
 
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
         if (user.email === newEmail) {
-            res.render('new-email', { message: 'Please enter an email that different from the old one' })
+            res.render('new-email', { message: 'Please enter an email that different from the old one', userData: user })
         }
         await User.findByIdAndUpdate(userId, { email: newEmail });
 
@@ -441,31 +469,45 @@ const UpdateEmail = async (req, res) => {
 
     } catch (error) {
         console.log("Error in update Email", error);
-        return res.redirect('/pageNotFound');
+        next(error)
     }
 }
 
-
-const changePassword = async (req, res) => {
+const changePassword = async (req, res, next) => {
     try {
-        req.session.step = 'change-pass'; 
-        return res.render('change-password');
+        const userId = req.session.user;
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
+        req.session.step = 'change-pass';
+        return res.render('change-password', { userData: user });
     } catch (error) {
         console.log('Error in loading change password');
-        return res.redirect('/pageNotFound');
+        next(error)
     }
 }
 
-const changePasswordValid = async (req, res) => {
+const changePasswordValid = async (req, res, next) => {
     try {
         const { email } = req.body;
         const userId = req.session.user;
         const userExists = await User.findOne({ email });
         const user = await User.findOne({ _id: userId });
 
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
         if (userExists) {
             if (userExists.email !== user.email) {
-                return res.render('change-password', { message: 'Please enter your own email id' })
+                return res.render('change-password', { message: 'Please enter your own email id', userData: user })
             }
             const otp = generateOtp();
             const emailSend = await sendVerificationEmail(email, otp);
@@ -485,54 +527,74 @@ const changePasswordValid = async (req, res) => {
             }
         } else {
             return res.render('change-password', {
-                message: "User with this Email does not exist"
+                message: "User with this Email does not exist",
+                userData: user
             })
         }
     } catch (error) {
         console.log("Error in change pass valid");
-        return res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
-const passOtpPage = async(req,res)=>{
+const passOtpPage = async (req, res, next) => {
     try {
-        if(req.session.step !== 'change-pass-otp'){
+        const userId = req.session.user;
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
+        if (req.session.step !== 'change-pass-otp') {
             return res.redirect('/userProfile')
         }
-        return res.render('change-pass-otp');
+        return res.render('change-pass-otp', { userData: user });
     } catch (error) {
-        console.log('Error when loading change pass otp page : ',error);
-        return res.redirect('/pageNotFound');
+        console.log('Error when loading change pass otp page : ', error);
+        next(error)
     }
 }
 
-const verifyChangePassOtp = async (req, res) => {
+const verifyChangePassOtp = async (req, res, next) => {
     try {
+
+        const userId = req.session.user;
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
         const enteredOtp = req.body.otp;
         if (enteredOtp === req.session.userOtp) {
 
             req.session.step = 'new-pass';
 
             return res.render('new-password', {
-                userData: req.session.userData,
+                userData: user,
             })
 
         } else {
             return res.render('change-pass-otp', {
                 message: "OTP not mathcing",
-                userData: req.session.userData
+                userData: user
             })
         }
     } catch (error) {
         console.log("Error in verify change pass");
-        return res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
-const UpdatePassword = async (req, res) => {
+const UpdatePassword = async (req, res, next) => {
     try {
 
-        if(req.session.step !== 'new-pass'){
+        if (req.session.step !== 'new-pass') {
             return res.redirect('/pageNotFound');
         }
         const { newPass1, newPass2 } = req.body;
@@ -540,12 +602,18 @@ const UpdatePassword = async (req, res) => {
 
         const user = await User.findOne({ _id: userId });
 
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
         if (newPass1 === newPass2) {
             console.log(newPass1, ",", newPass2)
             const passwordHash = await securePassword(newPass1);
 
             if (passwordHash === user.password) {
-                return res.render('new-password', { message: 'Password must be different from you old password' });
+                return res.render('new-password', { message: 'Password must be different from you old password', userData: user });
             }
 
             await User.findByIdAndUpdate(userId, { password: passwordHash });
@@ -557,11 +625,11 @@ const UpdatePassword = async (req, res) => {
             req.session.step = null;
             return res.redirect('/userProfile?success=' + encodeURIComponent('Password Updated Successfully'));
         } else {
-            return res.render('new-password', { message: 'Password do not match' })
+            return res.render('new-password', { message: 'Password do not match', userData: user })
         }
     } catch (error) {
         console.log('Error in Update password', error);
-        return res.redirect('/pageNotFound');
+        next(error)
     }
 }
 
@@ -590,7 +658,7 @@ const changeName = async (req, res) => {
 
     } catch (error) {
         console.log('Error in Change name');
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 
 }
@@ -620,14 +688,20 @@ const changePhone = async (req, res) => {
 
     } catch (error) {
         console.log('Error in Change Phone');
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
-const addresses = async (req, res) => {
+const addresses = async (req, res, next) => {
     try {
         const userId = req.session.user;
         const userData = await User.findById(userId);
+
+        if (!userData) {
+            const err = new Error("User data not found");
+            err.statusCode = 404;
+            throw err;
+        }
         const addressData = await Address.findOne({ userId: userId })
 
 
@@ -637,20 +711,9 @@ const addresses = async (req, res) => {
         })
     } catch (error) {
         console.error('Error while loading Profile', error);
-        return res.redirect('/pageNotFound')
+        next(error)
     }
 }
-
-// const addAddress = async(req,res)=>{
-//     try {
-
-//         const user = req.session.user;
-//         return res.render('add-address',{user:user});
-//     } catch (error) {
-//         console.log("Error in loading add address",error);
-//         return res.redirect('/pageNotFound');
-//     }
-// }
 
 const postAddAddress = async (req, res) => {
     try {
@@ -676,13 +739,12 @@ const postAddAddress = async (req, res) => {
 
     } catch (error) {
         console.log("Error while adding address : ", error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
 const getEditAddress = async (req, res) => {
     try {
-        console.log('backend')
         const id = req.params.id;
         const userId = req.session.user;
 
@@ -707,7 +769,7 @@ const getEditAddress = async (req, res) => {
 
     } catch (error) {
         console.error('GET /address error:', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -754,7 +816,7 @@ const editAddress = async (req, res) => {
 
     } catch (error) {
         console.error("Errorn in edit address", error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -786,16 +848,29 @@ const deleteAddress = async (req, res) => {
 
     } catch (error) {
         console.error('Error in delete Address', error);
-        return res.redirect('/pageNotFound');
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR })
     }
 }
 
-const loadCart = async (req, res) => {
+const loadCart = async (req, res, next) => {
     try {
+        req.session.orderSuccess = null;
         const userId = req.session.user;
         const userData = await User.findOne({ _id: userId });
 
+        if (!userData) {
+            const err = new Error("User Data not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
         const userCart = await Cart.findOne({ userId: userId }).populate('items.productId');
+
+        if (!userCart) {
+            const err = new Error("Cart not found");
+            err.statusCode = 404;
+            throw err;
+        }
 
         return res.render('cart', {
             user: userData,
@@ -805,7 +880,7 @@ const loadCart = async (req, res) => {
 
     } catch (error) {
         console.error('Errorn while loading cart', error);
-        res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
@@ -884,11 +959,17 @@ const addToCart = async (req, res) => {
         }
         await userCart.save();
 
-        return res.status(200).json({ success: true, message: 'Product added to cart' });
+        const totalItems = userCart.items.reduce((total, item) => total + item.quantity, 0);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Product added to cart',
+            cartCount: totalItems,
+        });
 
     } catch (error) {
         console.error('Error adding to cart:', error);
-        return res.status(500).json({ success: false, message: 'Something went wrong' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -958,7 +1039,7 @@ const updateQty = async (req, res) => {
 
     } catch (error) {
         console.error('Error updating cart quantity:', error);
-        return res.status(500).json({ success: false, message: 'Server error' });
+        return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
@@ -986,34 +1067,58 @@ const removeItem = async (req, res) => {
 
     } catch (error) {
         console.error('Error in Delete item from cart', error);
-        return res.status(404).json({ success: false, message: "Something went wrong" });
+        return res.status(404).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
 
-const orderPage = async (req, res) => {
+const orderPage = async (req, res, next) => {
     try {
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
+        const skip = (page - 1) * limit;
 
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId })
 
-        const orders = await Order.find({ userId: userId }).sort({createdOn : -1})
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
+        const orders = await Order.find({ userId: userId }).populate('orderedItems.product')
+            .sort({ createdOn: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalOrders = await Order.countDocuments({ userId: userId });
+        const totalPages = Math.ceil(totalOrders / limit);
 
         res.render('order', {
             orders: orders,
-            user
+            user,
+            currentPage: page,
+            totalPages,
+
         });
     } catch (error) {
         console.log('Error while loading order page', error);
-        res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
-
-const getCoupons = async (req, res) => {
+const getCoupons = async (req, res, next) => {
     try {
         const userId = req.session.user;
 
-        const user = await User.findOne({ _id: userId })
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
 
         const [publicCoupons, privateCoupons] = await Promise.all([
             Coupon.find({
@@ -1037,7 +1142,7 @@ const getCoupons = async (req, res) => {
         })
     } catch (error) {
         console.log("Error while loading Coupon page", error);
-        return res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
@@ -1075,4 +1180,5 @@ module.exports = {
     getCoupons,
     emailOtpPage,
     passOtpPage,
+    userAccount
 }

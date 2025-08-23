@@ -3,106 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOGUE - New Email</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <title>New Email</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/user/changeEmailStyle.css">
-    <link rel="stylesheet" href="/user/headerStyle.css">
-    <link rel="stylesheet" href="/user/footerStyle.css">
 </head>
 <body>
     <%- include('../../views/partials/user/header') %>
 
-    <!-- New Email Wrapper -->
-    <div class="email-change-wrapper">
-        <!-- Sidebar -->
-        <div class="profile-sidebar">
-            <div class="sidebar-header">
-                <h3>My Account</h3>
-            </div>
-            <ul class="sidebar-nav">
-                <li><a href="/userProfile" data-section="profile">Profile</a></li>
-                <li><a href="/profile#addresses" data-section="addresses">Addresses</a></li>
-                <li><a href="/profile#orders" data-section="orders">Orders</a></li>
-                <li><a href="/profile#wishlist" data-section="wishlist">Wishlist</a></li>
-                <li><a href="/profile#wallet" data-section="wallet">Wallet</a></li>
-                <li><a href="/profile#coupons" data-section="coupons">Coupons</a></li>
-                <li><a href="/profile#referrals" data-section="referrals">Referrals</a></li>
-            </ul>
-            <a href="/logout" class="logout-button">Logout</a>
-        </div>
-
-        <!-- New Email Content -->
-        <div class="email-change-content">
-            <section class="email-change-section">
-                <h2>New Email</h2>
-                <form class="email-change-form" method="POST" action="/update-email">
-                    <div class="form-group">
-                        <label for="new-email">Enter Your New Email</label>
-                        <input type="email" id="new-email" name="newEmail" placeholder="Enter new email" required>
-                    </div>
-                    <% if (typeof message !== 'undefined') { %>
-                        <div id="validationMessage" class="validation-message show"><%= message %></div>
-                        <script>
-                            setTimeout(() => {
-                            const msg = document.getElementById('validationMessage');
-                            if (msg) {
-                                msg.classList.remove('show');
-                            }
-                            }, 2000);
-                        </script>
+    <div class="container">
+        <div class="header">
+            <div class="profile-section">
+                <div class="profile-image-wrapper">
+                    <% if (userData && userData.image) { %>
+                        <img src="<%= userData.image %>" alt="User Profile Image" class="profile-image">
+                    <% } else { %>
+                        <div class="profile-icon">👤</div>
                     <% } %>
-                    <div class="form-actions">
-                        <button type="submit" class="action-button">Save Email</button>
-                        <a href="/userProfile" class="action-button cancel">Cancel</a>
-                    </div>
-                </form>
-            </section>
+                </div>
+                <div class="profile-text">
+                    <h1>NEW EMAIL <span><%= userData.name %></span></h1>
+                    <p>Set your new email address</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="email-card card-wallet">
+            <div class="icon-container">
+                <i class="card-icon" data-lucide="mail-plus"></i>
+            </div>
+            <h3>Enter New Email</h3>
+            <p>This will be your new login email</p>
+            
+            <form class="email-form" method="POST" action="/update-email">
+                <div class="form-group">
+                    <label for="new-email">New Email Address</label>
+                    <input type="email" id="new-email" name="newEmail" placeholder="Enter new email" required>
+                </div>
+                
+                <% if (typeof message !== 'undefined') { %>
+                    <div id="validationMessage" class="validation-message show"><%= message %></div>
+                    <script>
+                        setTimeout(() => {
+                            const msg = document.getElementById('validationMessage');
+                            if (msg) msg.classList.remove('show');
+                        }, 3000);
+                    </script>
+                <% } %>
+                
+                <div class="form-actions">
+                    <button type="submit" class="action-button">Save Email</button>
+                    <a href="/userProfile" class="action-button cancel">Cancel</a>
+                </div>
+            </form>
         </div>
     </div>
 
-    <%- include('../../views/partials/user/footer') %>
-
     <script>
-        // // GSAP Animations
-        // gsap.from(".profile-sidebar", {
-        //     opacity: 0,
-        //     x: -50,
-        //     duration: 1,
-        //     delay: 0.5,
-        //     ease: "power2.out"
-        // });
-
-        // gsap.from(".email-change-content", {
-        //     opacity: 0,
-        //     x: 50,
-        //     duration: 1,
-        //     delay: 0.7,
-        //     ease: "power2.out"
-        // });
-
-        // gsap.from(".email-change-section", {
-        //     opacity: 0,
-        //     y: 30,
-        //     duration: 1,
-        //     delay: 0.9,
-        //     ease: "power2.out"
-        // });
-
-        // Form submission
-        // document.querySelector('.email-change-form').addEventListener('submit', function(e) {
-        //     e.preventDefault();
-        //     const newEmail = document.getElementById('new-email').value;
-        //     const confirmEmail = document.getElementById('confirm-email').value;
-        //     if (newEmail === confirmEmail) {
-        //         alert('New email save functionality would go here');
-        //         // In a real implementation, this would send a request to the backend
-        //         // window.location.href = '/profile#profile';
-        //     } else {
-        //         alert('Emails do not match');
-        //     }
-        // });
+        lucide.createIcons();
     </script>
 </body>
 </html>

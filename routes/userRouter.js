@@ -15,7 +15,11 @@ const { userAuth } = require('../middlewares/auth');
 // Home Page & Shopping page
 router.get('/',userController.loadHomepage);
 router.get('/shop',userController.loadShoppingPage);
+router.get('/cart/count',userController.cartCount);
+router.get('/wishlist/count',userController.wishlistCount)
 router.get('/quickView',productController.quickView);
+router.get('/about',userController.aboutPage);
+router.get('/contact',userController.contactPage)
 
 // Signup
 router.get('/signup',userController.loadSignup);
@@ -69,7 +73,10 @@ router.post('/forgot-pass-otp',profileController.verifyForgotPassOtp);
 router.post('/resend-forgot-otp',profileController.resendOtp);
 router.get('/reset-password',profileController.getResetPassword);
 router.post('/reset-password',profileController.NewPassword);
+
 router.get('/userProfile',userAuth,profileController.userProfile);
+router.get('/account',userAuth,profileController.userAccount)
+
 router.get('/change-email',userAuth,profileController.changeEmail);
 router.post('/change-email',userAuth,profileController.changeEmailValid);
 router.get('/verify-email-otp',userAuth,profileController.emailOtpPage);
@@ -123,7 +130,9 @@ router.post('/cart/check-stock',userAuth,checkoutController.checkStock);
 router.post('/verify-razorpay-payment',userAuth,checkoutController.verifyRazorpayPayment);
 router.post('/place-order',userAuth,checkoutController.placeOrder);
 router.get('/order-success/:id',userAuth,checkoutController.orderSuccess);
-router.get('/payment-failed',userAuth,checkoutController.paymentFailed)
+router.post('/payment-failed',userAuth,checkoutController.paymentFailed)
+router.get('/payment-failed',userAuth,checkoutController.getPaymentFailed)
+router.post('/retry-razorpay-order',userAuth,checkoutController.retryRazorpayOrder);
 router.post('/create-razorpay-order',userAuth,checkoutController.createRazorpayOrder);
 
 // Wallet & referral code

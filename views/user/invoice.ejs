@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - Order #<%= order.orderId %></title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Invoice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/user/invoice.css">
 </head>
 <body>
@@ -93,8 +93,8 @@
                             <td><%= item.sku %></td>
                             <td><%= item.size %></td>
                             <td><%= item.quantity %></td>
+                            <td>₹<%= (item.price / item.quantity).toFixed(2) %></td>
                             <td>₹<%= item.price.toFixed(2) %></td>
-                            <td>₹<%= (item.price * item.quantity).toFixed(2) %></td>
                             <td><span class="status <%= item.status.toLowerCase().replace(/\s+/g, '-') %>"><%= item.status %></span></td>
                         </tr>
                     <% }) %>
@@ -124,7 +124,11 @@
                 <% } %>
                 <div class="summary-row total">
                     <span class="summary-label">Total Amount:</span>
+                    <% if(order.status === 'Cancelled') {%>
+                        <span class="summary-value">₹<%= order.totalPrice.toFixed(2) %></span>
+                        <% }else{ %>
                     <span class="summary-value">₹<%= order.finalAmount.toFixed(2) %></span>
+                    <% } %>
                 </div>
             </div>
         </div>

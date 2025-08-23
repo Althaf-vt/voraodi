@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,12 +8,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
   <link rel="stylesheet" href="/admin/errorStyle.css">
 </head>
-<body>
+<body> -->
   <!-- Include the Header (Navbar and Sidebar) -->
-  <%- include('../../views/partials/admin/header') %>
+  <!-- <%#- include('../../views/partials/admin/header') %> -->
 
   <!-- Main Content Wrapper -->
-  <div class="main-content">
+  <!-- <div class="main-content">
     <section class="error-section">
       <div class="error-container">
         <h2 id="typewriter">Access Denied</h2>
@@ -22,9 +22,9 @@
         <button class="return-btn" onclick="window.location.href='/admin/'">Return to Dashboard</button>
       </div>
     </section>
-  </div>
+  </div> -->
 
-  <script>
+  <!-- <script>
     // Typewriter Effect
     const text = "Access Denied";
     let i = 0;
@@ -48,5 +48,39 @@
       typeWriter();
     };
   </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= statusCode %> - <%= statusCode === 403 ? 'Access Denied' : 'Error' %> | VOGUE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="/admin/adminErrorStyle.css">
+</head>
+<body>
+  <!-- Include the Header (Navbar and Sidebar) -->
+  <%- include('../../views/partials/admin/header') %>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-content">
+    <section class="error-section">
+      <div class="error-container">
+        <h2 id="typewriter"><%= statusCode === 403 ? 'Access Denied' : 'Error' %></h2>
+        <div class="subtitle">An Error Occurred in the VOGUE Dominion</div>
+        <p class="error-message"><%= message %></p>
+        <% if (error && process.env.NODE_ENV === 'development') { %>
+          <pre class="error-stack"><%= error %></pre>
+        <% } %>
+        <button class="return-btn" onclick="window.location.href='/admin/'">Return to Dashboard</button>
+      </div>
+    </section>
+  </div>
+
+  
 </body>
 </html>

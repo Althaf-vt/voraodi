@@ -165,6 +165,14 @@ body {
   font-weight: 300;
 }
 
+.unavailable{
+  font-size: 15px;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+  font-weight: 300;
+}
+
 /* Checkbox Section */
 .checkbox-section {
   margin-bottom: 40px;

@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Details - <%= product.productName %></title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Montserrat&family=Playfair+Display&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="/user/productDetails.css">
-  <link rel="stylesheet" href="/user/headerStyle.css" />
   <link rel="stylesheet" href="/user/footerStyle.css" />
 </head>
 <body>
@@ -207,6 +206,7 @@
                         timer: 2000,
                         timerProgressBar: true,
                     });
+                    updateCartCount();
                 } else {
                     Swal.fire({
                         toast: true,
@@ -260,7 +260,7 @@
         let currentQty = parseInt(qtyElement.textContent);
         const newQty = currentQty + change;
 
-        if (newQty >= 1) {
+        if (newQty >= 1 && newQty <= 3) {
             qtyElement.textContent = newQty;
         }
     }
@@ -302,6 +302,7 @@
                     heartIcon.classList.add('fas');
                     heartIcon.style.color = '#d4af37';
                 }
+                updateWishlistCount();
             }else{
                 toastMessage(data,'error');
             }

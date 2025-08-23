@@ -5,17 +5,22 @@ const Wishlist = require('../../models/whishlistSchema');
 
 
 
-const productDetails = async(req,res)=>{
+const productDetails = async (req, res, next) => {
     try {
         const userId = req.session.user;
-        const userData = await User.findById(userId);
+        const userData = await User.findOne({ _id: userId });
         const productId = req.params.id;
         const product = await Product.findById(productId).populate('category');
         const findCategory = product.category;
-        const categoryOffer = findCategory ?.categoryOffer || 0;
+        const categoryOffer = findCategory?.categoryOffer || 0;
         const productOffer = product.productOffer || 0;
         const totalOffer = categoryOffer + productOffer;
 
+        if (!product) {
+            const err = new Error("Product not found");
+            err.statusCode = 404;
+            throw err;
+        }
 
         const relatedProducts = await Product.find({
             _id: { $ne: productId },
@@ -23,11 +28,10 @@ const productDetails = async(req,res)=>{
             isBlocked: false,
             'variants.quantity': { $gt: 0 }
         })
-        .limit(4)
-        .sort({ createdAt: -1 });
+            .limit(4)
+            .sort({ createdAt: -1 });
 
-        
-        res.render('product-details',{
+        res.render('product-details', {
             user: userData,
             product: product,
             quantity: product.quantity,
@@ -38,15 +42,19 @@ const productDetails = async(req,res)=>{
         })
 
     } catch (error) {
-        console.log("Error in Product Detail page",error);
-        res.redirect('/pageNotFound');
+        console.log("Error in Product Detail page", error);
+        next(error);
     }
 }
 
-const quickView = async(req,res)=>{
+const quickView = async (req, res) => {
     try {
         const productId = req.query.id;
-        const product = await Product.findOne({_id:productId})
+        const product = await Product.findOne({ _id: productId })
+
+        if (!product) {
+            return res.status(400).json({ success: false, message: 'Product not found' });
+        }
 
         res.json({
             _id: product._id,
@@ -60,22 +68,22 @@ const quickView = async(req,res)=>{
     }
 }
 
-const addToWishlist = async(req,res)=>{
+const addToWishlist = async (req, res) => {
     try {
-        const {productId} = req.body;
+        const { productId } = req.body;
         const userId = req.session.user;
 
-        const findProduct = await Product.findOne({_id:productId,isBlocked:false});
+        const findProduct = await Product.findOne({ _id: productId, isBlocked: false });
 
-        const quantity =  findProduct.variants.reduce((qty,variant)=> qty + variant.quantity,0);
+        const quantity = findProduct.variants.reduce((qty, variant) => qty + variant.quantity, 0);
 
-        if(quantity < 1){
-            return res.status(400).json({success:false,message:'All variants are out of stock'})
+        if (quantity < 1) {
+            return res.status(400).json({ success: false, message: 'All variants are out of stock' })
         }
 
-        let wishlist = await Wishlist.findOne({userId:userId});
+        let wishlist = await Wishlist.findOne({ userId: userId });
 
-        if(!wishlist){
+        if (!wishlist) {
             wishlist = new Wishlist({
                 userId,
                 products: [{
@@ -83,13 +91,13 @@ const addToWishlist = async(req,res)=>{
                     addedOn: new Date(),
                 }]
             });
-        }else{
-            const alreadyInWishlist = wishlist.products.some(p => 
+        } else {
+            const alreadyInWishlist = wishlist.products.some(p =>
                 p.productId.toString() === findProduct._id.toString()
             );
 
-            if(alreadyInWishlist){
-                return res.status(400).json({success:false, message:'Product already in wishlist'});
+            if (alreadyInWishlist) {
+                return res.status(400).json({ success: false, message: 'Product already in wishlist' });
             }
 
             wishlist.products.push({
@@ -100,12 +108,12 @@ const addToWishlist = async(req,res)=>{
 
         await wishlist.save();
 
-        return res.status(200).json({success:true, message:'Product added successfull'});
+        return res.status(200).json({ success: true, message: 'Product added successfull' });
 
 
     } catch (error) {
-        console.log("error when Adding to wishlist",error);
-        return res.status(500).json({success:false,message:'Internal Server Error'})
+        console.log("error when Adding to wishlist", error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' })
     }
 }
 

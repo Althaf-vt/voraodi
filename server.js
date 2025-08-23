@@ -1,5 +1,11 @@
 const express = require('express');
 const app = express();
+
+        app.use((req, res, next) => {
+          res.setHeader("Access-Control-Allow-Origin", "https://ba8473fe0f2c.ngrok-free.app");
+          next();
+        });
+    
 const path = require('path');
 const env = require('dotenv').config();
 const session = require('express-session');
@@ -8,6 +14,7 @@ const db = require('./config/db');
 const methodOverride = require('method-override');
 const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
+const errorHandler = require('./middlewares/errorHandler');
 db()
 
 app.use(methodOverride('_method'));
@@ -38,11 +45,29 @@ app.use((req,res,next) =>{
 app.set('view engine','ejs');
 app.set('views',[path.join(__dirname,'views/user'),path.join(__dirname,'views/admin')]);
 app.use(express.static(path.join(__dirname,'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 
 app.use('/',userRouter);
 app.use('/admin',adminRouter);
+
+
+//error
+// app.use((req, res, next) => {
+//     const err = new Error('Page Not Found');
+//     err.statusCode = 404;
+//     next(err);
+// });
+
+
+app.use((req, res, next) => {
+  const err = new Error("Page Not Found");
+  err.statusCode = 404;
+  next(err);
+});
+
+app.use(errorHandler);
 
 
 app.listen(process.env.PORT, ()=>console.log("Server Running"));

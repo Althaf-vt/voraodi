@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings | Althaf</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --accent-gold: #d4af37;
+            --accent-dark: #2f3a44;
+            --accent-green: #004d00;
+            --accent-gray: #767675;
+            --accent-red: #c00000;
+            --text-primary: #2f3a44;
+            --text-secondary: #4a4a4a;
+            --text-tertiary: #666666;
+            --bg-primary: #f5f5e8;
+            --bg-secondary: #fffef4;
+        }
+        
+        body {
+            padding-top: 80px;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-primary);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 100px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.5);
+            padding-bottom: 20px;
+        }
+        
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+        
+        .profile-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 40px;
+            border: 1px solid #797e85d2;
+            object-fit: cover;
+            /* border: 2px solid var(--bg-primary); */
+            box-shadow: 0 8px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-text h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-primary);
+        }
+        
+        .profile-text h1 span {
+            font-weight: 600;
+            color: var(--accent-gold);
+        }
+        
+        .profile-text p {
+            margin: 0.5rem 0 0;
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            background: linear-gradient(45deg, var(--accent-gold), #b8972e);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .logout-btn:hover {
+            background: linear-gradient(135deg, var(--accent-green), #1a661a);
+            color: var(--bg-primary);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            margin-top: 20px;
+        }
+        
+        .dashboard-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gold);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-gold);
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+        
+        .icon-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            background-color: rgba(212, 175, 55, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .icon-container {
+            background-color: rgba(212, 175, 55, 0.2);
+        }
+        
+        .card-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-gold);
+            stroke-width: 1.75;
+        }
+        
+        .dashboard-card h3 {
+            margin: 0.5rem 0 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .dashboard-card p {
+            margin: 0 0 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--accent-gold);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .card-link:hover {
+            color: #b8972e;
+        }
+        
+        .card-link i {
+            margin-left: 0.4rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Card specific styles */
+        .card-security::before {
+            background: var(--accent-green);
+        }
+        
+        .card-security .icon-container {
+            background-color: rgba(0, 77, 0, 0.1);
+        }
+        
+        .card-security .card-icon {
+            color: var(--accent-green);
+        }
+        
+        .card-security:hover {
+            border-color: var(--accent-green);
+            background-color: rgba(0, 77, 0, 0.05);
+        }
+        
+        .card-security:hover .icon-container {
+            background-color: rgba(0, 77, 0, 0.2);
+        }
+        
+        .card-security .card-link {
+            color: var(--accent-green);
+        }
+        
+        .card-security .card-link:hover {
+            color: #006400;
+        }
+        
+        .card-address::before {
+            background: var(--accent-gray);
+        }
+        
+        .card-address .icon-container {
+            background-color: rgba(118, 118, 117, 0.1);
+        }
+        
+        .card-address .card-icon {
+            color: var(--accent-gray);
+        }
+        
+        .card-address:hover {
+            border-color: var(--accent-gray);
+            background-color: rgba(118, 118, 117, 0.05);
+        }
+        
+        .card-address:hover .icon-container {
+            background-color: rgba(118, 118, 117, 0.2);
+        }
+        
+        .card-address .card-link {
+            color: var(--accent-gray);
+        }
+        
+        .card-address .card-link:hover {
+            color: #5a5a5a;
+        }
+        
+        .card-wallet::before {
+            background: var(--accent-dark);
+        }
+        
+        .card-wallet .icon-container {
+            background-color: rgba(47, 58, 68, 0.1);
+        }
+        
+        .card-wallet .card-icon {
+            color: var(--accent-dark);
+        }
+        
+        .card-wallet:hover {
+            border-color: var(--accent-dark);
+            background-color: rgba(47, 58, 68, 0.05);
+        }
+        
+        .card-wallet:hover .icon-container {
+            background-color: rgba(47, 58, 68, 0.2);
+        }
+        
+        .card-wallet .card-link {
+            color: var(--accent-dark);
+        }
+        
+        .card-wallet .card-link:hover {
+            color: #1a2028;
+        }
+        
+        .card-coupons::before {
+            background: var(--accent-red);
+        }
+        
+        .card-coupons .icon-container {
+            background-color: rgba(192, 0, 0, 0.1);
+        }
+        
+        .card-coupons .card-icon {
+            color: var(--accent-red);
+        }
+        
+        .card-coupons:hover {
+            border-color: var(--accent-red);
+            background-color: rgba(192, 0, 0, 0.05);
+        }
+        
+        .card-coupons:hover .icon-container {
+            background-color: rgba(192, 0, 0, 0.2);
+        }
+        
+        .card-coupons .card-link {
+            color: var(--accent-red);
+        }
+        
+        .card-coupons .card-link:hover {
+            color: #990000;
+        }
+        
+        .card-placeholder::before {
+            background: var(--accent-gray);
+        }
+        
+        .card-placeholder .icon-container {
+            background-color: rgba(118, 118, 117, 0.1);
+        }
+        
+        .card-placeholder .card-icon {
+            color: var(--accent-gray);
+        }
+        
+        .card-placeholder:hover {
+            border-color: var(--accent-gray);
+            background-color: rgba(118, 118, 117, 0.05);
+        }
+        
+        .card-placeholder:hover .icon-container {
+            background-color: rgba(118, 118, 117, 0.2);
+        }
+        
+        .card-placeholder .card-link {
+            color: var(--accent-gray);
+        }
+        
+        .card-placeholder .card-link:hover {
+            color: #5a5a5a;
+        }
+        
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                padding-top: 70px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1.25rem;
+            }
+            
+            .profile-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="container">
+        <div class="header">
+            <div class="profile-section">
+                <% if(user?.image) {%>
+                    <img src="<%= user.image %>" alt="image" class="profile-image">
+                    <% }else{%>
+                            <div class="icon-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <% } %>
+                <div class="profile-text">
+                    <h1>YOUR ACCOUNT <span><%= user.name %></span></h1>
+                    <p>Manage your account settings</p>
+                </div>
+            </div>
+            <a href="/logout" style="text-decoration: none;"><button class="logout-btn">LOGOUT</button></a>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Row 1 -->
+            <div class="dashboard-card">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="shopping-bag"></i>
+                </div>
+                <h3>Your Orders</h3>
+                <p>Track, return, or cancel orders</p>
+                <a href="/orders" class="card-link">View history <i data-lucide="chevron-right" width="14" height="14"></i></a>
+            </div>
+            
+            <div class="dashboard-card card-security">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="lock"></i>
+                </div>
+                <h3>Login & Security</h3>
+                <p>Edit name, password and email</p>
+                <a href="/userProfile" class="card-link">Update settings <i data-lucide="chevron-right" width="14" height="14"></i></a>
+            </div>
+            
+            <div class="dashboard-card card-address">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="map-pin"></i>
+                </div>
+                <h3>Address</h3>
+                <p>Add or edit delivery addresses</p>
+                <a href="userAddress" class="card-link">Manage addresses <i data-lucide="chevron-right" width="14" height="14"></i></a>
+            </div>
+            
+            <!-- Row 2 -->
+            <div class="dashboard-card card-wallet">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="wallet"></i>
+                </div>
+                <h3>Your Wallet</h3>
+                <p>Add or check balance</p>
+                <a href="/wallet" class="card-link">View wallet <i data-lucide="chevron-right" width="14" height="14"></i></a>
+            </div>
+            
+            <div class="dashboard-card card-coupons">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="tags"></i>
+                </div>
+                <h3>Available Coupons</h3>
+                <p>Get special offers</p>
+                <a href="/coupons" class="card-link">View coupons <i data-lucide="chevron-right" width="14" height="14"></i></a>
+            </div>
+            
+            <div class="dashboard-card card-placeholder">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="plus-circle"></i>
+                </div>
+                <h3>More features coming soon</h3>
+                <p>We're working on new tools for you</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -38,7 +38,7 @@
         <div class="coupon-action-bar">
           <!-- Search Bar -->
           <div class="coupon-search-container">
-            <form id="searchForm" action="/admin/searchCoupon" method="GET" class="coupon-search-form">
+            <form id="searchForm" action="#" method="GET" class="coupon-search-form">
               <input type="text" name="query" id="searchInput" placeholder="Search coupons..."
                 class="coupon-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
                 required>
@@ -227,7 +227,7 @@
               <div class="modal-checkbox-section">
                 <div class="modal-checkbox-group">
                   <div class="modal-checkbox-item">
-                    <input type="checkbox" id="editIsPublic" name="isPublic" class="form-checkbox">
+                    <input type="checkbox" id="editIsPublic" name="isPublic" class="form-checkbox" checked required>
                     <label for="editIsPublic" class="checkbox-label">
                       <span class="checkbox-custom"></span>
                       Public Coupon
@@ -235,10 +235,10 @@
                   </div>
 
                   <div class="modal-checkbox-item">
-                    <input type="checkbox" id="editHasRewardThreshold" name="hasRewardThreshold" class="form-checkbox">
+                    <input type="checkbox" id="editHasRewardThreshold" name="hasRewardThreshold" class="form-checkbox" disabled>
                     <label for="editHasRewardThreshold" class="checkbox-label">
                       <span class="checkbox-custom"></span>
-                      Reward Threshold
+                      Reward Threshold <span style="color: #666;">(unavailable)</span>
                     </label>
                     <div class="modal-threshold-input-container" style="display: none;">
                       <input type="number" id="editRewardThreshold" name="rewardThreshold" class="threshold-input"
@@ -293,7 +293,7 @@
                   document.getElementById('editIsPublic').disabled = false;
                 }
 
-                // Handle public checkbox logic
+                //Handle public checkbox logic
                 if (coupon.isPublic) {
                   document.getElementById('editHasRewardThreshold').disabled = true;
                 } else {
@@ -328,7 +328,7 @@
             thresholdContainer.style.display = 'none';
             document.getElementById('editRewardThreshold').value = '';
           } else {
-            rewardThresholdCheckbox.disabled = false;
+            // rewardThresholdCheckbox.disabled = false;
           }
         });
 
@@ -587,12 +587,12 @@
         const result = await Swal.fire({
           toast:true,
           title: 'Are you sure?',
-          text: "You won't be able to revert this!",
+          text: "Confirm your action!",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#9d0000',
           cancelButtonColor: '#c9a022',
-          confirmButtonText: 'Yes, delete it!'
+          confirmButtonText: 'Yes!'
         });
         try {
           if(result.isConfirmed){

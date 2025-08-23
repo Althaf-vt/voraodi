@@ -1,3 +1,8 @@
+
+*{
+    font-family: 'Montserrat', sans-serif;
+}
+
 /* Add Address Container */
 .add-address-container {
     display: flex;

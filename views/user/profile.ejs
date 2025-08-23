@@ -1,143 +1,188 @@
-<!-- grok -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOGUE - User Profile</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Account Settings | Althaf</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
     <link rel="stylesheet" href="/user/profileStyle.css">
-    <link rel="stylesheet" href="/user/headerStyle.css" />
-    <link rel="stylesheet" href="/user/footerStyle.css" />
 </head>
 <body>
+
     <%- include('../../views/partials/user/header') %>
 
-    <div class="profile-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h2 class="sidebar-title">My Account</h2>
-            <ul class="sidebar-nav">
-                <li><a href="/userProfile" class="active">Profile</a></li>
-                <li><a href="/userAddress">Address</a></li>
-                <li><a href="/orders">Orders</a></li>
-                <li><a href="/wishlist">Wishlist</a></li>
-                <li><a href="/wallet">Wallet</a></li>
-                <li><a href="/coupons">Coupons</a></li>
-                <li><a href="/referrals">Referrals</a></li>
-                <li><a href="/logout">Logout</a></li>
-            </ul>
-        </div>
-
-        <!-- Profile Section -->
-        <div class="profile-content">
-            <h1 class="profile-title">Personal Info</h1>
-            <div class="profile-card">
-                <div class="profile-image-container">
+    <div class="container">
+        <div class="header">
+            <div class="profile-section">
                 <div class="profile-image-wrapper">
-                  <% if (user && user.image) { %>
-                    <img id="profilePic" src="<%= user.image %>" alt="User Profile Image" class="profile-image">
-                  <% } else { %>
-                    <div id="profilePic" class="profile-icon">👤</div>
-                  <% } %>
-                  
-                  <button type="button" class="image-edit-btn" onclick="triggerImagePick()" aria-label="Change picture">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  
-                  <input id="avatarInput" type="file" accept="image/*" hidden />
+                    <% if (user && user.image) { %>
+                        <img id="profilePic" src="<%= user.image %>" alt="User Profile Image" class="profile-image">
+                    <% } else { %>
+                        <div id="profilePic" class="profile-icon">👤</div>
+                    <% } %>
+                    <button type="button" class="image-edit-btn" onclick="triggerImagePick()" aria-label="Change picture">
+                        <i data-lucide="edit-2" width="16" height="16"></i>
+                    </button>
+                    <input id="avatarInput" type="file" accept="image/*" hidden />
                 </div>
-              </div>
-                <div class="profile-details">
-                    <div class="profile-item">
-                        <label>Name:</label>
-                        <span><%= user ? user.name : 'Your Name' %></span>
-                        <a href="javascript:void(0)" class="edit-button" onclick="openModal('newName', '<%= user.name %>')" aria-label="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                    </div>
-                    <div class="profile-item">
-                        <label>Phone:</label>
-                        <span><%= user && user.phone ? user.phone : 'Not Provided' %></span>
-                        <a href="javascript:void(0)" class="edit-button" onclick="openModal('newPhone', '<%= user.phone %>')" aria-label="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                    </div>
-                    <div class="profile-item">
-                        <label>Email:</label>
-                        <span><%= user ? user.email : 'Not Provided' %></span>
-                        <a href="/change-email" class="edit-button" aria-label="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                    </div>
-                    <div class="profile-item change-password" aria-label="Edit">
-                        <label>Password:</label>
-                        <span style="font-weight: bold ; white-space: pre">  •  •  •  •  •  •</span>
-                        <a href="/change-password" class="edit-button" aria-label="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                    </div>
+                <div class="profile-text">
+                    <h1>PROFILE SETTINGS <span><%= user.name %></span></h1>
+                    <p>Manage your personal information and security</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="user"></i>
+                </div>
+                <h3>Personal Information</h3>
+                <div class="profile-item">
+                    <label>Name:</label>
+                    <span><%= user ? user.name : 'Your Name' %></span>
+                    <button class="edit-button" onclick="openModal('newName', '<%= user.name %>')" aria-label="Edit">
+                        <i data-lucide="edit-2" width="16" height="16"></i>
+                    </button>
+                </div>
+                <div class="profile-item">
+                    <label>Phone:</label>
+                    <span><%= user && user.phone ? user.phone : 'Not Provided' %></span>
+                    <button class="edit-button" onclick="openModal('newPhone', '<%= user.phone %>')" aria-label="Edit">
+                        <i  data-lucide="edit-2" width="16" height="16"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="dashboard-card card-security">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="lock"></i>
+                </div>
+                <h3>Account Security</h3>
+                <div class="profile-item">
+                    <label>Email:</label>
+                    <span><%= user ? user.email : 'Not Provided' %></span>
+                    <% if (!user.googleId) { %>
+                    <a href="/change-email" class="edit-button" aria-label="Edit">
+                        <i data-lucide="edit-2" width="16" height="16"></i>
+                    </a>
+                    <% } %>
+                </div>
+                <div class="profile-item change-password">
+                    <label>Password:</label>
+                    <span>••••••••</span>
+                     <% if (!user.googleId && user.password) { %>
+                    <a href="/change-password" class="edit-button" aria-label="Edit">
+                        <i data-lucide="edit-2" width="16" height="16"></i>
+                    </a>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="dashboard-card card-address">
+                <div class="icon-container">
+                    <i class="card-icon" data-lucide="map-pin"></i>
+                </div>
+                <h3>Quick Links</h3>
+                <div class="quick-links">
+                    <a href="/userAddress" class="quick-link">
+                        <i data-lucide="map-pin" width="16" height="16"></i>
+                        Manage Addresses
+                    </a>
+                    <a href="/orders" class="quick-link">
+                        <i data-lucide="shopping-bag" width="16" height="16"></i>
+                        Order History
+                    </a>
+                    <a href="/wishlist" class="quick-link">
+                        <i data-lucide="heart" width="16" height="16"></i>
+                        Wishlist
+                    </a>
+                    <a href="/wallet" class="quick-link">
+                        <i data-lucide="wallet" width="16" height="16"></i>
+                        Wallet
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    
     <!-- Edit Modal -->
     <div id="editModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeModal()">&times;</span>
-    <h2 id="modalTitle">Edit</h2>
-    <form id="editForm" onsubmit="return validateForm(event)">
-        <input type="text" id="editValue" name="value" required />
-         <div id="validationMessage" class="validation-message"></div>
-        <button type="submit" class="submit-btn">Save</button>
-    </form>
-  </div>
-</div>
-
-<!-- Image Crop Modal -->
-<div id="imageCropModal" class="modal">
-  <div class="modal-content crop-modal-content">
-    <span class="close-btn" onclick="closeCropModal()">&times;</span>
-    <h2 class="modal-title">Edit Profile Picture</h2>
-    
-    <div class="crop-container">
-      <div class="crop-preview-wrapper">
-        <img id="cropPreviewImg" class="crop-preview-img" style="display: none;" />
-        <div class="crop-overlay">
-          <div class="crop-circle" id="cropCircle">
-            <div class="crop-handle crop-handle-nw"></div>
-            <div class="crop-handle crop-handle-ne"></div>
-            <div class="crop-handle crop-handle-sw"></div>
-            <div class="crop-handle crop-handle-se"></div>
-          </div>
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Edit</h2>
+            <form id="editForm" onsubmit="return validateForm(event)">
+                <input type="text" id="editValue" name="value" required />
+                <div id="validationMessage" class="validation-message"></div>
+                <button type="submit" class="submit-btn">Save</button>
+            </form>
         </div>
-      </div>
-      
-      <div class="crop-result-preview">
-        <div class="result-preview-label">Preview:</div>
-        <canvas id="cropResultCanvas" width="150" height="150"></canvas>
-      </div>
     </div>
-    
-    <div class="crop-actions">
-      <button class="submit-btn" onclick="saveCroppedImage()">Save</button>
-      <button class="submit-btn cancel-btn" onclick="closeCropModal()">Cancel</button>
+
+    <!-- Image Crop Modal -->
+    <div id="imageCropModal" class="modal">
+        <div class="modal-content crop-modal-content">
+            <span class="close-btn" onclick="closeCropModal()">&times;</span>
+            <h2 class="modal-title">Edit Profile Picture</h2>
+            
+            <div class="crop-container">
+                <div class="crop-preview-wrapper">
+                    <img id="cropPreviewImg" class="crop-preview-img" style="display: none;" />
+                    <div class="crop-overlay">
+                        <div class="crop-circle" id="cropCircle">
+                            <div class="crop-handle crop-handle-nw"></div>
+                            <div class="crop-handle crop-handle-ne"></div>
+                            <div class="crop-handle crop-handle-sw"></div>
+                            <div class="crop-handle crop-handle-se"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="crop-result-preview">
+                    <div class="result-preview-label">Preview:</div>
+                    <canvas id="cropResultCanvas" width="150" height="150"></canvas>
+                </div>
+            </div>
+            
+            <div class="crop-actions">
+                <button class="submit-btn" onclick="saveCroppedImage()">Save</button>
+                <button class="submit-btn cancel-btn" onclick="closeCropModal()">Cancel</button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-    <%- include('../../views/partials/user/footer') %>
-
+    <script>
+        lucide.createIcons();
+        
+        // Your existing script functions here (openModal, closeModal, validateForm, etc.)
+        // ... keep all the JavaScript code from your original file ...
+    </script>
 </body>
 </html>
 
 <script>
+
+// Toast message
+async function toastMessage(message) {
+    Toastify({
+        text: message,
+        duration: 1500,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: "#dc3545",
+            borderRadius: "10px",
+            padding: "10px 20px",
+            fontWeight: "500",
+        }
+    }).showToast();
+}
+
+
 function openModal(type, currentValue) {
   const modal = document.getElementById('editModal');
   const title = document.getElementById('modalTitle');
@@ -264,10 +309,25 @@ function triggerImagePick() {
   document.getElementById('avatarInput').click();
 }
 
+
 document.getElementById('avatarInput').addEventListener('change', function () {
-  const file = this.files[0];
+  const file = this.files && this.files[0];
   if (!file) return;
-  
+
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  const isImageMime = file.type && file.type.startsWith('image/');
+  const isImageExt = /\.(jpe?g|png|webp|gif)$/i.test(file.name);
+
+  if (!isImageMime && !isImageExt) {
+    toastMessage('Please select a valid image')
+    return;
+  }
+
+  if (file.size > maxSize) {
+    toastMessage('Image must be less than 5MB.')
+    return;
+  }
+
   currentImageFile = file;
   openCropModal(file);
 });
@@ -478,6 +538,5 @@ document.getElementById('imageCropModal').addEventListener('click', function(e) 
     closeCropModal();
   }
 });
-
 
 </script>

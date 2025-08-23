@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | VORAODI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/user/contact.css">
+</head>
+<body>
+    <%- include('../../views/partials/user/header') %>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="contact-hero">
+            <img src="/images/voraodi.png" alt="VORAODI Logo" class="brand-logo">
+            <h1>Contact <span>VORAODI</span></h1>
+            <p>We value your inquiries about our timeless menswear collections.</p>
+        </div>
+
+        <!-- Contact Grid -->
+        <div class="contact-grid">
+            <!-- Contact Form -->
+            <div class="contact-form-container">
+                <div class="form-header">
+                    <i data-lucide="mail" width="24" height="24"></i>
+                    <h2>Send Us a Message</h2>
+                </div>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Berlin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Berlin@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <select id="subject">
+                            <option value="general">General Inquiry</option>
+                            <option value="order">Order Support</option>
+                            <option value="custom">Custom Tailoring</option>
+                            <option value="wholesale">Wholesale Inquiry</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" rows="5" placeholder="Your message..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message <i data-lucide="send" width="16" height="16"></i></button>
+                </form>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="contact-info-container">
+                <div class="info-card">
+                    <div class="icon-container">
+                        <i data-lucide="phone" width="20" height="20"></i>
+                    </div>
+                    <h3>Phone</h3>
+                    <p>+91 96690-96690</p>
+                    <p class="hours">Mon-Fri: 9AM - 6PM EST</p>
+                </div>
+
+                <div class="info-card card-security">
+                    <div class="icon-container">
+                        <i data-lucide="map-pin" width="20" height="20"></i>
+                    </div>
+                    <h3>Atelier Address</h3>
+                    <p>KINFRA Techno Park, Kakkanchery, Calicut, India</p>
+                    <p class="hours">By appointment only</p>
+                </div>
+
+                <div class="info-card card-wallet">
+                    <div class="icon-container">
+                        <i data-lucide="mail" width="20" height="20"></i>
+                    </div>
+                    <h3>Email</h3>
+                    <p>clientcare@voraodi.com</p>
+                    <p class="hours">Response within 24 hours</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d125263.13195057625!2d75.74003569726561!3d11.15258150000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba6502f41ef4e8b%3A0xf4c653a7548cccd!2sKinfra%20Techno%20Industrial%20Park!5e0!3m2!1sen!2sin!4v1754315661480!5m2!1sen!2sin" 
+             width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+
+    <%- include('../../views/partials/user/footer') %>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

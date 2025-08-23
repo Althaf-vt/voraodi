@@ -1,7 +1,32 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/userSchema');
+const Wallet = require('../models/walletSchema');
 require('dotenv').config();
+
+
+// Helper to generate a referral code
+function createReferralCode(name) {
+  const trimmed = name.trim().toLowerCase().replace(/\s+/g, '');
+  const prefix = trimmed.slice(0, 4);
+  const random = Math.floor(1000 + Math.random() * 9000); 
+  return `${prefix}${random}`.toUpperCase();
+}
+
+//referral code generator that ensures uniqueness
+async function generateReferralCode(name) {
+  let code;
+  let isUnique = false;
+
+  while (!isUnique) {
+    code = createReferralCode(name);
+    const existing = await User.findOne({ referralCode: code });
+    if (!existing) isUnique = true;
+  }
+
+  return code;
+}
+
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -24,13 +49,23 @@ async (req, accessToken, refreshToken, profile, done) => {
                 return done(null, false, { message: 'User not found. Please sign up first.' });
              }
 
+
             // Else it's signup
+            const referralCode  = await generateReferralCode(profile.displayName);
+
             user = new User({
                 name: profile.displayName,
                 email: profile.emails[0].value,
                 googleId: profile.id,
+                referralCode
             });
             await user.save();
+            
+            const newWallet = new Wallet({
+                userId: user._id,
+            });
+
+            newWallet.save();
             return done(null, user);
         }
     } catch (error) {

@@ -12,50 +12,137 @@ const bcrypt = require('bcrypt');
 
 
 
-
-const loadAdminSignin = async (req, res) => {
-    if (req.session.admin) {
-        return res.redirect('/admin/');
-    }
-    res.render('adminSignin', { message: null })
+// Top selling products
+async function getTopSellingProducts(limit = 10) {
+    const topProducts = await Order.aggregate([
+        { $unwind: "$orderedItems" },
+        {
+            $group: {
+                _id: "$orderedItems.product",
+                totalSold: { $sum: "$orderedItems.quantity" }
+            }
+        },
+        { $sort: { totalSold: -1 } },
+        { $limit: limit },
+        {
+            $lookup: {
+                from: "products",
+                localField: "_id",
+                foreignField: "_id",
+                as: "product"
+            }
+        },
+        { $unwind: "$product" },
+        {
+            $project: {
+                _id: 0,
+                productId: "$product._id",
+                productName: "$product.productName",
+                productImage: { $arrayElemAt: ["$product.productImage", 0] },
+                totalSold: 1,
+                salePrice: "$product.salePrice"
+            }
+        }
+    ]);
+    return topProducts;
 }
 
-const signin = async(req,res)=>{
+// Top selling categories
+async function getTopSellingCategories(limit = 10) {
+    const topCategories = await Order.aggregate([
+        { $unwind: "$orderedItems" },
+        // Lookup product to get its category
+        {
+            $lookup: {
+                from: "products",
+                localField: "orderedItems.product",
+                foreignField: "_id",
+                as: "product"
+            }
+        },
+        { $unwind: "$product" },
+        // Group by category and sum revenue and quantity
+        {
+            $group: {
+                _id: "$product.category",
+                totalSold: { $sum: "$orderedItems.quantity" },
+                totalRevenue: { $sum: { $multiply: ["$orderedItems.price", "$orderedItems.quantity"] } }
+            }
+        },
+        { $sort: { totalRevenue: -1 } }, // Sort by revenue
+        { $limit: limit },
+        // Lookup category details
+        {
+            $lookup: {
+                from: "categories",
+                localField: "_id",
+                foreignField: "_id",
+                as: "category"
+            }
+        },
+        { $unwind: "$category" },
+        {
+            $project: {
+                _id: 0,
+                categoryId: "$category._id",
+                categoryName: "$category.name",
+                totalSold: 1,
+                totalRevenue: 1
+            }
+        }
+    ]);
+    return topCategories;
+}
+
+const loadAdminSignin = async (req, res, next) => {
     try {
-        const {email,password} = req.body;
-        const admin = await User.findOne({email,isAdmin:true});
-        if(admin){
-            const passwordMatch = await bcrypt.compare(password,admin.password);
-            if(passwordMatch){
+        if (req.session.admin) {
+            return res.redirect('/admin/');
+        }
+        res.render('adminSignin', { message: null })
+    } catch (error) {
+        next(error);
+    }
+}
+
+const signin = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const admin = await User.findOne({ email, isAdmin: true });
+        if (admin) {
+            const passwordMatch = await bcrypt.compare(password, admin.password);
+            if (passwordMatch) {
                 req.session.admin = true;
                 console.log('admin in session')
                 return res.redirect('/admin/')
-            }else{
+            } else {
                 res.render('adminSignin', { message: 'password incorrect' })
             }
-        }else{
+        } else {
             res.render('adminSignin', { message: 'Admin not found' })
         }
     } catch (error) {
-        console.log('login error',error);
-        return res.redirect('/pageError');
-        
+        console.log('login error', error);
+        next(error);
+
     }
 }
 
 
-const logout = async (req,res) =>{
+const logout = async (req, res, next) => {
     try {
-        req.session.destroy(err =>{
-            if(err){
-                console.log('Error destroying session',err);
-                return res.redirect('/pageError'); 
+        req.session.destroy(err => {
+            if (err) {
+                console.log('Error destroying session', err);
+                const error = new Error("Error destroying session");
+                error.statusCode = 500;
+                return next(error);
             }
             res.redirect('/admin/signin');
         })
     } catch (error) {
         console.log('unexpected error during logout', error);
-        res.redirect('/pageError')
+        next(error)
     }
 }
 
@@ -82,8 +169,13 @@ const loadDashboard = async (req, res, next) => {
 
         const data = await getSalesData(filter);
 
+        const topProducts = await getTopSellingProducts(10);
+        const topCategories = await getTopSellingCategories(10)
+
         res.render('dashboard', {
             ...data,
+            topProducts,
+            topCategories,
             message: req.session.message || null,
             selectedPeriod: filter.period,
             filter,
@@ -92,28 +184,29 @@ const loadDashboard = async (req, res, next) => {
         delete req.session.message;
     } catch (error) {
         console.error('Error loading dashboard:', error);
-        res.render('dashboard', {
-            totalSale: 0,
-            totalOrders: 0,
-            totalCustomers: 0,
-            totalIncome: 0,
-            summary: { salesCount: 0, orderAmount: 0, discount: 0 },
-            salesReport: [],
-            pagination: { currentPage: 1, totalPages: 1, limit: 5, totalRecords: 0 },
-            categorySalesData: [],
-            incomeData: [],
-            // topProducts: [],
-            // topBrands: [],
-            // topCategories: [],
-            message: 'Failed to load dashboard data. Please try again.',
-            selectedPeriod: 'monthly',
-            filter: { period: 'monthly', page: 1, limit: 5 }
-        });
+        next(error)
+        // res.render('dashboard', {
+        //     totalSale: 0,
+        //     totalOrders: 0,
+        //     totalCustomers: 0,
+        //     totalIncome: 0,
+        //     summary: { salesCount: 0, orderAmount: 0, discount: 0 },
+        //     salesReport: [],
+        //     pagination: { currentPage: 1, totalPages: 1, limit: 5, totalRecords: 0 },
+        //     categorySalesData: [],
+        //     incomeData: [],
+        //     // topProducts: [],
+        //     // topBrands: [],
+        //     // topCategories: [],
+        //     message: 'Failed to load dashboard data. Please try again.',
+        //     selectedPeriod: 'monthly',
+        //     filter: { period: 'monthly', page: 1, limit: 5 }
+        // });
     }
 };
 
 // Sales Report
-const saleReport = async (req, res, next) => { 
+const saleReport = async (req, res, next) => {
     try {
         if (!req.session.admin) {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
@@ -352,11 +445,13 @@ const getSalesData = async (filter) => {
                 return [];
             });
 
+            
+
         const formattedSalesReport = salesReport.map(order => ({
             orderId: order.orderId || 'N/A',
             orderDate: order.createdOn ? moment(order.createdOn).format('DD/MM/YYYY') : moment().format('DD/MM/YYYY'),
             userName: order.userId?.name || 'Unknown',
-            finalAmount: order.finalAmount || 0,
+            finalAmount: order.status === 'Cancelled' ? order.totalPrice : order.finalAmount || 0,
             discount: order.discount || 0,
             couponCode: order.couponApplied ? 'Applied' : 'None',
             orderedItems: order.orderedItems || []
@@ -589,11 +684,10 @@ const getSalesData = async (filter) => {
                 limit,
                 totalRecords: totalSalesRecords
             },
-            categorySalesData: topCategories,
-            incomeData,
-            topProducts,
-            // topBrands,
-            topCategories
+            categorySalesData: topCategories, // Make sure this is populated
+            incomeData, // Make sure this is populated
+            topProducts, // Make sure this is populated
+            topCategories // Make sure this is populated
         };
     } catch (error) {
         return {
@@ -613,8 +707,8 @@ const getSalesData = async (filter) => {
     }
 };
 
-const pageError = async (req,res) =>{
-    res.render ('admin-error')
+const pageError = async (req, res) => {
+    res.render('admin-error')
 }
 module.exports = {
     loadAdminSignin,

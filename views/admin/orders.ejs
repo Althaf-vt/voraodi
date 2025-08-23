@@ -31,13 +31,13 @@
       <!-- <h2>Order List</h2> -->
 
       <!-- Search Bar -->
-      <div class="order-search-container">
+      <!-- <div class="order-search-container">
         <form id="searchForm" action="/admin/searchOrder" method="GET" class="order-search-form">
           <input type="text" name="query" id="searchInput" placeholder="Search orders..." class="order-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
           <button type="submit" class="order-search-button">Search</button>
           <button type="button" class="order-search-clear" onclick="clearSearch()">Clear</button>
         </form>
-      </div>
+      </div> -->
 
       <div class="orders-table">
         <table>
@@ -82,9 +82,12 @@
                     </select>
                 <% } %>
             </td>
-            <td>
-                <button class="action-btn view-btn" aria-label="View Order Details">
+            <td style="position: relative;">
+                <button class="action-btn view-btn" aria-label="View Order Details" style="position: relative;">
                     <a href="/admin/orderDetails?orderId=<%= order.orderId %>">View Details</a>
+                    <% if (order.hasReturnRequest) { %>
+                        <span class="return-badge"></span>
+                    <% } %>
                 </button>
             </td>
         </tr>
@@ -101,19 +104,26 @@
 
     <!-- Pagination Section -->
     <div class="pagination">
-      <nav aria-label="Page navigation">
-        <ul class="pagination-list">
-          <% if (typeof totalPages === 'number' && totalPages > 0) { %>
-            <% for (let i = 1; i <= totalPages; i++) { %>
-              <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                <a class="page-link" href="<%= typeof searchQuery !== 'undefined' ? '/admin/searchOrder?page=' + i + '&query=' + encodeURIComponent(searchQuery) : '/admin/orders?page=' + i %>">
-                  <%= i %>
+        <% if(totalPages > 1) { %>
+            <% if(currentPage > 1) { %>
+                <a href="/admin/orders?page=<%= currentPage - 1 %>" class="pagination-button">
+                    <i class="fas fa-chevron-left"></i> Previous
                 </a>
-              </li>
             <% } %>
-          <% } %>
-        </ul>
-      </nav>
+
+            <% for(let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) { %>
+                <a href="/admin/orders?page=<%= i %>"
+                    class="pagination-button <%= currentPage === i ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+
+            <% if(currentPage < totalPages) { %>
+                <a href="/admin/orders?page=<%= currentPage + 1 %>" class="pagination-button">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            <% } %>
+        <% } %>
     </div>
   </div>
 
@@ -141,28 +151,43 @@
 
     // Pagination
     document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('page-link')) {
-        e.preventDefault();
-        const url = new URL(e.target.href);
-        const page = url.searchParams.get('page');
-        const query = document.getElementById('searchInput').value.trim();
-        const route = query.length > 0 
-          ? `/admin/searchOrder?page=${page}&query=${encodeURIComponent(query)}`
-          : `/admin/orders?page=${page}`;
-
-        fetch(route)
-          .then(res => res.text())
-          .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newTable = doc.querySelector('.orders-table');
-            const newPagination = doc.querySelector('.pagination');
-            document.querySelector('.orders-table').innerHTML = newTable.innerHTML;
-            document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
-          })
-          .catch(err => {
-            console.error('Error in pagination', err);
-          });
+        // Check if the clicked element is a pagination button
+      if (e.target.classList.contains('pagination-button')) {
+          e.preventDefault();
+          
+          // Get the href from the clicked link
+          const url = new URL(e.target.href);
+          const page = url.searchParams.get('page');
+          
+          // Determine the correct route based on whether we're in search or normal view
+          const searchInput = document.getElementById('searchInput');
+          const query = searchInput ? searchInput.value.trim() : '';
+          
+          const route = query.length > 0 
+              ? `/admin/searchOrder?page=${page}&query=${encodeURIComponent(query)}` 
+              : `/admin/orders?page=${page}`;
+              
+          fetch(route)
+              .then(res => res.text())
+              .then(html => {
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(html, 'text/html');
+                  
+                  // Update orders table
+                  const newTable = doc.querySelector('.orders-table');
+                  if (newTable) {
+                      document.querySelector('.orders-table').innerHTML = newTable.innerHTML;
+                  }
+                  
+                  // Update pagination
+                  const newPagination = doc.querySelector('.pagination');
+                  if (newPagination) {
+                      document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+                  }
+              })
+              .catch(err => {
+                  console.error('Error in pagination', err);
+              });
       }
     });
 

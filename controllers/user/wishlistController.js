@@ -4,10 +4,16 @@ const Wishlist = require('../../models/whishlistSchema');
 const Cart = require('../../models/cartSchema');
 
 
-const loadWishlist = async(req,res)=>{
+const loadWishlist = async(req,res,next)=>{
     try {
         const userId = req.session.user;
-        const user = await User.findOne({_id:userId})
+        const user = await User.findOne({_id:userId});
+
+        if(!user){
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
 
         let wishlist = await Wishlist.findOne({userId:userId}).populate('products.productId');
 
@@ -18,17 +24,14 @@ const loadWishlist = async(req,res)=>{
 
     } catch (error) {
         console.log('Error while loading wishlist',error);
-        return res.redirect('/pageNotFound');
+        next(error);
     }
 }
 
 const checkStock = async (req, res) => {
     try {
 
-        console.log('Body ==> ',req.body)
         const { productId,size } = req.body;
-
-        console.log("productId : ",productId)
         const product = await Product.findById(productId);
 
         if (!product) {
@@ -58,8 +61,6 @@ const addToCart = async(req,res)=>{
     try {
         const userId = req.session.user;
         const {productId,size} = req.body;
-
-        
 
         const product = await Product.findOne({_id:productId,isBlocked:false});
         if(!product) return res.status(400).json({success:false,message:'Product is currently unavailable'})
