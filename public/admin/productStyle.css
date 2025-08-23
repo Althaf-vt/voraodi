@@ -69,16 +69,16 @@ body {
 }
 
 /* Style paragraph text in header */
-.product-management-container p {
+/* .product-management-container p {
   font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   font-weight: 300;
   letter-spacing: 1px;
-}
+} */
 
 /* Style product list section */
 .product-container {
-  padding: 30px 20px; /* Generous padding for content */
+  padding: 10px 20px; /* Generous padding for content */
   /* background: linear-gradient(135deg, #1a252f, #2f3a44);  */
   color: #f5f5e8;
   text-align: center;
@@ -102,6 +102,7 @@ body {
   background-color: rgba(255, 255, 232, 0.9); /* Semi-transparent background */
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  color: black;
 }
 
 /* Show alert when content is present */

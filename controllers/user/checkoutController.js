@@ -62,7 +62,7 @@ const loadCheckout = async (req, res, next) => {
     try {
         // 1. Order success session check
         if (req.session.orderSuccess) {
-            req.session.orderSuccess = null;
+            req.session.orderSuccess = false;
             return res.redirect('/shop');
         }
 
@@ -384,7 +384,7 @@ const placeOrder = async (req, res) => {
             }
 
             // session hanlding
-            req.session.orderSuccess = null;
+            req.session.orderSuccess = true;
             return res.status(200).json({ success: true, orderId })
 
         } else {
@@ -531,7 +531,7 @@ const placeOrder = async (req, res) => {
             await cart.save();
 
             //session handling
-            req.session.orderSuccess = null;
+            req.session.orderSuccess = true;
             return res.status(200).json({ success: true, orderId: newOrder.orderId });
 
         }
@@ -771,6 +771,7 @@ const orderSuccess = async (req, res, next) => {
         const userId = req.session.user;
         const { id } = req.params;
 
+        req.session.orderSuccess = true;
         const user = await User.findOne({ _id: userId });
 
         if (!user) {
@@ -887,6 +888,8 @@ const paymentFailed = async (req, res) => {
         // Clear cart
         cart.items = [];
         await cart.save();
+
+        req.session.orderSuccess = true;
 
         return res.status(200).json({ success: true, orderId: newOrder.orderId });
     } catch (error) {

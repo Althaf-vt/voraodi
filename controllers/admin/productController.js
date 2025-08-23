@@ -87,7 +87,7 @@ const addProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
     try {
-        const page = req.query.page || 1;
+        const page = parseInt(req.query.page) || 1;
         const limit = 4;
         const skip = (page-1)*limit;
 
@@ -139,7 +139,7 @@ const addProductOffer = async(req,res)=>{
         if(parseInt(percentage) < 1){
             return res.status(400).json({success:false,message:'Percentage must be greater than 0.'});
         }
-        if(parseInt(percentage) > 100){
+        if(parseInt(percentage) > 90){
             return res.status(400).json({success:false,message:"Percentage cannot be greater than 100."});
         }
 

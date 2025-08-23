@@ -61,7 +61,11 @@
                                 <div class="order-summary">
                                     <div class="order-total">
                                         <span>Total</span>
+                                        <% if(order.status === 'Cancelled') {%>
+                                            <strong>₹<%= (order.totalPrice - order.discount).toFixed(2) %></strong>
+                                            <%} else{%>
                                         <strong>₹<%= order.finalAmount.toFixed(2) %></strong>
+                                        <% } %>
                                     </div>
                                     <% if (order.orderedItems && order.orderedItems.length > 0) { %>
                                         <div class="order-items-count">

@@ -163,6 +163,26 @@
 </html>
 
 <script>
+
+// Toast message
+async function toastMessage(message) {
+    Toastify({
+        text: message,
+        duration: 1500,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: "#dc3545",
+            borderRadius: "10px",
+            padding: "10px 20px",
+            fontWeight: "500",
+        }
+    }).showToast();
+}
+
+
 function openModal(type, currentValue) {
   const modal = document.getElementById('editModal');
   const title = document.getElementById('modalTitle');
@@ -289,10 +309,25 @@ function triggerImagePick() {
   document.getElementById('avatarInput').click();
 }
 
+
 document.getElementById('avatarInput').addEventListener('change', function () {
-  const file = this.files[0];
+  const file = this.files && this.files[0];
   if (!file) return;
-  
+
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  const isImageMime = file.type && file.type.startsWith('image/');
+  const isImageExt = /\.(jpe?g|png|webp|gif)$/i.test(file.name);
+
+  if (!isImageMime && !isImageExt) {
+    toastMessage('Please select a valid image')
+    return;
+  }
+
+  if (file.size > maxSize) {
+    toastMessage('Image must be less than 5MB.')
+    return;
+  }
+
   currentImageFile = file;
   openCropModal(file);
 });

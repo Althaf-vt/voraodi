@@ -137,8 +137,13 @@
                         <span>+ ₹<%= order.deliveryCharge.toFixed(2) %></span>
                     </div>
                     <div class="detail-row total">
+                        <% if(order.status === 'Cancelled') {%>
+                            <span>Total:</span>
+                        <span>₹<%= (order.totalPrice - order.discount).toFixed(2) %></span>
+                            <% }else{%>
                         <span>Total:</span>
                         <span>₹<%= order.finalAmount.toFixed(2) %></span>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -186,7 +191,7 @@
                                         Cancel Item
                                     </button>
                                 <% } else { %>
-                                    <% if (order.orderedItems.length > 1 && item.status === 'Delivered') { %>
+                                    <% if (order.orderedItems.length > 1 && item.status === 'Delivered' && order.orderedItems.filter(i => i.status !== 'Returned').length > 1) { %>
                                         <button class="action-button return" onclick="returnItem('<%= order.orderId %>', '<%= item.sku %>')">
                                             Return Item
                                         </button>

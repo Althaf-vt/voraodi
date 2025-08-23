@@ -63,7 +63,7 @@ const addCategoryOffer = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Percentage must be greater than 0.' });
         }
 
-        if (parseInt(percentage) > 100) {
+        if (parseInt(percentage) > 90) {
             return res.status(400).json({ success: false, message: "Percentage cannot be greater than 100." });
         }
         const category = await Category.findOne({ _id: id });

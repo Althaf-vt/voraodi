@@ -36,7 +36,7 @@
         <div class="summary-grid">
           <div class="summary-item">
             <span class="label">Order Date:</span>
-            <span class="value"><%= new Date(order.createtOn).toDateString() %></span>
+            <span class="value"><%= new Date(order.invoiceDate).toLocaleDateString() %></span>
           </div>
           <div class="summary-item">
             <span class="label">Status:</span>
@@ -49,20 +49,37 @@
           </div>
           <div class="summary-item">
             <span class="label">Total Amount:</span>
+            <% if(order.status) {%>
+              <span class="value total-amount">₹<%= order.totalPrice.toFixed(2) %></span>
+              <% }else{%>
             <span class="value total-amount">₹<%= order.finalAmount.toFixed(2) %></span>
+            <% } %>
           </div>
           <div class="summary-item">
             <span class="label">Payment Method:</span>
             <span class="value"><%= order.paymentMethod %></span>
           </div>
-          
         </div>
+
+        <div class="return-action-area">
+        
+
         <% if (order.status === 'Return Request' && order.returnStatus !== 'Rejected') { %>
+
+          
+          
           <div class="return-buttons">
+            <% if (order.returnReason) { %>
+          <div class="return-reason">
+            <span class="label">Return Reason:</span>
+            <span class="value"><%= order.returnReason %></span>
+          </div>
+        <% } %>
             <button class="return-btn approve-btn" onclick="approveReturn('<%=order.orderId%>')">Approve</button>
             <button class="return-btn reject-btn" onclick="rejectReturn('<%=order.orderId%>')">Reject</button>
           </div>
       <% } %>
+        </div>
       </div>
     </div>
 
@@ -106,10 +123,18 @@
                     <%= product.status %>
                     <% } %>
                   </span></div>
-                  <div class="product-price">Price: ₹<%= product.price.toFixed(2) %></div>
-                  <div class="product-total">Total: ₹<%= (product.price * product.quantity).toFixed(2) %></div>
+                  <div class="product-price">Price: ₹<%= (product.price / product.quantity).toFixed(2)  %></div>
+                  <div class="product-total">Total: ₹<%= (product.price).toFixed(2) %></div>
                 </div>
+                <% if (product?.Reason) { %>
+                  <div class="return-reason">
+                    <span class="label">Return Reason:</span>
+                    <span class="value"><%= product.Reason %></span>
+                    <% console.log(product.Reason) %>
+                  </div>
+                <% } %>
                 <% if (product.status === 'Return Request' && order.status !== 'Return Request') { %>
+                  
                   <div class="product-return-buttons">
                     <button class="product-return-btn approve-btn" onclick="approveReturnItem('<%= order.orderId %>','<%= product.sku%>')">Approve</button>
                     <button class="product-return-btn reject-btn" onclick="rejectReturnItem('<%= order.orderId %>','<%= product.sku%>')">Reject</button>

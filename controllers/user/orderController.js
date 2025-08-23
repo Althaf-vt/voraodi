@@ -115,14 +115,14 @@ const cancelItem = async (req, res) => {
             const activeItems = findOrder.orderedItems.filter(item => item.status !== 'Cancelled');
             const newTotalPrice = activeItems.reduce((sum, item) => sum + item.price, 0);
 
-            findOrder.totalPrice = newTotalPrice;
-            findOrder.finalAmount = newTotalPrice - findOrder.discount + findOrder.deliveryCharge;
+            // findOrder.totalPrice = newTotalPrice;
+            findOrder.finalAmount = newTotalPrice + findOrder.deliveryCharge;
         } else {
             // For COD orders, just update the totals without refund
             const activeItems = findOrder.orderedItems.filter(item => item.status !== 'Cancelled');
             const newTotalPrice = activeItems.reduce((sum, item) => sum + item.price, 0);
 
-            findOrder.totalPrice = newTotalPrice;
+            // findOrder.totalPrice = newTotalPrice;
             findOrder.finalAmount = newTotalPrice - findOrder.discount + findOrder.deliveryCharge;
         }
 
@@ -191,7 +191,7 @@ const cancelOrder = async (req, res) => {
                     }
                 }
             )
-            order.totalPrice -= refundAmount;
+            // order.totalPrice -= refundAmount;
             order.finalAmount -= refundAmount;
         }
 
@@ -249,7 +249,11 @@ const returnOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Order not found' });
         }
 
-        order.orderedItems.forEach(item => {
+        const activeItems = order.orderedItems.filter(item => 
+            item.status !== 'Cancelled' && item.status !== 'Returned' && item.returnStatus !== 'Returned'
+        );
+
+        activeItems.forEach(item => {
             item.status = 'Return Request'
         })
 

@@ -91,6 +91,14 @@ const updateOrderStatus = async (req, res) => {
             return res.status(500).json({ success: false, message: 'Order not found' });
         }
 
+        if(order.status === 'Cancelled'){
+            return res.status(400).json({success:false,message:'Order is already cancelled'})
+        }
+
+        if(order.status === 'Delivered'){
+            return res.status(400).json({success:false,message:'Order is already delivered'})
+        }
+
         const updateStatus = order.status = status;
         order.orderedItems.map(item => {
             if (item.status !== 'Cancelled') {
@@ -125,15 +133,26 @@ const approveReturnOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Order not found' });
         }
 
+        
+
         order.status = 'Returned';
         order.returnStatus = 'Returned';
 
-        order.orderedItems.map(item => item.status = 'Returned');
-        order.orderedItems.map(item => item.returnStatus = 'Returned');
+
+        // find active orders
+        const activeItems = order.orderedItems.filter(item => 
+            item.status !== 'Cancelled' && item.status !== 'Returned' && item.returnStatus !== 'Returned'
+        );
+
+        const activeItemsTotal = activeItems.reduce((total,item)=> total + item.price,0);
+        const amountToRefund = activeItemsTotal;
+
+        activeItems.map(item => item.status = 'Returned');
+        activeItems.map(item => item.returnStatus = 'Returned');
 
 
         // Refund Amount to wallet
-        const refundAmount = order.finalAmount;
+        const refundAmount = amountToRefund;
 
         await Wallet.updateOne(
             { userId: order.userId },
@@ -226,8 +245,10 @@ const approveReturnItem = async (req, res) => {
         requestedItem.returnStatus = 'Returned';
         requestedItem.status = 'Returned';
 
-        // refunding 
-        const refundAmount = requestedItem.price * requestedItem.quantity;
+        // Calculate refund amount
+        const unitPrice = requestedItem.price / requestedItem.quantity; // Price per item
+        const refundAmount = unitPrice * requestedItem.quantity; // Total price for returned items
+
 
         await Wallet.updateOne(
             { userId: userId },
@@ -245,7 +266,43 @@ const approveReturnItem = async (req, res) => {
             }
         )
 
-        order.finalAmount -= refundAmount;
+        // Restore product quantity
+        const product = await Product.findById(requestedItem.product);
+
+        if (product) {
+            const variant = product.variants.find(v => v.sku === requestedItem.sku);
+
+            if (variant) {
+                variant.quantity += requestedItem.quantity;
+                await product.save();
+            } else {
+                console.log(`Variant with SKU ${requestedItem.sku} not found in product ${product._id}`);
+            }
+        } else {
+            console.warn(`Product not found with id ${requestedItem.product}`);
+        }
+
+        requestedItem.status = 'Returned';
+
+        // Update order totals
+        // const activeItems = order.orderedItems.filter(item => 
+        //     item.status !== 'Cancelled' && item.status !== 'Returned' && item.returnStatus !== 'Returned'
+        // );
+        // const newTotalPrice = activeItems.reduce((sum, item) => sum + (item.price), 0);
+
+        // order.totalPrice = newTotalPrice;
+        // order.finalAmount = newTotalPrice - order.discount + order.deliveryCharge;
+
+        // Check if all items are now returned
+        const allItemsReturned = order.orderedItems.every(item => 
+            item.returnStatus === 'Returned' || item.status === 'Returned'
+        );
+        
+        if (allItemsReturned) {
+            order.status = 'Returned';
+            order.returnStatus = 'Returned';
+        }
+
         await order.save();
 
         return res.status(200).json({ success: true, message: 'Return request approved' });
@@ -268,7 +325,7 @@ const rejectReturnItem = async (req, res) => {
         if (!requestedItem) return res.status(400).json({ success: false, message: 'Item not found' });
 
         requestedItem.returnStatus = 'Rejected';
-        requestedItem.status = 'Returned';
+        requestedItem.status = 'Rejected';
 
         await order.save();
 

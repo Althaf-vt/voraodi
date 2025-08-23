@@ -80,16 +80,55 @@
   <script src="/user/signin.js"></script>
 
   <!-- Message div timer -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const alertBox = document.querySelector('.alert.alert-danger');
-      if (alertBox) {
-        setTimeout(() => {
-          alertBox.style.display = 'none';
-        }, 3000); 
-      }
-      lucide.createIcons();
+<script>
+    // frontend validation
+    document.getElementById('signin-form').addEventListener('submit', function(event) {
+        const email = document.getElementById('email').value.trim();
+        const password = document.querySelector('input[name="password"]').value;
+        let isValid = true;
+
+        // Clear previous errors
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+        // Validate email
+        if (!email) {
+            const emailError = document.querySelector('.error-message[data-field="email"]');
+            emailError.textContent = 'Email is required';
+            isValid = false;
+
+            // Set timer to clear error after 5 seconds
+            setTimeout(() => {
+                emailError.textContent = '';
+            }, 5000);
+        }
+
+        // Validate password
+        if (!password) {
+            const passwordError = document.querySelector('.error-message[data-field="password"]');
+            passwordError.textContent = 'Password is required';
+            isValid = false;
+
+            // Set timer to clear error after 5 seconds
+            setTimeout(() => {
+                passwordError.textContent = '';
+            }, 5000);
+        }
+
+        // Prevent form submission if validation fails
+        if (!isValid) {
+            event.preventDefault();
+        }
     });
-  </script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const alertBox = document.querySelector('.alert.alert-danger');
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 3000); 
+        }
+        lucide.createIcons();
+    });
+</script>
 </body>
 </html>

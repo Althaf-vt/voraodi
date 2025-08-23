@@ -39,7 +39,7 @@ const orderSchema = new Schema({
         status: {
             type: String,
             required: true,
-            enum: ['Pending','Processing','Shipped','Delivered','Cancelled','Return Request','Returned','Payment Failed']
+            enum: ['Pending','Processing','Shipped','Delivered','Cancelled','Return Request','Returned','Rejected','Payment Failed']
         },
         returnStatus: {
             type: String,

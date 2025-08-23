@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const { search } = require('../../server');
 const { find } = require('../../models/addressSchema');
 const mongoose = require('mongoose');
+const Wishlist = require('../../models/whishlistSchema');
 
 
 
@@ -490,6 +491,27 @@ const cartCount = async (req, res) => {
     }
 }
 
+const wishlistCount = async(req,res)=>{
+    try {
+        if (!req.session.user) {
+            return res.json({ count: 0 });
+        }
+
+        const wishlist = await Wishlist.findOne({userId: req.session.user});
+
+        let count = 0;
+
+        if(wishlist && wishlist.products.length > 0){
+            count = wishlist.products.length;
+        }
+        res.json({count});
+        
+    } catch (error) {
+        console.error('Error fetching wishlist count:', error);
+        res.status(500).json({ error: 'Failed to fetch wishlist count' });
+    }
+}
+
 const aboutPage = async (req, res, next) => {
     try {
         return res.render('about');
@@ -526,7 +548,8 @@ module.exports = {
     loadShoppingPage,
     aboutPage,
     contactPage,
-    cartCount
+    cartCount,
+    wishlistCount,
     // filterProduct,
     // filterByPrice,
     // searchProducts,

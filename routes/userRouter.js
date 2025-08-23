@@ -15,7 +15,8 @@ const { userAuth } = require('../middlewares/auth');
 // Home Page & Shopping page
 router.get('/',userController.loadHomepage);
 router.get('/shop',userController.loadShoppingPage);
-router.get('/cart/count',userController.cartCount)
+router.get('/cart/count',userController.cartCount);
+router.get('/wishlist/count',userController.wishlistCount)
 router.get('/quickView',productController.quickView);
 router.get('/about',userController.aboutPage);
 router.get('/contact',userController.contactPage)
