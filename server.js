@@ -1,10 +1,7 @@
 const express = require('express');
 const app = express();
-
-        // app.use((req, res, next) => {
-        //   res.setHeader("Access-Control-Allow-Origin", "https://ba8473fe0f2c.ngrok-free.app");
-        //   next();
-        // });
+const cors = require('cors');
+       
     
 const path = require('path');
 const env = require('dotenv').config();
@@ -40,6 +37,16 @@ app.use((req,res,next) =>{
     res.set('cache-control','no-store')
     next();
 })
+
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "https://ba8473fe0f2c.ngrok-free.app");
+//   next();
+// });
+
+app.use(cors({
+  origin: ["https://voraodi.shop", "http://localhost:3000"], // allow live + local dev
+  credentials: true
+}));
 
 
 app.set('view engine','ejs');
