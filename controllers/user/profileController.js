@@ -866,11 +866,11 @@ const loadCart = async (req, res, next) => {
 
         const userCart = await Cart.findOne({ userId: userId }).populate('items.productId');
 
-        if (!userCart) {
-            const err = new Error("Cart not found");
-            err.statusCode = 404;
-            throw err;
-        }
+        // if (!userCart) {
+        //     const err = new Error("Cart not found");
+        //     err.statusCode = 404;
+        //     throw err;
+        // }
 
         return res.render('cart', {
             user: userData,
