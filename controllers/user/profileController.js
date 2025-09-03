@@ -54,7 +54,6 @@ const sendVerificationEmail = async (email, otp) => {
         }
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Email Send : ${info.messageId}`);
         return true;
     } catch (error) {
         console.error("Error in Send Email", error);
@@ -82,7 +81,6 @@ const getForgotPassword = async (req, res, next) => {
         req.session.step = 'forgot-pass';
         res.render('forgot-password');
     } catch (error) {
-        console.log(error)
         next(error);
     }
 }
@@ -119,7 +117,6 @@ const forgotEmailValid = async (req, res, next) => {
         }
 
     } catch (error) {
-        console.log(error);
         next(error);
     }
 }
@@ -135,7 +132,6 @@ const forgotPassOtp = async (req, res, next) => {
 
         return res.render('forgotPass-otp');
     } catch (error) {
-        console.log('Error while rendering forgot password otp : ', error);
         next(error)
     }
 }
@@ -178,8 +174,6 @@ const resendOtp = async (req, res) => {
         req.session.userOtp = otp;
         const email = req.session.email;
 
-        console.log(`Resending OTP to email ${email}`);
-
         const emailSend = await sendVerificationEmail(email, otp);
 
         if (emailSend) {
@@ -205,7 +199,6 @@ const NewPassword = async (req, res, next) => {
         const email = req.session.email;
 
         if (newPass1 === newPass2) {
-            console.log(newPass1, ",", newPass2)
             const passwordHash = await securePassword(newPass1);
             await User.updateOne(
                 { email: email },
@@ -222,7 +215,6 @@ const NewPassword = async (req, res, next) => {
             return res.render('reset-password', { message: 'Password do not match' })
         }
     } catch (error) {
-        console.log(error);
         next(error);
     }
 }
@@ -259,7 +251,6 @@ const userAccount = async (req, res, next) => {
 
         return res.render('userAccount', { user });
     } catch (error) {
-        console.log("Error in loading user account", error);
         next(error);
     }
 }
@@ -270,7 +261,6 @@ const editImage = async (req, res) => {
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId });
         const profileImage = req.file;
-        console.log('Req.file ========> : ', req.file);
 
         if (!profileImage) {
             return res.status(400).json({ success: false, message: 'No file uploaded' });
@@ -364,7 +354,6 @@ const changeEmailValid = async (req, res, next) => {
                 throw err;
             }
         } else {
-            console.log('user not exist')
             return res.render('change-email', {
                 message: "User with this email not exist",
                 userData: user
@@ -392,7 +381,6 @@ const emailOtpPage = async (req, res, next) => {
         }
         return res.render('change-email-otp', { userData: user });
     } catch (error) {
-        console.log('Error in rendering otp page : ', error);
         next(error)
     }
 }
@@ -431,7 +419,6 @@ const verifyOtp = async (req, res, next) => {
             })
         }
     } catch (error) {
-        console.log("Error in verify otp", error);
         next(error)
     }
 }
@@ -468,7 +455,6 @@ const UpdateEmail = async (req, res, next) => {
         return res.redirect('/userProfile?success=' + encodeURIComponent('Email Updated Successfully'));
 
     } catch (error) {
-        console.log("Error in update Email", error);
         next(error)
     }
 }
@@ -487,7 +473,6 @@ const changePassword = async (req, res, next) => {
         req.session.step = 'change-pass';
         return res.render('change-password', { userData: user });
     } catch (error) {
-        console.log('Error in loading change password');
         next(error)
     }
 }
@@ -532,7 +517,6 @@ const changePasswordValid = async (req, res, next) => {
             })
         }
     } catch (error) {
-        console.log("Error in change pass valid");
         next(error);
     }
 }
@@ -553,7 +537,6 @@ const passOtpPage = async (req, res, next) => {
         }
         return res.render('change-pass-otp', { userData: user });
     } catch (error) {
-        console.log('Error when loading change pass otp page : ', error);
         next(error)
     }
 }
@@ -586,7 +569,6 @@ const verifyChangePassOtp = async (req, res, next) => {
             })
         }
     } catch (error) {
-        console.log("Error in verify change pass");
         next(error);
     }
 }
@@ -609,7 +591,6 @@ const UpdatePassword = async (req, res, next) => {
         }
 
         if (newPass1 === newPass2) {
-            console.log(newPass1, ",", newPass2)
             const passwordHash = await securePassword(newPass1);
 
             if (passwordHash === user.password) {
@@ -628,7 +609,6 @@ const UpdatePassword = async (req, res, next) => {
             return res.render('new-password', { message: 'Password do not match', userData: user })
         }
     } catch (error) {
-        console.log('Error in Update password', error);
         next(error)
     }
 }
@@ -657,7 +637,6 @@ const changeName = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Name Updated Successfully' });
 
     } catch (error) {
-        console.log('Error in Change name');
         return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 
@@ -687,7 +666,6 @@ const changePhone = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Number Updated Successfully' });
 
     } catch (error) {
-        console.log('Error in Change Phone');
         return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
@@ -738,7 +716,6 @@ const postAddAddress = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Address added successful' });
 
     } catch (error) {
-        console.log("Error while adding address : ", error);
         return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
@@ -749,7 +726,6 @@ const getEditAddress = async (req, res) => {
         const userId = req.session.user;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            console.log('ivalid address id')
             return res.status(400).json({ success: false, message: 'Invalid address id' });
         }
 
@@ -760,10 +736,8 @@ const getEditAddress = async (req, res) => {
 
 
         if (!doc) {
-            console.log('no user')
             return res.status(400).json({ success: false, message: 'Address not found' });
         }
-        console.log('user here')
 
         return res.status(200).json({ success: true, address: doc.address[0] })
 
@@ -792,7 +766,6 @@ const editAddress = async (req, res) => {
 
         const address = await Address.findOne({ userId, 'address._id': addressId });
         if (!address) {
-            console.log('address not found in db');
             return res.status(400).json({ success: false, message: 'Address not found' });
         }
 
@@ -826,13 +799,11 @@ const deleteAddress = async (req, res) => {
         const userId = req.session.user
 
         if (!id) {
-            console.log('no id')
             return res.status(400).json({ success: false });
         }
 
         const addrId = new mongoose.Types.ObjectId(id);
 
-        console.log('id here')
         const result = await Address.updateOne(
             { userId, 'address._id': addrId },
             { $pull: { address: { _id: addrId } } }
@@ -840,7 +811,6 @@ const deleteAddress = async (req, res) => {
 
 
         if (!result.modifiedCount) {
-            console.log('not modified')
             return res.status(400).json({ success: false, message: 'Address not found' })
         }
 
@@ -902,7 +872,7 @@ const addToCart = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Product not found.' });
         }
 
-        if (findProduct.isBlock) {
+        if (findProduct.isBlocked) {
             return res.status(400).json({ success: false, message: 'This product has been blocked by the admin.' });
         }
 
@@ -995,8 +965,6 @@ const updateQty = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Product not found in cart' });
         }
 
-        // const product = await Product.findOne({_id:});
-        // console.log(product)
 
         const item = userCart.items[itemIndex];
 
@@ -1010,7 +978,6 @@ const updateQty = async (req, res) => {
                 item.quantity += 1;
 
             } else {
-                console.log('stock exceed')
                 return res.status(500).json({ success: false, message: 'Stcok exceed' })
             }
 
@@ -1103,7 +1070,6 @@ const orderPage = async (req, res, next) => {
 
         });
     } catch (error) {
-        console.log('Error while loading order page', error);
         next(error);
     }
 }
@@ -1141,7 +1107,6 @@ const getCoupons = async (req, res, next) => {
             user
         })
     } catch (error) {
-        console.log("Error while loading Coupon page", error);
         next(error);
     }
 }

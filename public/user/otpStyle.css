@@ -1,257 +1,270 @@
-*{
+:root {
+    --accent-gold: #d4af37;
+    --accent-dark: #2f3a44;
+    --accent-green: #004d00;
+    --accent-gray: #767675;
+    --accent-red: #c00000;
+    --text-primary: #2f3a44;
+    --text-secondary: #4a4a4a;
+    --text-tertiary: #666666;
+    --bg-primary: #f5f5e8;
+    --bg-secondary: #fffef4;
+}
+
+* {
     font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Sign In and Sign Up Pages */
-.auth-section {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: #f5f5e8;
-  padding: 80px 20px;
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-primary);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    color: var(--text-primary);
 }
 
-.auth-container {
-  position: relative;
-  padding: 30px;
-  background: rgba(255, 255, 245, 0.85);
-  border: 5px solid #d4af37;
-  border-image: linear-gradient(45deg, #d4af37, #b8972e) 1;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  max-width: 360px;
-  width: 100%;
+/* OTP Section Styling */
+.otp-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px;
 }
 
-.auth-container h2 {
-  font-family: 'Cinzel', serif;
-  font-size: 30px;
-  color: #2f3a44;
-  margin-bottom: 15px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+.otp-card {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
 }
 
-.auth-container form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.otp-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-green);
 }
 
-.auth-container label {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: #2f3a44;
-  text-align: left;
-  text-transform: uppercase;
+.otp-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent-green);
+    background-color: rgba(0, 77, 0, 0.05);
 }
 
-.auth-container input {
-  padding: 8px;
-  border: 1px solid #d4af37;
-  border-radius: 5px;
-  outline: none;
-  background-color: #fff;
-  font-size: 12px;
-  font-family: 'Montserrat', sans-serif;
-  transition: border-color 0.3s ease;
+.icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    background-color: rgba(0, 77, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
-.auth-container input:focus {
-  border-color: #b8972e;
-  box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+.otp-card:hover .icon-container {
+    background-color: rgba(0, 77, 0, 0.2);
 }
 
-.auth-container button {
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #d4af37, #b8972e);
-  color: #2f3a44;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.card-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-green);
+    stroke-width: 1.75;
 }
 
-.auth-container button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
+.otp-card h2 {
+    margin: 0.5rem 0 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
 }
 
-.auth-container button:hover::before {
-  left: 100%;
+.otp-card p {
+    margin: 0 0 1.25rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-weight: 500;
+    text-align: center;
 }
 
-.auth-container button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
-  background: linear-gradient(135deg, #006400, #228B22);
-  color: #f5f5e8;
+.otp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
-.auth-container .link {
-  font-family: 'Playfair Display', serif;
-  font-size: 12px;
-  color: #2f3a44;
-  margin-top: 8px;
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.auth-container .link a {
-  color: #d4af37;
-  text-decoration: none;
-  transition: color 0.3s ease;
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
 }
 
-.auth-container .link a:hover {
-  color: #b8972e;
+.form-group input {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
 }
 
-.auth-divider {
-  font-family: 'Playfair Display', serif;
-  font-size: 12px;
-  color: #2f3a44;
-  margin: 15px 0;
-  position: relative;
-  text-align: center;
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 2px rgba(0, 77, 0, 0.2);
 }
 
-.auth-divider::before,
-.auth-divider::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 40%;
-  height: 1px;
-  background-color: #d4af37;
+.otp-timer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin: 0.5rem 0;
 }
 
-.auth-divider::before {
-  left: 0;
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
-.auth-divider::after {
-  right: 0;
+.action-button {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.google-signin-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #d4af37, #b8972e);
-  color: #2f3a44;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  text-decoration: none;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-  width: 100%;
-  text-align: center;
+.action-button.verify {
+    background: linear-gradient(45deg, var(--accent-green), #1a661a);
+    color: white;
 }
 
-.google-signin-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
+.action-button.verify:hover {
+    background: linear-gradient(135deg, #1a661a, var(--accent-green));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.google-signin-btn:hover::before {
-  left: 100%;
+.action-button.resend-otp {
+    background: var(--bg-primary);
+    color: var(--text-tertiary);
+    border: 1px solid rgba(118, 118, 117, 0.3);
+    cursor: not-allowed;
 }
 
-.google-signin-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
-  background: linear-gradient(135deg, #006400, #228B22);
-  color: #f5f5e8;
+.action-button.resend-otp:not(.disabled) {
+    background: var(--bg-primary);
+    color: var(--accent-green);
+    border-color: var(--accent-green);
+    cursor: pointer;
 }
 
-.google-signin-btn img {
-  width: 16px;
-  height: 16px;
-  margin-right: 8px;
+.action-button.resend-otp:not(.disabled):hover {
+    background: rgba(0, 77, 0, 0.05);
 }
 
-/* Form Field Wrapper */
-.auth-container .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
+.resend-link {
+    text-align: center;
+    margin-top: 1rem;
 }
 
-/* Error Message Styling */
-.auth-container .error-message {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px;
-  color: #ff4040;
-  text-align: left;
-  min-height: 16px;
+.resend-link a {
+    color: var(--accent-green);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: color 0.2s ease;
 }
 
-/* General Error Styling */
-.auth-container .general-error {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px;
-  color: #ff4040;
-  text-align: center;
-  margin-bottom: 12px;
+.resend-link a:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+}
+
+.resend-link a.disabled {
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.validation-message {
+    font-size: 0.8rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    background-color: rgba(192, 0, 0, 0.05);
+    color: var(--accent-red);
+    border: 1px solid rgba(192, 0, 0, 0.1);
+    margin-top: -0.5rem;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.validation-message.show {
+    opacity: 1;
+    height: auto;
+    margin-bottom: 0.5rem;
 }
 
 /* Responsive Design */
-@media (max-width: 480px) {
-  .auth-container {
-    padding: 20px;
-    max-width: 300px;
-  }
-
-  .auth-container h2 {
-    font-size: 20px;
-  }
-
-  .auth-container input,
-  .auth-container button,
-  .google-signin-btn {
-    padding: 6px;
-    font-size: 10px;
-  }
-
-  .google-signin-btn img {
-    width: 14px;
-    height: 14px;
-  }
-
-  .auth-container label,
-  .auth-divider {
-    font-size: 10px;
-  }
-
-  .auth-container .link {
-    font-size: 10px;
-  }
+@media (max-width: 600px) {
+    .otp-section {
+        padding: 60px 15px;
+    }
+    
+    .otp-card {
+        padding: 1.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .otp-card h2 {
+        font-size: 1.3rem;
+    }
+    
+    .otp-card p {
+        font-size: 0.85rem;
+    }
 }

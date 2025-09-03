@@ -32,46 +32,51 @@
                             <h2>Your Cart Items</h2>
                         </div>
                         
-                        <% if (cartItems && cartItems.length > 0) { %>
-                            <div class="cart-table">
-                                <div class="cart-table-header">
-                                    <div class="cart-column product-column">Product</div>
-                                    <div class="cart-column price-column">Price</div>
-                                    <div class="cart-column size-column">Size</div>
-                                    <div class="cart-column quantity-column">Qty</div>
-                                    <div class="cart-column total-column">Total</div>
-                                </div>
-                                <% cartItems.forEach(item => { %>
-                                    <% if (item.productId) { %>
-                                        <div class="cart-table-row">
-                                            <div class="cart-column product-column">
-                                                <div class="cart-product">
-                                                    <img src="<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>" class="cart-product-image" />
-                                                    <span class="cart-product-name"><%= item.productId.productName %></span>
-                                                </div>
-                                            </div>
-                                            <div class="cart-column price-column">
-                                                <span>₹<%= item.productId.salePrice.toFixed(2) %></span>
-                                            </div>
-                                            <div class="cart-column size-column">
-                                                <span><%= item.size %></span>
-                                            </div>
-                                            <div class="cart-column quantity-column">
-                                                <span><%= item.quantity %></span>
-                                            </div>
-                                            <div class="cart-column total-column">
-                                                <span>₹<%= (item.productId.salePrice * item.quantity).toFixed(2) %></span>
-                                            </div>
-                                        </div>
-                                    <% } %>
-                                <% }) %>
-                            </div>
-                        <% } else { %>
-                            <div class="empty-state">
-                                <i data-lucide="shopping-cart" class="empty-icon"></i>
-                                <p>Your cart is empty</p>
-                            </div>
-                        <% } %>
+                        <!-- Replace the entire cart table section with this code -->
+<% if (cartItems && cartItems.length > 0) { %>
+    <div class="cart-table">
+        <div class="cart-table-header">
+            <div class="cart-column product-column">Product</div>
+            <div class="cart-column price-column">Price</div>
+            <div class="cart-column size-column">Size</div>
+            <div class="cart-column quantity-column">Qty</div>
+            <div class="cart-column total-column">Total</div>
+        </div>
+        <% cartItems.forEach(item => { %>
+            <% if (item.productId) { %>
+                <div class="cart-table-row">
+                    <div class="cart-column product-column">
+                        <div class="cart-product">
+                            <img src="<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>" class="cart-product-image" />
+                            <span class="cart-product-name"><%= item.productId.productName %></span>
+                        </div>
+                    </div>
+                    <div class="cart-column price-column">
+                        <span class="cart-item-label">Price:</span>
+                        <span>₹<%= item.productId.salePrice.toFixed(2) %></span>
+                    </div>
+                    <div class="cart-column size-column">
+                        <span class="cart-item-label">Size:</span>
+                        <span><%= item.size %></span>
+                    </div>
+                    <div class="cart-column quantity-column">
+                        <span class="cart-item-label">Qty:</span>
+                        <span><%= item.quantity %></span>
+                    </div>
+                    <div class="cart-column total-column">
+                        <span class="cart-item-label">Total:</span>
+                        <span>₹<%= (item.productId.salePrice * item.quantity).toFixed(2) %></span>
+                    </div>
+                </div>
+            <% } %>
+        <% }) %>
+    </div>
+<% } else { %>
+    <div class="empty-state">
+        <i data-lucide="shopping-cart" class="empty-icon"></i>
+        <p>Your cart is empty</p>
+    </div>
+<% } %>
                     </div>
                     
                     <!-- Address Section -->
@@ -333,8 +338,6 @@
 
         // Toast message
         async function toastMessage(data, type) {
-            console.log('data in toast : ',data.message)
-            console.log('TYpe : ,',type)
             const message = data?.message ?? (type ? "Something went wrong" : "Updated successfully");
 
             Toastify({
@@ -700,7 +703,6 @@
                                             }
                                         })
                                         .catch(err => {
-                                            console.log("order error: ",err);
                                             let data = {message : 'Something went wrong'}
                                             toastMessage(data,'error')
                                         })
@@ -743,7 +745,6 @@
                     rzp.open()
                 })
                 .catch(err => {
-                    console.log(err);
                     let data = {message : 'Error initiating Razorpay'}
                     toastMessage(data,'error')
                 });
@@ -773,7 +774,6 @@
                     }
                 })
                 .catch(err => {
-                    console.log("order error: ",err);
                     let data = {message : 'Something went wrong. Please try again later'}
                     toastMessage(data,'error')
                 })

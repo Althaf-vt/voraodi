@@ -13,6 +13,7 @@
 
 *{
     font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
 }
 
 .body{
@@ -21,82 +22,91 @@
 
 /* Base Layout */
 .orders-container {
-    padding: 100px 20px 60px;
+    padding: 80px 15px 40px;
     max-width: 1200px;
     margin: 0 auto;
     min-height: calc(100vh - 160px);
-    
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .orders-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     border-bottom: 2px solid rgba(212, 175, 55, 0.5);
-    padding-bottom: 20px;
+    padding-bottom: 15px;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 15px;
+    width: 100%;
 }
 
 .profile-section {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1rem;
 }
 
 .profile-image {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border-radius: 40px;
     border: 1px solid #797e85d2;
     object-fit: cover;
     box-shadow: 0 8px 6px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
 }
 
 .profile-text h1 {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: 700;
     margin: 0;
     color: var(--text-primary);
     font-family: 'Montserrat', sans-serif;
+    line-height: 1.2;
 }
 
 .profile-text h1 span {
     font-weight: 600;
     color: var(--accent-gold);
+    display: block;
+    font-size: 1.1rem;
+    margin-top: 4px;
 }
 
 .profile-text p {
-    margin: 0.5rem 0 0;
+    margin: 0.4rem 0 0;
     color: var(--text-tertiary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
 }
 
 .orders-filter {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
+    flex-shrink: 0;
 }
 
 .orders-filter select {
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid #ddd;
     background: var(--bg-secondary);
     font-family: 'Montserrat', sans-serif;
     color: var(--text-secondary);
+    font-size: 13px;
 }
 
 /* Orders Grid */
 .orders-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 12px;
 }
 
 .order-card {
@@ -120,7 +130,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 12px 15px;
     border-bottom: 1px solid rgba(0,0,0,0.05);
     background: rgba(212, 175, 55, 0.03);
 }
@@ -128,31 +138,36 @@
 .order-meta {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
+    min-width: 0;
 }
 
 .order-id {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .order-date {
     font-family: 'Montserrat', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-tertiary);
 }
 
 .order-status {
     font-family: 'Montserrat', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 5px 10px;
+    padding: 4px 8px;
     border-radius: 20px;
     background: #f0f0f0;
     color: #555;
+    flex-shrink: 0;
 }
 
 .order-status.delivered {
@@ -171,7 +186,7 @@
 }
 
 .order-card-body {
-    padding: 15px 20px;
+    padding: 12px 15px;
     flex-grow: 1;
 }
 
@@ -184,29 +199,29 @@
 .order-total {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
 }
 
 .order-total span {
     font-family: 'Montserrat', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-tertiary);
 }
 
 .order-total strong {
     font-family: 'Montserrat', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--text-primary);
 }
 
 .order-items-count {
     font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-tertiary);
 }
 
 .order-card-footer {
-    padding: 0 20px 15px;
+    padding: 0 15px 12px;
     text-align: right;
 }
 
@@ -214,11 +229,11 @@
 .view-details-button {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
+    gap: 6px;
+    padding: 6px 12px;
     border-radius: 6px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     text-decoration: none;
@@ -232,11 +247,11 @@
 .retry-payment-button{
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
+    gap: 6px;
+    padding: 6px 12px;
     border-radius: 6px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     text-decoration: none;
@@ -263,40 +278,40 @@
 .no-orders {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px 15px;
     background: var(--bg-secondary);
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px dashed var(--accent-gold);
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 .no-orders-icon {
-    font-size: 50px;
+    font-size: 40px;
     color: var(--accent-gold);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .no-orders h3 {
     font-family: 'Montserrat', sans-serif;
-    font-size: 24px;
+    font-size: 20px;
     color: var(--text-primary);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 700;
 }
 
 .no-orders p {
     font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     color: var(--text-tertiary);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .browse-button {
     display: inline-block;
-    padding: 12px 30px;
+    padding: 10px 20px;
     border-radius: 6px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
     text-decoration: none;
@@ -310,63 +325,30 @@
     box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .orders-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .profile-section {
-        width: 100%;
-    }
-    
-    .orders-filter {
-        width: 100%;
-        justify-content: flex-end;
-    }
-}
-
-@media (max-width: 480px) {
-    .orders-container {
-        padding: 80px 15px 40px;
-    }
-    
-    .order-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .order-status {
-        align-self: flex-end;
-    }
-}
-
 /* Pagination */
 .pagination {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-top: 40px;
+    gap: 6px;
+    margin-top: 30px;
     flex-wrap: wrap;
 }
 
 .pagination-button {
-    padding: 8px 14px;
+    padding: 6px 10px;
     background: linear-gradient(45deg, var(--accent-gold), #b8972e);
     color: var(--text-primary);
     border: none;
     border-radius: 5px;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     transition: all 0.3s ease;
-    min-width: 36px;
+    min-width: 32px;
     text-align: center;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
 }
 
 .pagination-button:hover {
@@ -383,12 +365,153 @@
 }
 
 .pagination-button i {
-    font-size: 12px;
+    font-size: 11px;
 }
 .pagination-ellipsis {
     display: inline-flex;
     align-items: center;
-    padding: 8px 8px;
+    padding: 6px 6px;
     color: var(--text-tertiary);
     font-weight: 600;
+    font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .orders-header {
+        margin-top: 30px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .profile-section {
+        width: 100%;
+    }
+    
+    .orders-filter {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 540px) {
+    .orders-container {
+        padding: 70px 12px 30px;
+    }
+    
+    .profile-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .profile-text h1 {
+        font-size: 1.2rem;
+    }
+    
+    .profile-text h1 span {
+        font-size: 1rem;
+    }
+    
+    .profile-text p {
+        font-size: 0.8rem;
+    }
+    
+    .order-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 12px;
+    }
+    
+    .order-status {
+        align-self: flex-start;
+    }
+    
+    .order-id {
+        font-size: 13px;
+    }
+    
+    .order-date {
+        font-size: 11px;
+    }
+    
+    .order-card-body {
+        padding: 10px 12px;
+    }
+    
+    .order-total span {
+        font-size: 11px;
+    }
+    
+    .order-total strong {
+        font-size: 14px;
+    }
+    
+    .order-items-count {
+        font-size: 12px;
+    }
+    
+    .order-card-footer {
+        padding: 0 12px 10px;
+    }
+    
+    .view-details-button,
+    .retry-payment-button {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+    
+    .no-orders {
+        padding: 30px 12px;
+    }
+    
+    .no-orders-icon {
+        font-size: 32px;
+    }
+    
+    .no-orders h3 {
+        font-size: 18px;
+    }
+    
+    .no-orders p {
+        font-size: 13px;
+    }
+    
+    .browse-button {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+    
+    .pagination {
+        gap: 4px;
+        margin-top: 25px;
+    }
+    
+    .pagination-button {
+        padding: 5px 8px;
+        font-size: 11px;
+        min-width: 28px;
+    }
+}
+
+@media (max-width: 360px) {
+    .order-summary {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .order-items-count {
+        align-self: flex-end;
+    }
+    
+    .orders-filter {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    
+    .orders-filter select {
+        width: 100%;
+    }
 }

@@ -19,9 +19,9 @@ body {
     padding-top: 100px;
 }
 
-/* Hero Banner */
+/* Hero Banner - Made more compact for small screens */
 .hero-banner {
-    height: 70vh;
+    height: 60vh;
     background: linear-gradient(rgba(47, 58, 68, 0.7), rgba(47, 58, 68, 0.7)), 
                 url('https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
     background-size: cover;
@@ -29,7 +29,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -115,11 +115,11 @@ body {
     color: #b8972e;
 }
 
-/* Category Grid */
+/* Category Grid - Updated for small screens */
 .category-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 15px;
 }
 
 .category-card {
@@ -147,14 +147,14 @@ body {
     left: 0;
     right: 0;
     background: linear-gradient(to top, rgba(47, 58, 68, 0.9), transparent);
-    padding: 20px;
+    padding: 15px;
     color: #f5f5e8;
     text-align: center;
 }
 
 .category-overlay h3 {
-    font-size: 22px;
-    margin-bottom: 10px;
+    font-size: 18px;
+    margin-bottom: 8px;
     font-weight: 600;
 }
 
@@ -163,6 +163,7 @@ body {
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
+    font-size: 14px;
 }
 
 .category-link:hover {
@@ -269,6 +270,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 5px;
+    font-size: 14px;
 }
 
 .quick-view-btn:hover {
@@ -538,7 +540,7 @@ body {
     pointer-events: none;
 }
 
-/* Responsive Design */
+/* Enhanced Responsive Design */
 @media (max-width: 1200px) {
     .product-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -555,10 +557,6 @@ body {
 }
 
 @media (max-width: 992px) {
-    .category-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
     .hero-content h1 {
         font-size: 36px;
     }
@@ -566,46 +564,347 @@ body {
     .hero-content p {
         font-size: 18px;
     }
+    
+    .section-header h2 {
+        font-size: 24px;
+    }
 }
 
 @media (max-width: 768px) {
     .product-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
     }
     
-    .category-grid {
-        grid-template-columns: 1fr;
-    }
-    
+    /* Hero banner adjustments for tablets */
     .hero-banner {
         height: 50vh;
+        margin-bottom: 30px;
+    }
+    
+    .hero-content h1 {
+        font-size: 32px;
+        margin-bottom: 15px;
+    }
+    
+    .hero-content p {
+        font-size: 16px;
+        margin-bottom: 20px;
     }
     
     .section-header {
         flex-direction: column;
         align-items: flex-start;
+        margin-bottom: 20px;
     }
     
     .divider {
         width: 100%;
         margin: 15px 0;
     }
+    
+    .main-container {
+        padding: 15px;
+        padding-top: 90px;
+    }
+    
+    .featured-section, .new-arrivals {
+        margin-bottom: 40px;
+    }
+    
+    .about-content h2 {
+        font-size: 24px;
+    }
+    
+    .quick-view-btn {
+        padding: 6px 0;
+        font-size: 12px;
+    }
+    
+    /* Categories on small screens - 3 in a row */
+    .category-grid {
+        gap: 10px;
+    }
+    
+    .category-card {
+        height: 200px;
+    }
+    
+    .category-overlay {
+        padding: 10px;
+    }
+    
+    .category-overlay h3 {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .category-link {
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 576px) {
     .product-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .product-card {
+        padding: 10px;
+    }
+    
+    .image-container {
+        height: 160px;
+        margin-bottom: 10px;
+    }
+    
+    .details h3 {
+        font-size: 14px;
+        height: 36px;
+        margin-bottom: 8px;
+    }
+    
+    .price-container {
+        margin-bottom: 10px;
+    }
+    
+    .sale-price {
+        font-size: 14px;
+    }
+    
+    .regular-price {
+        font-size: 12px;
+    }
+    
+    /* Hero banner adjustments for mobile */
+    .hero-banner {
+        height: 40vh;
+        margin-bottom: 25px;
     }
     
     .hero-content h1 {
-        font-size: 28px;
+        font-size: 24px;
+        margin-bottom: 12px;
+        letter-spacing: 1px;
     }
     
     .hero-content p {
-        font-size: 16px;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    .cta-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    /* Categories on very small screens - 3 in a row */
+    .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .category-card {
+        height: 150px;
+    }
+    
+    .category-overlay {
+        padding: 8px;
+    }
+    
+    .category-overlay h3 {
+        font-size: 12px;
+    }
+    
+    .category-link {
+        font-size: 10px;
+    }
+    
+    .section-header h2 {
+        font-size: 20px;
+    }
+    
+    .about-content h2 {
+        font-size: 20px;
+    }
+    
+    .about-content p {
+        font-size: 14px;
+    }
+    
+    .wishlist {
+        top: 10px;
+        right: 10px;
+        font-size: 18px;
+    }
+    
+    .quick-view-btn {
+        font-size: 11px;
+        padding: 5px 0;
+    }
+    
+    .referral-modal-content {
+        padding: 25px 20px;
+    }
+    
+    .referral-modal h2 {
+        font-size: 22px;
+    }
+    
+    .referral-modal p {
+        font-size: 14px;
+    }
+    
+    .referral-input {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .referral-submit, .referral-skip {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Hero banner adjustments for very small mobile */
+    .hero-banner {
+        height: 35vh;
+        margin-bottom: 20px;
+    }
+    
+    .hero-content h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .hero-content p {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+    
+    .cta-button {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .product-card {
+        padding: 8px;
+    }
+    
+    .image-container {
+        height: 140px;
+    }
+    
+    .details h3 {
+        font-size: 13px;
+    }
+    
+    .quick-view-btn {
+        font-size: 10px;
+    }
+    
+    /* Categories on extra small screens - 3 in a row */
+    .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+    
+    .category-card {
+        height: 120px;
+    }
+    
+    .category-overlay {
+        padding: 6px;
+    }
+    
+    .category-overlay h3 {
+        font-size: 11px;
+        margin-bottom: 3px;
+    }
+    
+    .category-link {
+        font-size: 9px;
     }
     
     .main-container {
+        padding: 10px;
         padding-top: 80px;
+    }
+}
+
+/* Very small devices (320px and below) */
+@media (max-width: 320px) {
+    /* Hero banner adjustments for smallest screens */
+    .hero-banner {
+        height: 30vh;
+        margin-bottom: 15px;
+    }
+    
+    .hero-content h1 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .hero-content p {
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .cta-button {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .product-card {
+        padding: 6px;
+    }
+    
+    .image-container {
+        height: 120px;
+    }
+    
+    .details h3 {
+        font-size: 12px;
+        height: 32px;
+    }
+    
+    .quick-view-btn {
+        font-size: 9px;
+        padding: 4px 0;
+    }
+    
+    /* Categories on smallest screens - 3 in a row */
+    .category-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+    }
+    
+    .category-card {
+        height: 100px;
+    }
+    
+    .category-overlay {
+        padding: 5px;
+    }
+    
+    .category-overlay h3 {
+        font-size: 10px;
+        margin-bottom: 2px;
+    }
+    
+    .category-link {
+        font-size: 8px;
     }
 }

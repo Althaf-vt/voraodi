@@ -11,14 +11,19 @@
     --bg-secondary: #fffef4;
 }
 
+* {
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
 .coupon-container {
-    padding-top: 100px;
+    padding-top: 80px;
     font-family: 'Montserrat', sans-serif;
     background-color: var(--bg-primary);
-    /* margin: 0;
-    padding: 0; */
     min-height: 100vh;
     color: var(--text-primary);
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .coupon-container .container {
@@ -26,77 +31,89 @@
     margin: 0 auto;
     padding: 20px;
     padding-top: 40px;
+    width: 100%;
 }
 
 .coupon-container .header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     border-bottom: 2px solid rgba(212, 175, 55, 0.5);
-    padding-bottom: 20px;
+    padding-bottom: 15px;
     max-width: 1400px;
     margin: 0 auto;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .coupon-container .profile-section {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1rem;
 }
 
 .coupon-container .profile-image {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border-radius: 40px;
     border: 1px solid #797e85d2;
     object-fit: cover;
     box-shadow: 0 8px 6px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
 }
 
 .coupon-container .profile-text h1 {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: 700;
     margin: 0;
     color: var(--text-primary);
+    line-height: 1.2;
 }
 
 .coupon-container .profile-text h1 span {
     font-weight: 600;
     color: var(--accent-gold);
+    display: block;
+    font-size: 1.1rem;
+    margin-top: 4px;
 }
 
 .coupon-container .profile-text p {
-    margin: 0.5rem 0 0;
+    margin: 0.4rem 0 0;
     color: var(--text-tertiary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
 }
 
 .coupon-count {
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-primary);
     background-color: rgba(212, 175, 55, 0.1);
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem;
     border-radius: 20px;
     border: 1px solid rgba(212, 175, 55, 0.3);
+    flex-shrink: 0;
 }
 
 .coupon-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
     margin-top: 20px;
     max-width: 1400px;
-    margin-left: 70px
+    margin: 20px auto;
+    padding: 0 20px;
+    justify-content: center;
 }
 
 .coupon-card {
     background: var(--bg-secondary);
     border-radius: 8px;
-    padding: 1rem;
+    padding: 0.9rem;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -104,7 +121,9 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    height: 270px; /* Fixed height for uniformity */
+    height: 240px;
+    max-width: 320px;
+    margin: 0 auto;
 }
 
 .coupon-card::before {
@@ -145,19 +164,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.6rem;
     border-bottom: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 .coupon-value {
     display: flex;
     align-items: baseline;
-    gap: 0.25rem;
+    gap: 0.2rem;
 }
 
 .amount {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--accent-gold);
 }
@@ -171,16 +190,16 @@
 }
 
 .off {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
 }
 
 .status-badge {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     font-weight: 600;
-    padding: 0.2rem 0.6rem;
+    padding: 0.18rem 0.5rem;
     border-radius: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -208,10 +227,10 @@
 }
 
 .coupon-name {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.6rem 0;
     text-align: center;
     line-height: 1.3;
 }
@@ -223,8 +242,8 @@
     background-color: rgba(212, 175, 55, 0.05);
     border: 1px dashed rgba(212, 175, 55, 0.3);
     border-radius: 6px;
-    padding: 0.5rem;
-    margin-bottom: 0.75rem;
+    padding: 0.4rem;
+    margin-bottom: 0.6rem;
 }
 
 .coupon-card.expired .coupon-code-section {
@@ -239,7 +258,7 @@
 
 .coupon-code {
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 1px;
     color: var(--accent-gold);
@@ -247,7 +266,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 120px;
+    max-width: 100px;
 }
 
 .coupon-card.expired .coupon-code {
@@ -259,8 +278,8 @@
 }
 
 .copy-btn {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background-color: rgba(212, 175, 55, 0.1);
     border: 1px solid rgba(212, 175, 55, 0.3);
@@ -296,9 +315,9 @@
 .coupon-details {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 0.75rem;
-    font-size: 0.75rem;
+    gap: 0.3rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.7rem;
 }
 
 .detail-row {
@@ -308,13 +327,13 @@
 }
 
 .detail-label {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: var(--text-tertiary);
     font-weight: 500;
 }
 
 .detail-value {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: var(--text-primary);
 }
@@ -326,13 +345,13 @@
 .shop-btn {
     display: block;
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.45rem;
     border-radius: 6px;
     background-color: rgba(212, 175, 55, 0.1);
     border: 1px solid rgba(212, 175, 55, 0.3);
     color: var(--text-primary);
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     text-align: center;
     text-transform: uppercase;
@@ -362,43 +381,43 @@
 
 .empty-coupons {
     text-align: center;
-    padding: 3rem 2rem;
+    padding: 2.5rem 1.5rem;
     background: var(--bg-secondary);
     border-radius: 8px;
     border: 1px solid rgba(212, 175, 55, 0.3);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    max-width: 500px;
-    margin: 2rem auto;
+    max-width: 400px;
+    margin: 1.5rem auto;
 }
 
 .empty-icon {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     color: var(--accent-gold);
 }
 
 .empty-coupons h2 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
 }
 
 .empty-coupons p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-tertiary);
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
+    margin-bottom: 1.2rem;
+    line-height: 1.4;
 }
 
 .continue-shopping-btn {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1.2rem;
     border-radius: 6px;
     background-color: rgba(212, 175, 55, 0.1);
     border: 1px solid rgba(212, 175, 55, 0.3);
     color: var(--text-primary);
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     text-align: center;
     text-transform: uppercase;
@@ -424,31 +443,42 @@
 .colored-toast .swal2-title {
     color: white;
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 @media (max-width: 1200px) {
     .coupon-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     }
 }
 
 @media (max-width: 900px) {
     .coupon-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 0.9rem;
+    }
+    
+    .coupon-card {
+        height: 230px;
+        padding: 0.8rem;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .coupon-container {
+        padding-top: 70px;
+    }
+    
     .coupon-container .header {
+        margin-top: 30px;
         flex-direction: column;
-        gap: 1.25rem;
+        align-items: flex-start;
+        gap: 1rem;
     }
     
     .coupon-container .profile-section {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
+        flex-direction: row;
+        align-items: center;
     }
     
     .coupon-count {
@@ -456,23 +486,193 @@
     }
     
     .coupon-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.8rem;
     }
     
     .coupon-card {
-        height: auto;
-        min-height: 220px;
+        height: 220px;
+        max-width: 280px;
+    }
+}
+
+/* Updated for 540px and below - Two cards per row */
+@media (max-width: 540px) {
+    .coupon-container {
+        padding-top: 60px;
+    }
+    
+    .coupon-container .container {
+        padding: 15px;
+        padding-top: 30px;
+    }
+    
+    .coupon-container .profile-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .coupon-container .profile-text h1 {
+        font-size: 1.2rem;
+    }
+    
+    .coupon-container .profile-text h1 span {
+        font-size: 1rem;
+    }
+    
+    .coupon-container .profile-text p {
+        font-size: 0.8rem;
+    }
+    
+    .coupon-count {
+        font-size: 0.8rem;
+        padding: 0.35rem 0.7rem;
+    }
+    
+    .coupon-grid {
+        grid-template-columns: repeat(2, 1fr); /* Two cards per row */
+        gap: 0.8rem;
+        max-width: 100%;
+        margin: 15px auto;
+        padding: 0 10px;
+    }
+    
+    .coupon-card {
+        height: 200px; /* Slightly reduced height for compact layout */
+        max-width: 100%;
+        padding: 0.7rem;
+        margin: 0; /* Remove auto margin to allow two cards per row */
+    }
+    
+    .amount {
+        font-size: 0.95rem;
+    }
+    
+    .off {
+        font-size: 0.6rem;
+    }
+    
+    .coupon-name {
+        font-size: 0.7rem;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .coupon-code {
+        font-size: 0.6rem;
+        max-width: 80px;
+    }
+    
+    .copy-btn {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .copy-btn i {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .coupon-details {
+        gap: 0.2rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.65rem;
+    }
+    
+    .detail-label {
+        font-size: 0.55rem;
+    }
+    
+    .detail-value {
+        font-size: 0.6rem;
+    }
+    
+    .shop-btn {
+        font-size: 0.6rem;
+        padding: 0.35rem;
     }
     
     .empty-coupons {
-        padding: 2rem 1.5rem;
+        padding: 1.8rem 1rem;
+        margin: 1rem auto;
     }
     
     .empty-coupons h2 {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
     
     .empty-coupons p {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
+    }
+    
+    .continue-shopping-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .coupon-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.7rem;
+        padding: 0 8px;
+    }
+    
+    .coupon-card {
+        height: 190px;
+        padding: 0.6rem;
+    }
+    
+    .coupon-header {
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    .coupon-body {
+        gap: 0.3rem;
+    }
+    
+    .coupon-code-section {
+        margin-bottom: 0.5rem;
+        padding: 0.3rem;
+    }
+    
+    .coupon-details {
+        margin-bottom: 0.4rem;
+        gap: 0.15rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .coupon-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+        padding: 0 5px;
+    }
+    
+    .coupon-card {
+        height: 180px;
+        padding: 0.5rem;
+    }
+    
+    .amount {
+        font-size: 0.9rem;
+    }
+    
+    .coupon-name {
+        font-size: 0.65rem;
+    }
+    
+    .coupon-code {
+        font-size: 0.55rem;
+        max-width: 70px;
+    }
+    
+    .detail-label, .detail-value {
+        font-size: 0.5rem;
+    }
+    
+    .shop-btn {
+        font-size: 0.55rem;
+        padding: 0.3rem;
     }
 }

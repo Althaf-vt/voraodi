@@ -6,6 +6,7 @@
     <title>wallet</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/user/wallet.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -70,7 +71,7 @@
             <div class="transaction-section">
                 <div class="section-header">
                     <h2>Transaction History</h2>
-                    <div class="transaction-filters">
+                    <!-- <div class="transaction-filters">
                         <select id="typeFilter" class="filter-select">
                             <option value="all">All Transactions</option>
                             <option value="credit">Credit</option>
@@ -88,7 +89,7 @@
                             <i data-lucide="refresh-ccw"></i>
                             Reset
                         </button>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="transactions-container">
@@ -157,102 +158,111 @@
         </div>
     </div>
 
-    <script>
-        lucide.createIcons();
-        
-        // Filter functionality
-        function resetFilters() {
-            document.getElementById('typeFilter').value = 'all';
-            document.getElementById('timeFilter').value = '30';
-            filterTransactions();
-        }
-
-        function filterTransactions() {
-            const typeFilter = document.getElementById('typeFilter').value;
-            const timeFilter = document.getElementById('timeFilter').value;
-            const transactions = document.querySelectorAll('.transaction-item');
-            
-            let visibleCount = 0;
-            
-            transactions.forEach(transaction => {
-                let showTransaction = true;
-                
-                // Type filter
-                if (typeFilter !== 'all') {
-                    const transactionType = transaction.getAttribute('data-type');
-                    if (transactionType !== typeFilter) {
-                        showTransaction = false;
-                    }
-                }
-                
-                if (showTransaction) {
-                    transaction.style.display = 'flex';
-                    visibleCount++;
-                } else {
-                    transaction.style.display = 'none';
-                }
-            });
-        }
-
-        // Add event listeners
-        document.getElementById('typeFilter').addEventListener('change', filterTransactions);
-        document.getElementById('timeFilter').addEventListener('change', filterTransactions);
-
-        // Load more functionality
-let visibleTransactions = 4;
-const TRANSACTIONS_PER_LOAD = 4;
-
-function showMoreTransactions() {
-    const allTransactions = document.querySelectorAll('.transaction-item');
-    const nextVisibleCount = visibleTransactions + TRANSACTIONS_PER_LOAD;
-
-    allTransactions.forEach((txn, index) => {
-        if (index < nextVisibleCount) {
-            txn.style.display = 'flex';
-        }
-    });
-
-    visibleTransactions = nextVisibleCount;
-
-    if (visibleTransactions >= allTransactions.length) {
-        document.querySelector('.load-more-section').style.display = 'none';
+<script>
+    lucide.createIcons();
+    
+    // Filter functionality
+    function resetFilters() {
+        document.getElementById('typeFilter').value = 'all';
+        document.getElementById('timeFilter').value = '30';
+        filterTransactions();
     }
-}
 
-if (document.querySelector('.load-more-btn')) {
-    document.querySelector('.load-more-btn').addEventListener('click', function() {
-        // Directly show more transactions without icon animation
-        showMoreTransactions();
+    function filterTransactions() {
+        const typeFilter = document.getElementById('typeFilter')?.value;
+        const timeFilter = document.getElementById('timeFilter')?.value;
+        const transactions = document.querySelectorAll('.transaction-item');
         
-        // Optional: Add a simple visual feedback
-        this.classList.add('clicked');
-        setTimeout(() => {
-            this.classList.remove('clicked');
-        }, 300);
-    });
-}
+        let visibleCount = 0;
+        
+        transactions.forEach(transaction => {
+            let showTransaction = true;
+            
+            if (typeFilter && typeFilter !== 'all') {
+                const transactionType = transaction.getAttribute('data-type');
+                if (transactionType !== typeFilter) {
+                    showTransaction = false;
+                }
+            }
+            
+            if (showTransaction) {
+                transaction.style.display = 'flex';
+                visibleCount++;
+            } else {
+                transaction.style.display = 'none';
+            }
+        });
+    }
 
-        // Copy referral code functionality
-        function copyReferralCode() {
-            const referralCode = document.getElementById('referralCode').textContent;
-            navigator.clipboard.writeText(referralCode).then(() => {
-                const copyBtn = document.querySelector('.copy-code-btn');
-                const icon = copyBtn.querySelector('i');
-                const originalIcon = icon.dataset.lucide;
-                
-                icon.dataset.lucide = 'check';
-                lucide.createIcons();
-                copyBtn.classList.add('copied');
-                
-                setTimeout(() => {
-                    icon.dataset.lucide = originalIcon;
-                    lucide.createIcons();
-                    copyBtn.classList.remove('copied');
-                }, 2000);
-            }).catch(() => {
-                alert('Failed to copy referral code');
-            });
+    // ✅ Only add filter listeners if those elements exist
+    const typeFilterEl = document.getElementById('typeFilter');
+    const timeFilterEl = document.getElementById('timeFilter');
+
+    if (typeFilterEl && timeFilterEl) {
+        typeFilterEl.addEventListener('change', filterTransactions);
+        timeFilterEl.addEventListener('change', filterTransactions);
+    }
+
+    // Load more functionality
+    let visibleTransactions = 4;
+    const TRANSACTIONS_PER_LOAD = 4;
+
+    function showMoreTransactions() {
+        const allTransactions = document.querySelectorAll('.transaction-item');
+        const nextVisibleCount = visibleTransactions + TRANSACTIONS_PER_LOAD;
+
+        allTransactions.forEach((txn, index) => {
+            if (index < nextVisibleCount) {
+                txn.style.display = 'flex';
+            }
+        });
+
+        visibleTransactions = nextVisibleCount;
+
+        if (visibleTransactions >= allTransactions.length) {
+            document.querySelector('.load-more-section').style.display = 'none';
         }
-    </script>
+    }
+
+    if (document.querySelector('.load-more-btn')) {
+        document.querySelector('.load-more-btn').addEventListener('click', function() {
+            showMoreTransactions();
+            this.classList.add('clicked');
+            setTimeout(() => {
+                this.classList.remove('clicked');
+            }, 300);
+        });
+    }
+
+    // Copy referral code functionality
+    function copyReferralCode() {
+        const referralCode = document.getElementById('referralCode').textContent;
+        navigator.clipboard.writeText(referralCode).then(() => {
+            const copyBtn = document.querySelector('.copy-code-btn');
+            const icon = copyBtn.querySelector('i');
+            const originalIcon = icon.dataset.lucide;
+            
+            icon.dataset.lucide = 'check';
+            lucide.createIcons();
+            copyBtn.classList.add('copied');
+            
+            setTimeout(() => {
+                icon.dataset.lucide = originalIcon;
+                lucide.createIcons();
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        }).catch(() => {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                icon: 'success',
+                title: 'Referral code copied!'
+            });
+        });
+    }
+</script>
+
 </body>
 </html>

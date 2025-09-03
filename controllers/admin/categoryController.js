@@ -187,7 +187,6 @@ const getEditCategory = async (req, res, next) => {
         const category = await Category.findOne({ _id: id });
         return res.render('edit-category', { category: category });
     } catch (error) {
-        console.log('Error in loading edit category', error);
         next(error);
     }
 }
@@ -271,7 +270,6 @@ const searchCategory = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log("Error in Search Category", error);
         next(error)
     }
 

@@ -62,7 +62,7 @@
               <!-- Search Bar -->
     <div class="customer-search-container">
       <form id="searchForm" action="/admin/searchCategory" method="GET" class="customer-search-form">
-        <input type="text" name="query" id="searchInput" placeholder="Search customers..." class="customer-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
+        <input type="text" name="query" id="searchInput" placeholder="Search categories..." class="customer-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
         <button type="submit" class="customer-search-button">Search</button>
         <button type="button" class="customer-search-clear" onclick="clearSearch()">Clear</button>
       </form>
@@ -93,17 +93,19 @@
                   <% } %>
                 </td>
                 <td class="text-start">
-                  <% if (!category.categoryOffer || category.categoryOffer === 0) { %>
-                    <button class="view-btn" style="width: 100px" onclick="addOffer('<%= category._id%>')">
-                      Add Offer
-                    </button>
-                  <% } else { %>
-                    <button class="block-btn" style="width: 100px" onclick="removeOffer('<%= category._id%>')">
-                      Remove Offer
-                    </button>
-                  <% } %>
+                  <div class="button-container">
+                    <% if (!category.categoryOffer || category.categoryOffer === 0) { %>
+                      <button class="icon-btn view-btn" data-tooltip="Add Offer" onclick="addOffer('<%= category._id%>')">
+                        <i class="fas fa-percentage"></i>
+                      </button>
+                    <% } else { %>
+                      <button class="icon-btn block-btn" data-tooltip="Remove Offer" onclick="removeOffer('<%= category._id%>')">
+                        <i class="fas fa-times-circle"></i>
+                      </button>
+                    <% } %>
+                  </div>
                 </td>
-                <!--  -->
+
                 <td class="text-start">
                   <% if (category.isListed) { %>
                     <span class="badge rounded-pill alert-success">Listed</span>
@@ -111,26 +113,30 @@
                     <span class="badge rounded-pill alert-danger">Unlisted</span>
                   <% } %>
                 </td>
-                <!--  -->
+
                 <td class="text-start">
-                  <% if (category.isListed) { %>
-                    <button class="block-btn" style="width: 80px; margin-right: 5px;" onclick="confirmUnlistCategory('<%= category._id %>')">
-                      Unlist
-                    </button>
-                  <% } else { %>
-                    <button class="unblock-btn" style="width: 80px; margin-right: 5px;" onclick="confirmListCategory('<%= category._id %>')">
-                      List
-                    </button>
-                  <% } %>
+                  <div class="button-container">
+                    <% if (category.isListed) { %>
+                      <button class="icon-btn block-btn" data-tooltip="Unlist" onclick="confirmUnlistCategory('<%= category._id %>')">
+                        <i class="fas fa-eye-slash"></i>
+                      </button>
+                    <% } else { %>
+                      <button class="icon-btn unblock-btn" data-tooltip="List" onclick="confirmListCategory('<%= category._id %>')">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    <% } %>
+                  </div>
                 </td>
-                <!--  -->
+
                 <td class="text-start">
-                  <button class="unblock-btn" style="width: 100px">
-                    <a href="/admin/editCategory?id=<%= category._id %>" class="text-white">Edit</a>
-                  </button>
-                  <button class="action-btn delete-btn" aria-label="Delete Category" onclick="confirmDelete('<%= category._id %>')">
-                    <a href="#" class="text-white">Delete</a>
-                  </button>
+                  <div class="button-container">
+                    <a href="/admin/editCategory?id=<%= category._id %>" class="icon-btn view-btn" data-tooltip="Edit">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="icon-btn delete-btn" data-tooltip="Delete" onclick="confirmDelete('<%= category._id %>')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             <% }) %>

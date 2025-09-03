@@ -44,7 +44,6 @@ const loadOrders = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log('Error in loading orders page', error);
         next(error);
     }
 }
@@ -87,7 +86,6 @@ const updateOrderStatus = async (req, res) => {
         const order = await Order.findOne({ orderId });
 
         if (!order) {
-            console.log('Could not find order');
             return res.status(500).json({ success: false, message: 'Order not found' });
         }
 
@@ -107,7 +105,6 @@ const updateOrderStatus = async (req, res) => {
         });
 
         if (!updateStatus) {
-            console.log('status not updated');
             return res.status(500).json({ success: false, message: 'Status is not updated' });
         }
 
@@ -123,13 +120,10 @@ const updateOrderStatus = async (req, res) => {
 
 const approveReturnOrder = async (req, res) => {
     try {
-        console.log('Body : ', req.body)
         const { orderId } = req.body;
-        console.log('orderId : ', orderId)
         const order = await Order.findOne({ orderId: orderId });
 
         if (!order) {
-            console.log('Order not found');
             return res.status(400).json({ success: false, message: 'Order not found' });
         }
 
@@ -171,12 +165,8 @@ const approveReturnOrder = async (req, res) => {
 
 
         await order.save()
-        console.log('approved & saved');
 
         const items = order.orderedItems;
-
-        console.log('items: ', items)
-
 
         for (const item of items) {
             const product = await Product.findById(item.product);
@@ -210,7 +200,6 @@ const rejectReturnOrder = async (req, res) => {
         const order = await Order.findOne({ orderId: orderId });
 
         if (!order) {
-            console.log('Order not found');
             return res.status(400).json({ success: false, message: 'Order not found' });
         }
 

@@ -23,7 +23,6 @@ const getAllCoupons = async (req, res, next) => {
             totalPages
         });
     } catch (error) {
-        console.log("Error in loading Coupon list page", error);
         next(error);
     }
 }
@@ -32,7 +31,6 @@ const getAddCoupon = async (req, res, next) => {
     try {
         return res.render('add-coupon');
     } catch (error) {
-        console.log("Error in loading add Coupon", error);
         next(error);
     }
 }

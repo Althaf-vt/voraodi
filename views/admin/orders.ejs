@@ -31,13 +31,13 @@
       <!-- <h2>Order List</h2> -->
 
       <!-- Search Bar -->
-      <!-- <div class="order-search-container">
+      <div class="order-search-container">
         <form id="searchForm" action="/admin/searchOrder" method="GET" class="order-search-form">
           <input type="text" name="query" id="searchInput" placeholder="Search orders..." class="order-search-input" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" required>
           <button type="submit" class="order-search-button">Search</button>
           <button type="button" class="order-search-clear" onclick="clearSearch()">Clear</button>
         </form>
-      </div> -->
+      </div>
 
       <div class="orders-table">
         <table>
@@ -55,7 +55,7 @@
           <tbody>
             <!-- Replace the existing table row in your HTML file -->
             <% if (orders && orders.length > 0) { %>
-    <% orders.forEach(order => { %>
+            <% orders.forEach(order => { %>
             <tr id="order-<%= order._id%>">
             <td><%= order.orderId.toString().substring(0,30) + '...'  %></td>
             <td><%= order.username %></td>
@@ -63,32 +63,32 @@
             <td><%= order.totalAmount %></td>
             <td><%= order.paymentMethod %></td>
             <td>
-                <% if (order.returnStatus === 'Returned' || order.returnStatus === 'Rejected' || order.returnStatus === 'Requested') { %>
-                    <span class="return-status-span"><%= order.returnStatus %></span>
-                <% } else if (order.status === 'Delivered'){ %>
-                    <span class="order-delivered"><%= order.status %></span>
-                <% }else if(order.status === 'Cancelled') {%>
-                  <span class="order-cancelled"><%= order.status %></span>
-                <% } else {%>
-                  <select class="status-select status-<%= order.status ? order.status.toLowerCase() : 'pending' %>" 
-                            onchange="updateOrderStatus('<%= order.orderId %>', this.value)">
-                        <% if (order.status !== 'Pending') { %>
-                            <option value="Pending">Pending</option>
-                        <% } %>
-                        <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
-                        <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-                        <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-                        <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
-                    </select>
-                <% } %>
+              <% if (order.returnStatus === 'Returned' || order.returnStatus === 'Rejected' || order.returnStatus === 'Requested') { %>
+                <span class="badge alert-info"><%= order.returnStatus %></span>
+              <% } else if (order.status === 'Delivered'){ %>
+                <span class="badge alert-success"><%= order.status %></span>
+              <% } else if(order.status === 'Cancelled') {%>
+                <span class="badge alert-danger"><%= order.status %></span>
+              <% } else {%>
+                <select class="status-select status-<%= order.status ? order.status.toLowerCase() : 'pending' %>" 
+                        onchange="updateOrderStatus('<%= order.orderId %>', this.value)">
+                  <% if (order.status !== 'Pending') { %>
+                    <option value="Pending">Pending</option>
+                  <% } %>
+                  <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                  <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                  <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                  <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                </select>
+              <% } %>
             </td>
             <td style="position: relative;">
-                <button class="action-btn view-btn" aria-label="View Order Details" style="position: relative;">
-                    <a href="/admin/orderDetails?orderId=<%= order.orderId %>">View Details</a>
-                    <% if (order.hasReturnRequest) { %>
-                        <span class="return-badge"></span>
-                    <% } %>
-                </button>
+              <a href="/admin/orderDetails?orderId=<%= order.orderId %>" class="action-btn view-btn" style="position: relative;">
+                View Details
+                <% if (order.hasReturnRequest) { %>
+                  <span class="return-badge"></span>
+                <% } %>
+              </a>
             </td>
         </tr>
     <% }) %>

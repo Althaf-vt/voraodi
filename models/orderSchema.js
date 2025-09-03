@@ -1,13 +1,15 @@
 const mongoose = require("mongoose");
 const {Schema} = mongoose;
 const { v4: uuidv4 } = require('uuid');
+const { customAlphabet } = require('nanoid');
+const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 10);
 
 
 
 const orderSchema = new Schema({
     orderId: {
         type: String,
-        default:()=>uuidv4(),
+        default: () => nanoid(),
         unique: true,
     },
     userId:{

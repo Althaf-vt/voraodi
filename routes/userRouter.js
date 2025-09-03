@@ -48,7 +48,7 @@ failureMessage: true
       req.session.user = req.user._id;
       res.redirect('/');
     }else{
-      res.redirect('/signin');
+      res.redirect('/');
     }
     
   });

@@ -1,4 +1,4 @@
-/* Basic reset and global styles */
+/* Customers Page Minimal Redesign */
 * {
     margin: 0;
     padding: 0;
@@ -7,22 +7,23 @@
 }
 
 body {
-    /* background: linear-gradient(rgba(26, 37, 47, 0.9), rgba(47, 58, 68, 0.9)), url(https://www.transparenttextures.com/patterns/black-linen.png); */
-    background: linear-gradient(135deg, #1a252f, #2f3a44);
+    background-color: #f8f9fa;
     overflow-x: hidden;
+    color: #2d3748;
 }
 
 /* Customer Management Header */
 .customer-management-header {
-    height: 30vh;
+    height: 25vh;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    /* background: linear-gradient(rgba(26, 37, 47, 0.9), rgba(47, 58, 68, 0.9)), url(https://www.transparenttextures.com/patterns/black-linen.png); */
-    color: #f5f5e8;
+    background: #ffffff;
+    color: #2d3748;
     position: relative;
     overflow: hidden;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .customer-management-header .text-container {
@@ -30,363 +31,358 @@ body {
 }
 
 .customer-management-header h1 {
-    font-family: 'Cinzel', serif;
-    font-size: 30px;
     font-weight: 700;
+    font-size: 28px;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    margin-top: 70px;
-    /* margin-bottom: 10px; */
-    white-space: nowrap;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
 }
 
 .customer-management-header .subtitle {
-    font-family: 'Playfair Display', serif;
     font-size: 14px;
-    font-style: italic;
-    color: #c9a022;
-    /* margin-bottom: 10px; */
+    color: #718096;
+    font-weight: 400;
 }
 
-/* .customer-management-header p {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
-    font-weight: 300;
-    letter-spacing: 1px;
-} */
-
-/* Customer List */
+/* Customer List Section */
 .customer-list {
-    padding: 30px 20px;
-   /* background: linear-gradient(rgba(26, 37, 47, 0.9), rgba(47, 58, 68, 0.9)), url(https://www.transparenttextures.com/patterns/black-linen.png); */
-    color: #f5f5e8;
+    padding: 40px 20px;
+    background: #f8f9fa;
     text-align: center;
 }
 
-/* .customer-list h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 36px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-} */
-
+/* Customers Table */
 .customers-table {
     max-width: 1200px;
     margin: 0 auto;
     overflow-x: auto;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    padding: 20px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background: rgba(255, 255, 245, 0.9);
+    background: #ffffff;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 th, td {
-    padding: 15px;
+    padding: 12px 15px;
     text-align: left;
-    font-family: 'Montserrat', sans-serif;
     font-size: 14px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 th {
-    background: #1a252f;
-    color: #f5f5e8;
+    background: #f7fafc;
+    color: #4a5568;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    font-weight: 600;
 }
 
 td {
-    color: #1a252f;
-    border-bottom: 1px solid rgba(201, 160, 34, 0.2);
+    color: #2d3748;
 }
 
+/* Status Badges */
 .status {
-    padding: 5px 10px;
+    padding: 4px 8px;
     border-radius: 12px;
     font-size: 12px;
     text-transform: uppercase;
+    font-weight: 600;
 }
 
 .status.active {
-    background-color: #004d00;
-    color: #f5f5e8;
+    background-color: #c6f6d5;
+    color: #22543d;
 }
 
 .status.blocked {
-    background-color: #ff4040;
-    color: #f5f5e8;
+    background-color: #fed7d7;
+    color: #742a2a;
 }
 
-.view-btn {
-    background: linear-gradient(135deg, #c9a022, #a3821b);
-    margin-right: 5px;
-    padding: 8px 16px;
+/* Icon Button Container */
+.button-container {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* Minimal Icon Buttons */
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    text-transform: uppercase;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: all 0.2s ease;
+    background: transparent;
+    position: relative;
 }
 
-.view-btn:hover {
-    background: linear-gradient(135deg, #004d00, #1a661a);
-    color: #fff;
-    transform: scale(1.05);
+/* Tooltip for icon buttons */
+.icon-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2d3748;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
 }
 
+.icon-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+    bottom: -25px;
+}
+
+/* Block Icon - Red */
 .block-btn {
-    background: linear-gradient(135deg, #ff4040, #cc3333);
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    text-transform: uppercase;
-    transition: background 0.3s ease, transform 0.3s ease;
+    color: #fc8181;
 }
 
 .block-btn:hover {
-    background: linear-gradient(135deg, #cc3333, #ff4040);
-    transform: scale(1.05);
+    color: #f56565;
+    background: rgba(252, 129, 129, 0.1);
 }
 
+/* Unblock Icon - Green */
 .unblock-btn {
-    background: linear-gradient(135deg, #004d00, #1a661a);
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    text-transform: uppercase;
-    transition: background 0.3s ease, transform 0.3s ease;
+    color: #48bb78;
 }
 
 .unblock-btn:hover {
-    background: linear-gradient(135deg, #1a661a, #004d00);
-    transform: scale(1.05);
+    color: #38a169;
+    background: rgba(72, 187, 120, 0.1);
 }
 
-.block-btn a,
-.unblock-btn a,
-.view-btn a {
-    color: #f5f5e8;
-    text-decoration: none;
-    display: block;
-    width: 100%;
-    height: 100%;
-    line-height: normal;
-}
-
-.block-btn:hover a,
-.unblock-btn:hover a,
-.view-btn:hover a {
-    color: #f5f5e8;
+/* Icon sizes */
+.icon-btn i {
+    font-size: 16px;
 }
 
 /* Pagination */
 .pagination {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  /* background: linear-gradient(135deg, #1a252f, #2f3a44); */
+    padding: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .pagination-list {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  gap: 10px;
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 8px;
 }
 
 .page-item {
-  display: inline-block;
+    display: inline-block;
 }
 
 .page-link {
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #c9a022, #a3821b);
-  color: #1a252f;
-  border: none;
-  border-radius: 4px;
-  font-family: 'Cinzel', serif;
-  font-size: 14px;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: background 0.3s ease, transform 0.3s ease;
+    padding: 8px 16px;
+    background: #f7fafc;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
 }
 
 .page-link:hover {
-  background: linear-gradient(135deg, #004d00, #1a661a);
-  color: #f5f5e8;
-  transform: scale(1.05);
+    background: #e2e8f0;
+    color: #2d3748;
+    transform: translateY(-1px);
 }
 
 .page-item.active .page-link {
-  background: linear-gradient(135deg, #004d00, #1a661a);
-  color: #f5f5e8;
-  cursor: default;
+    background: #4299e1;
+    color: #ffffff;
+    border-color: #3182ce;
+    cursor: default;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .customer-management-header h1 {
-        font-size: 36px;
-    }
-
-    .customer-management-header .subtitle {
-        font-size: 20px;
-    }
-
-    .customer-management-header p {
-        font-size: 14px;
-    }
-
-    .customer-list h2 {
-        font-size: 30px;
-    }
-
-    th, td {
-        font-size: 12px;
-        padding: 10px;
-    }
-
-    .view-btn,
-    .block-btn,
-    .unblock-btn {
-        padding: 6px 12px;
-        font-size: 10px;
-    }
-
-    .page-link {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 768px) {
-    .customer-management-header {
-        height: 50vh;
-    }
-
-    .customer-management-header h1 {
-        font-size: 30px;
-    }
-
-    .customer-management-header .subtitle {
-        font-size: 18px;
-    }
-
-    .customer-management-header p {
-        font-size: 12px;
-    }
-
-    .customer-list h2 {
-        font-size: 26px;
-    }
-
-    .page-link {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 480px) {
-    .customer-management-header {
-        height: 40vh;
-    }
-
-    .customer-management-header h1 {
-        font-size: 24px;
-        letter-spacing: 2px;
-    }
-
-    .customer-management-header .subtitle {
-        font-size: 16px;
-    }
-
-    .customer-management-header p {
-        font-size: 10px;
-    }
-
-    .customer-list h2 {
-        font-size: 22px;
-    }
-
-    .page-link {
-        padding: 4px 8px;
-        font-size: 10px;
-    }
-}
-/* ///////////////// */
+/* Search Styles */
 .customer-search-container {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 20px;
-    padding-right: 20px;
+    padding-right: 0;
 }
 
 .customer-search-form {
     display: flex;
     gap: 10px;
+    align-items: center;
 }
 
 .customer-search-input {
-    padding: 8px 12px;
-    border-radius: 4px;
-    border: none;
-    font-family: 'Montserrat', sans-serif;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
     font-size: 14px;
-    background-color: #fff7e0;
-    color: #1a252f;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    background-color: #ffffff;
+    color: #2d3748;
+    width: 250px;
+    transition: all 0.2s ease;
 }
 
+.customer-search-input:focus {
+    border-color: #4299e1;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+/* Search Buttons - Muted Colors */
 .customer-search-button {
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #c9a022, #a3821b);
-    color: #1a252f;
+    padding: 10px 20px;
+    background: #4299e1;
+    color: #ffffff;
     border: none;
-    border-radius: 4px;
-    font-family: 'Cinzel', serif;
+    border-radius: 6px;
     font-size: 12px;
+    font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: all 0.2s ease;
+    border: 1px solid #3182ce;
 }
 
 .customer-search-clear {
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #767675, #4c4b49);
-    color: #f5f5e8;
+    padding: 10px 20px;
+    background: #a0aec0;
+    color: #ffffff;
     border: none;
-    border-radius: 4px;
-    font-family: 'Cinzel', serif;
+    border-radius: 6px;
     font-size: 12px;
+    font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: all 0.2s ease;
+    border: 1px solid #718096;
 }
 
 .customer-search-button:hover {
-    background: linear-gradient(135deg, #004d00, #1a661a);
-    transform: scale(1.05);
-    color: #fff;
+    background: #3182ce;
+    transform: translateY(-1px);
 }
 
 .customer-search-clear:hover {
-    background: linear-gradient(135deg, #b66801, #986211);
-    transform: scale(1.05);
+    background: #718096;
+    transform: translateY(-1px);
 }
 
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .customer-management-header h1 {
+        font-size: 24px;
+    }
+
+    .customer-search-input {
+        width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .customer-management-header {
+        height: 20vh;
+    }
+
+    .customer-management-header h1 {
+        font-size: 22px;
+    }
+
+    .customers-table {
+        overflow-x: auto;
+        padding: 15px;
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+    .customer-search-container {
+        justify-content: center;
+    }
+    
+    .customer-search-form {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .customer-search-input {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .customer-management-header {
+        height: 18vh;
+    }
+
+    .customer-management-header h1 {
+        font-size: 20px;
+    }
+
+    .customer-list {
+        padding: 30px 15px;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+    .icon-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .icon-btn i {
+        font-size: 14px;
+    }
+
+    .pagination-list {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .customer-search-form {
+        flex-direction: column;
+    }
+    
+    .customer-search-button,
+    .customer-search-clear {
+        width: 100%;
+    }
+}
+
+/* Text alignment utilities */
+.text-start {
+    text-align: left !important;
+}

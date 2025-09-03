@@ -20,32 +20,38 @@ const getAddProduct = async (req, res,next) => {
 const addProduct = async (req, res) => {
     try {
         const product = req.body;
-        console.log(req.body)
         const productExists = await Product.findOne({ 
             productName: { $regex: `^${product.productName}$`, $options: 'i' }
         });
 
         if (!productExists) {
             const images = [];
+    const imageFolderPath = path.join(__dirname, '../../public/uploads/product-images');
+    if (!fs.existsSync(imageFolderPath)) {
+      fs.mkdirSync(imageFolderPath, { recursive: true });
+    }
 
-            const imageFolderPath = path.join(__dirname, '../../public/uploads/product-images');
-            if (!fs.existsSync(imageFolderPath)) {
-                fs.mkdirSync(imageFolderPath, { recursive: true });
-            }
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        const originalImagePath = req.files[i].path;
+        const filename = `${Date.now()}-${Math.floor(Math.random() * 1_000_000_000)}.png`;
+        const resizedImagePath = path.join(imageFolderPath, filename);
 
-            if (req.files && req.files.length > 0) {
-                for (let i = 0; i < req.files.length; i++) {
-                    const originalImagePath = req.files[i].path;
-                    const filename = `${Date.now()}-${Math.floor(Math.random() * 1_000_000_000)}.png`;
-                    const resizedImagePath = path.join(imageFolderPath, filename);
+        try {
+          await sharp(originalImagePath)
+            .resize({ width: 440, height: 440 })
+            .toFile(resizedImagePath);
 
-                    await sharp(originalImagePath)
-                        .resize({ width: 440, height: 440 })
-                        .toFile(resizedImagePath);
-                    fs.unlinkSync(originalImagePath);
-                    images.push(`/uploads/product-images/${filename}`);
-                }
-            }
+          images.push(`/uploads/product-images/${filename}`);
+        } finally {
+          if (fs.existsSync(originalImagePath)) {
+            fs.unlink(originalImagePath, (err) => {
+              if (err) console.error("Temp cleanup failed:", err);
+            });
+          }
+        }
+      }
+    }
 
             const categoryId = await Category.findById(product.category);
             if (!categoryId) {
@@ -124,7 +130,6 @@ const getAllProducts = async (req, res) => {
             throw err;
         }
     } catch (error) {
-        console.log(error)
         next(error)
     }
 };
@@ -175,7 +180,6 @@ const addProductOffer = async(req,res)=>{
 
         return res.status(200).json({success: true,message:'Offer added successfully'});
     } catch (error) {
-        console.log(error)
         return res.status(500).json({success:false, message:"Internal Server Error"})
     }
 }
@@ -212,7 +216,6 @@ const removeProductOffer = async (req,res)=>{
         return res.status(200).json({success:true,message:'Offer removed successfully.'});
 
     } catch (error) {
-        console.log(error)
         return res.status(500).json({success:false,message:'Internal Server Error'});
 
     }
@@ -263,89 +266,106 @@ const getEditProduct = async (req,res,next)=>{
             variantsMap: variantsMap 
         })
     } catch (error) {
-        console.log(error);
         next(error)
     }
 }
 
-const editProduct = async(req,res)=>{
-    try {
-        const id = req.params.id;
-        const product = await Product.findOne({_id:id});
-        const data = req.body;
-        const existingProduct = await Product.findOne({
-            productName: data.productName,
-            _id:{$ne:id}
-        })
+const editProduct = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const product = await Product.findOne({ _id: id });
+    const data = req.body;
 
-        if(existingProduct){
-            return res.status(400).json({error:'Product with this name already exists. Please try with another name'});
-        }
-
-        let variants = [];
-        if(typeof data.variantData === 'string'){
-            try {
-                variants = JSON.parse(data.variantData);
-            } catch (error) {
-                return res.status(400).json({ message: 'Invalid varients format' });
-            }
-        }
-
-        const images = [];
-        if (req.files && req.files.length > 0) {
-            for (let i = 0; i < req.files.length; i++) {
-                images.push(`/uploads/product-images/${req.files[i].filename}`);
-            }
-        }
-
-        // Handle existing images
-        const existingImages = Array.isArray(data.existingImages)
-            ? data.existingImages
-            : data.existingImages
-            ? [data.existingImages]
-            : [];
-
-        const updateFields = {
-            productName: data.productName,
-            description: data.description,
-            category: data.category,
-            regularPrice: parseFloat(data.regularPrice),
-            salePrice: parseFloat(data.salePrice),
-            variants : variants,
-            color: data.color,
-            productImage: [...existingImages, ...images] // Combine existing and new images
-        }
-
-        // Check if any field is actually changed
-        const hasChanges =
-            product.productName !== updateFields.productName ||
-            product.description !== updateFields.description ||
-            product.category.toString() !== updateFields.category ||
-            parseFloat(product.regularPrice) !== updateFields.regularPrice ||
-            parseFloat(product.salePrice) !== updateFields.salePrice ||
-            product.color !== updateFields.color ||
-            JSON.stringify(product.variants) !== JSON.stringify(updateFields.variants) ||
-            JSON.stringify(product.productImage) !== JSON.stringify(updateFields.productImage);
-
-        if (!hasChanges) {
-            return res.status(200).json({
-                status: false,
-                message: 'No changes detected. Product not updated.',
-            });
-        }
-
-        const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, { new: true });
-
-        if (!updatedProduct) {
-            return res.status(500).json({ status: false, error: 'Failed to update product in database' });
-        }
-        res.json({ status: true, message: 'Product updated successfully' });
-    } catch (error) {
-        console.error('Error in editProduct:',error);
-        res.status(500).json({ status: false, error: 'Failed to update product' });
-
+    const existingProduct = await Product.findOne({
+      productName: data.productName,
+      _id: { $ne: id }
+    });
+    if (existingProduct) {
+      return res.status(400).json({ error: 'Product with this name already exists. Please try with another name' });
     }
-}
+
+    let variants = [];
+    if (typeof data.variantData === 'string') {
+      try {
+        variants = JSON.parse(data.variantData);
+      } catch (error) {
+        return res.status(400).json({ message: 'Invalid variants format' });
+      }
+    }
+
+    const images = [];
+    const imageFolderPath = path.join(__dirname, '../../public/uploads/product-images');
+    if (!fs.existsSync(imageFolderPath)) {
+      fs.mkdirSync(imageFolderPath, { recursive: true });
+    }
+
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        const originalImagePath = req.files[i].path;
+        const filename = `${Date.now()}-${Math.floor(Math.random() * 1_000_000_000)}.png`;
+        const resizedImagePath = path.join(imageFolderPath, filename);
+
+        try {
+          await sharp(originalImagePath)
+            .resize({ width: 440, height: 440 })
+            .toFile(resizedImagePath);
+
+          images.push(`/uploads/product-images/${filename}`);
+        } finally {
+          if (fs.existsSync(originalImagePath)) {
+            fs.unlink(originalImagePath, (err) => {
+              if (err) console.error("Temp cleanup failed:", err);
+            });
+          }
+        }
+      }
+    }
+
+    const existingImages = Array.isArray(data.existingImages)
+      ? data.existingImages
+      : data.existingImages
+      ? [data.existingImages]
+      : [];
+
+    const updateFields = {
+      productName: data.productName,
+      description: data.description,
+      category: data.category,
+      regularPrice: parseFloat(data.regularPrice),
+      salePrice: parseFloat(data.salePrice),
+      variants: variants,
+      color: data.color,
+      productImage: [...existingImages, ...images]
+    };
+
+    const hasChanges =
+      product.productName !== updateFields.productName ||
+      product.description !== updateFields.description ||
+      product.category.toString() !== updateFields.category ||
+      parseFloat(product.regularPrice) !== updateFields.regularPrice ||
+      parseFloat(product.salePrice) !== updateFields.salePrice ||
+      product.color !== updateFields.color ||
+      JSON.stringify(product.variants) !== JSON.stringify(updateFields.variants) ||
+      JSON.stringify(product.productImage) !== JSON.stringify(updateFields.productImage);
+
+    if (!hasChanges) {
+      return res.status(200).json({
+        status: false,
+        message: 'No changes detected. Product not updated.',
+      });
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, { new: true });
+    if (!updatedProduct) {
+      return res.status(500).json({ status: false, error: 'Failed to update product in database' });
+    }
+
+    res.json({ status: true, message: 'Product updated successfully' });
+  } catch (error) {
+    console.error('Error in editProduct:', error);
+    res.status(500).json({ status: false, error: 'Failed to update product' });
+  }
+};
 
 const deleteSingleImage = async(req,res)=>{
     try {
@@ -358,7 +378,6 @@ const deleteSingleImage = async(req,res)=>{
         const imagePath = path.join(__dirname, '..', 'public', 'uploads', 'product-images', path.basename(imageNameToServer));        
         try {
             await fs.unlink(imagePath);
-            console.log(`Image ${imageNameToServer} deleted successfully`);
         } catch (err) {
             console.warn(`Image ${imageNameToServer} not found on disk:`, err.message);
         }
@@ -374,8 +393,6 @@ const deleteSingleImage = async(req,res)=>{
 const searchProduct = async(req,res,next)=>{
     try {
         const search = (req.body?.query || req.query?.query || "").trim();
-
-        console.log('search ==========', search)
 
         let searchResult = [];
 
@@ -423,7 +440,6 @@ const searchProduct = async(req,res,next)=>{
 
 
     } catch (error) {
-        console.log("Error in Search Products",error);
         next(error)
     }
 }

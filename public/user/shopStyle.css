@@ -3,7 +3,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* font-family: 'Montserrat', sans-serif; */
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -221,7 +220,6 @@ body.no-scroll {
     font-size: 14px;
     color: #2f3a44;
     margin-bottom: 10px;
-    /* text-transform: uppercase; */
     letter-spacing: 0.5px;
     cursor: pointer;
     display: flex;
@@ -276,7 +274,6 @@ body.no-scroll {
     border-radius: 5px;
     cursor: pointer;
     font-weight: 600;
-    /* text-transform: uppercase; */
     letter-spacing: 0.5px;
     transition: all 0.3s ease;
 }
@@ -312,7 +309,6 @@ body.no-scroll {
 .product-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    /* border-color: #d4af37; */
 }
 
 .offer-badge {
@@ -592,7 +588,7 @@ body.no-scroll {
     background: linear-gradient(135deg, #666, #444);
 }
 
-/* Responsive Design */
+/* Enhanced Responsive Design */
 @media (max-width: 1200px) {
     .product-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -658,12 +654,17 @@ body.no-scroll {
         align-self: flex-start;
     }
     
+    .product-card {
+        padding: 10px;
+    }
+    
     .product-card img {
         height: 140px;
     }
     
     .product-card h4 {
         font-size: 14px;
+        min-height: 32px;
     }
     
     .product-card p {
@@ -680,10 +681,171 @@ body.no-scroll {
         font-size: 12px;
         min-width: 32px;
     }
+    
+    .price-container {
+        gap: 6px;
+    }
+    
+    .sale-price {
+        font-size: 14px;
+    }
+    
+    .regular-price {
+        font-size: 12px;
+    }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 480px) {
     .product-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .product-card {
+        padding: 8px;
+    }
+    
+    .product-card img {
+        height: 120px;
+    }
+    
+    .product-card h4 {
+        font-size: 13px;
+        min-height: 30px;
+        margin: 6px 0;
+    }
+    
+    .product-actions {
+        margin-top: 8px;
+    }
+    
+    .wishlist-btn {
+        font-size: 16px;
+        width: 28px;
+        height: 28px;
+    }
+    
+    .quick-view-btn {
+        font-size: 10px;
+        padding: 4px 6px;
+    }
+    
+    .quick-view-btn i {
+        margin-right: 3px;
+    }
+    
+    .price-container {
+        margin: 6px 0;
+    }
+    
+    .sale-price {
+        font-size: 13px;
+    }
+    
+    .regular-price {
+        font-size: 11px;
+    }
+    
+    .main-container {
+        padding: 15px;
+        padding-top: 70px;
+    }
+    
+    .breadcrumb {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .product-card {
+        padding: 6px;
+    }
+    
+    .product-card img {
+        height: 100px;
+    }
+    
+    .product-card h4 {
+        font-size: 12px;
+        min-height: 28px;
+    }
+    
+    .quick-view-btn {
+        font-size: 9px;
+        padding: 3px 5px;
+    }
+    
+    .wishlist-btn {
+        font-size: 14px;
+        width: 24px;
+        height: 24px;
+    }
+    
+    .sale-price {
+        font-size: 12px;
+    }
+    
+    .regular-price {
+        font-size: 10px;
+    }
+    
+    .btn {
+        padding: 5px 8px;
+        font-size: 11px;
+        min-width: 28px;
+    }
+}
+
+/* Very small devices (320px and below) */
+@media (max-width: 320px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+    
+    .product-card {
+        padding: 5px;
+    }
+    
+    .product-card img {
+        height: 90px;
+    }
+    
+    .product-card h4 {
+        font-size: 11px;
+        min-height: 26px;
+        margin: 4px 0;
+    }
+    
+    .quick-view-btn {
+        font-size: 8px;
+        padding: 2px 4px;
+    }
+    
+    .wishlist-btn {
+        font-size: 13px;
+        width: 22px;
+        height: 22px;
+    }
+    
+    .price-container {
+        margin: 4px 0;
+    }
+    
+    .sale-price {
+        font-size: 11px;
+    }
+    
+    .regular-price {
+        font-size: 9px;
+    }
+    
+    .product-actions {
+        margin-top: 6px;
     }
 }

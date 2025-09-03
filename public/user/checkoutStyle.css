@@ -15,6 +15,7 @@
 
 *{
     font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
 }
 
 /* Base Styles */
@@ -23,6 +24,8 @@ body {
     color: var(--text-primary);
     font-family: 'Montserrat', sans-serif;
     line-height: 1.6;
+    margin: 0;
+    padding: 0;
 }
 
 .checkout-container {
@@ -177,6 +180,15 @@ body {
 
 .cart-product-name {
     font-weight: 500;
+}
+
+/* Cart item labels for mobile */
+.cart-item-label {
+    display: none;
+    font-weight: 600;
+    margin-right: 5px;
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
 }
 
 .empty-state {
@@ -693,12 +705,57 @@ body {
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+    .checkout-container {
+        padding: 70px 15px 30px;
+    }
+    
+    .checkout-title {
+        font-size: 2.2rem;
+    }
+    
+    .checkout-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .checkout-section {
+        padding: 20px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .section-icon {
+        width: 22px;
+        height: 22px;
+    }
+}
+
 @media (max-width: 1024px) {
     .address-grid {
         grid-template-columns: 1fr;
     }
+    
+    .checkout-title {
+        font-size: 2rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.1rem;
+    }
+    
+    .cart-product-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .cart-product-name {
+        font-size: 0.95rem;
+    }
 }
 
+/* Tablet and below (768px and below) */
 @media (max-width: 768px) {
     .checkout-grid {
         grid-template-columns: 1fr;
@@ -708,10 +765,33 @@ body {
         position: static;
     }
     
-    .form-grid {
-        grid-template-columns: 1fr;
+    .checkout-title {
+        font-size: 1.8rem;
     }
     
+    .checkout-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .checkout-section {
+        padding: 18px;
+    }
+    
+    .section-header {
+        margin-bottom: 15px;
+        padding-bottom: 12px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.1rem;
+    }
+    
+    .section-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* Cart items with labels for small screens */
     .cart-table-header {
         display: none;
     }
@@ -719,14 +799,25 @@ body {
     .cart-table-row {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
-        padding: 15px 0;
+        gap: 12px;
+        padding: 15px;
+        border: 1px solid rgba(212, 175, 55, 0.1);
+        border-radius: var(--border-radius);
+        margin-bottom: 10px;
+        background: rgba(255, 255, 255, 0.5);
     }
     
     .cart-column {
         width: 100%;
         padding: 0;
         text-align: left !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .cart-item-label {
+        display: inline;
     }
     
     .product-column {
@@ -738,22 +829,201 @@ body {
     .cart-product {
         flex-direction: row;
         align-items: center;
+        width: 100%;
+    }
+    
+    .cart-product-image {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .cart-product-name {
+        font-size: 0.9rem;
+    }
+    
+    /* Address section adjustments */
+    .address-item {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .address-label {
+        min-width: auto;
+        font-size: 0.8rem;
+    }
+    
+    .address-item span {
+        font-size: 0.85rem;
+    }
+    
+    .edit-address-btn {
+        width: 28px;
+        height: 28px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    /* Order summary adjustments */
+    .summary-item {
+        font-size: 0.9rem;
+    }
+    
+    .summary-item.total {
+        font-size: 1rem;
+    }
+    
+    /* Payment options adjustments */
+    .payment-option {
+        padding: 10px;
+    }
+    
+    .payment-option label {
+        font-size: 0.9rem;
+    }
+    
+    /* Buttons adjustments */
+    .add-address-btn, 
+    .continue-shopping-btn,
+    .place-order-button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .place-order-button {
+        padding: 14px;
+        font-size: 0.95rem;
+    }
+    
+    /* Coupon section adjustments */
+    .coupon-header h3 {
+        font-size: 0.95rem;
+    }
+    
+    #coupon-code {
+        padding: 10px;
+    }
+    
+    .apply-coupon-button {
+        padding: 0 15px;
+        font-size: 0.9rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
     }
     
     .modal-actions {
         justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .save-btn, .cancel-btn {
+        padding: 10px 20px;
+        font-size: 0.85rem;
     }
 }
 
+/* Mobile devices (480px and below) */
 @media (max-width: 480px) {
     .checkout-container {
-        padding: 80px 15px 30px;
+        padding: 60px 10px 20px;
+    }
+    
+    .checkout-title {
+        font-size: 1.6rem;
+    }
+    
+    .checkout-subtitle {
+        font-size: 0.85rem;
     }
     
     .checkout-section {
-        padding: 20px;
+        padding: 15px;
     }
     
+    .section-header {
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        gap: 8px;
+    }
+    
+    .section-header h2 {
+        font-size: 1rem;
+    }
+    
+    .section-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .cart-table-row {
+        padding: 12px;
+        gap: 10px;
+    }
+    
+    .cart-product-image {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .cart-product-name {
+        font-size: 0.85rem;
+    }
+    
+    .cart-item-label {
+        font-size: 0.8rem;
+    }
+    
+    .cart-column {
+        font-size: 0.9rem;
+    }
+    
+    /* Address section */
+    .address-card {
+        padding: 15px;
+    }
+    
+    .address-label {
+        font-size: 0.75rem;
+    }
+    
+    .address-item span {
+        font-size: 0.8rem;
+    }
+    
+    /* Order summary */
+    .summary-item {
+        font-size: 0.85rem;
+    }
+    
+    .summary-item.total {
+        font-size: 0.95rem;
+    }
+    
+    /* Payment options */
+    .payment-option {
+        padding: 8px;
+    }
+    
+    .payment-option label {
+        font-size: 0.85rem;
+    }
+    
+    /* Buttons */
+    .add-address-btn, 
+    .continue-shopping-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .place-order-button {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    /* Coupon section */
     .coupon-input {
         flex-direction: column;
     }
@@ -763,13 +1033,110 @@ body {
         margin-bottom: 10px;
     }
     
-    .apply-coupon-btn {
+    .apply-coupon-button {
         border-radius: var(--border-radius);
-        padding: 12px;
+        padding: 10px;
         justify-content: center;
     }
     
+    /* Modal adjustments */
     .modal-content {
         width: 95%;
+    }
+    
+    .modal-header {
+        padding: 15px;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.1rem;
+    }
+    
+    .form-grid {
+        padding: 15px 10px;
+        gap: 12px;
+    }
+    
+    .form-group label {
+        font-size: 0.8rem;
+    }
+    
+    .form-group input {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .save-btn, .cancel-btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Very small devices (360px and below) */
+@media (max-width: 360px) {
+    .checkout-title {
+        font-size: 1.4rem;
+    }
+    
+    .checkout-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .section-header h2 {
+        font-size: 0.95rem;
+    }
+    
+    .cart-product {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .cart-product-image {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .cart-product-name {
+        font-size: 0.8rem;
+    }
+    
+    .cart-item-label {
+        font-size: 0.75rem;
+    }
+    
+    .cart-column {
+        font-size: 0.8rem;
+    }
+    
+    .address-label {
+        font-size: 0.7rem;
+    }
+    
+    .address-item span {
+        font-size: 0.75rem;
+    }
+    
+    .summary-item {
+        font-size: 0.8rem;
+    }
+    
+    .summary-item.total {
+        font-size: 0.9rem;
+    }
+    
+    .payment-option label {
+        font-size: 0.8rem;
+    }
+    
+    .add-address-btn, 
+    .continue-shopping-btn {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+    
+    .place-order-button {
+        font-size: 0.85rem;
+        padding: 10px;
     }
 }

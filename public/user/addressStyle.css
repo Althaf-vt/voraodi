@@ -438,6 +438,7 @@ body {
     }
     
     .header {
+        margin-top: 30px;
         flex-direction: column;
         gap: 1.25rem;
         align-items: center;

@@ -107,7 +107,6 @@ const seachCustomer = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.log("Error in Search Customers", error);
         next(error);
     }
 }

@@ -16,7 +16,6 @@ const { type } = require('os');
 
 const checkStock = async (req, res) => {
     try {
-        console.log('checking....');
         const userId = req.session.user;
         const userCart = await Cart.findOne({ userId: userId });
 
@@ -24,10 +23,9 @@ const checkStock = async (req, res) => {
             const product = await Product.findById(item.productId).populate('category');
 
             if (!product) {
-                console.log(`Product not found for ID : ${item.productId}`);
+                return res.status(400).json({success:false, message:`Product not found for ID : ${item.productId}`});
             }
             if (product.isBlocked === true) {
-                console.log('Product is Blocked');
                 return res.status(400).json({ success: false, message: `The product"${product.productName}" is currently unavailable. Please update your cart.` });
             }
             if (product.category.isListed === false) {
@@ -37,7 +35,7 @@ const checkStock = async (req, res) => {
             const variant = product.variants.find(v => v.sku === item.sku);
 
             if (!variant) {
-                console.log(`Variant not found for product : ${product.productName}`);
+                return res.status(400).json({success:false,message: `Variant not found for product : ${product.productName}`})
             }
 
             if (item.quantity > variant.quantity) {
@@ -48,7 +46,6 @@ const checkStock = async (req, res) => {
                 })
             }
         }
-        console.log('checked!')
 
         return res.status(200).json({ success: true, stockAvailable: true, });
 
@@ -61,7 +58,7 @@ const checkStock = async (req, res) => {
 const loadCheckout = async (req, res, next) => {
     try {
         // 1. Order success session check
-        if (req.session.orderSuccess) {
+        if (req.session.orderSuccess && !req.query.orderId) {
             req.session.orderSuccess = false;
             return res.redirect('/shop');
         }
@@ -185,8 +182,6 @@ const loadCheckout = async (req, res, next) => {
             const coupons = await Coupon.find({ isListed: true, isPublic: true, amount: { $lte: subtotal } }).sort({ amount: -1 });
             availableCoupons = coupons.filter(c => !c.usedBy.includes(userId));
         }
-
-        console.log("CartItems ======: ", cartItems)
 
         // 4. Render checkout
         return res.render('checkout', {
@@ -464,8 +459,6 @@ const placeOrder = async (req, res) => {
 
             const finalAmount = recalculatedTotal + deliveryCharge;
 
-            console.log('============>', paymentMethod)
-
             const paymentStatus = paymentMethod === 'cod' ? 'Pending' : 'Completed';
 
 
@@ -484,8 +477,6 @@ const placeOrder = async (req, res) => {
                 deliveryCharge: deliveryCharge,
             });
             await newOrder.save();
-
-            console.log(paymentMethod)
 
             // Decrease amount from wallet
             if (paymentMethod === 'wallet') {
@@ -982,7 +973,6 @@ const getPaymentFailed = async (req, res) => {
             order
         });
     } catch (error) {
-        console.log("Error while rendering payment failed", error);
         next(error);
     }
 }

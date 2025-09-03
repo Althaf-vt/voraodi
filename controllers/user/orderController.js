@@ -34,7 +34,6 @@ const orderDetailpage = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log('Catch in orderdetail', error);
         next(error);
     }
 }
@@ -47,15 +46,14 @@ const cancelItem = async (req, res) => {
         const findOrder = await Order.findOne({ orderId: orderId });
 
         if (!findOrder) {
-            console.log("Order not found");
             return res.status(400).json({ success: false, message: "Order not found" });
         }
 
         const item = findOrder.orderedItems.find((item) => item.sku === sku);
 
         if (!item) {
-            console.log('Item with SKU not found')
-            return res.status(500).json({ success: false, message: 'Item not found in ordered items' });
+
+            return res.status(500).json({ success: false, message: 'Item with SKU not found in ordered items' });
         }
 
         if (item.status === 'Cancelled') {
@@ -73,14 +71,12 @@ const cancelItem = async (req, res) => {
         const product = await Product.findOne({ _id: productId });
 
         if (!product) {
-            console.log("Product not found");
             return res.status(500).json({ success: false, message: "Product not found" });
         }
 
         // Find the variant by SKU and increment its quantity
         const variant = product.variants.find(variant => variant.sku === sku);
         if (!variant) {
-            console.log('variant not found in product Schema');
             return res.status(500).json({ success: false, message: "Product variant not found" })
         }
 
@@ -144,7 +140,6 @@ const cancelOrder = async (req, res) => {
         const order = await Order.findOne({ orderId: orderId });
 
         if (!order) {
-            console.log('Order not found');
             return res.status(500).json({ success: false, message: 'Order not found' });
         }
 
@@ -212,14 +207,12 @@ const returnItem = async (req, res) => {
 
         const order = await Order.findOne({ orderId: orderId })
         if (!order) {
-            console.log('Order not found')
             return res.status(400).json({ success: false, message: 'Order not found' });
         }
 
         const item = order.orderedItems.find((item) => item.sku === sku);
 
         if (!item) {
-            console.log('Item not found');
             return res.status(400).json({ success: false, message: 'Item not found' })
         }
 
@@ -245,7 +238,6 @@ const returnOrder = async (req, res) => {
         const order = await Order.findOne({ orderId: orderId });
 
         if (!order) {
-            console.log('Order not found');
             return res.status(400).json({ success: false, message: 'Order not found' });
         }
 
@@ -290,7 +282,6 @@ const invoice = async (req, res, next) => {
             admin
         })
     } catch (error) {
-        console.log("Error while rendering invoice", error);
         next(error);
     }
 }

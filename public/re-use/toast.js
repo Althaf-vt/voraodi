@@ -13,7 +13,6 @@ async function toast (data,type){
     const message = sessionStorage.getItem('toastMessage');
     const type = sessionStorage.getItem('toastType');
     if (message) {
-        console.log('in if...')
         Toastify({
             text: message,
             duration: 1500,
@@ -28,11 +27,8 @@ async function toast (data,type){
                 fontWeight: "500",
             }
         }).showToast();
-
-        console.log('out if')
         // Remove message after showing once
         sessionStorage.removeItem('toastMessage');
         sessionStorage.removeItem('toastType');
-        console.log('delete sesssion strg')
     }
 });

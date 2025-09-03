@@ -34,7 +34,7 @@ body {
                 url('/images/hero-background.jpg');
     background-size: cover;
     background-position: center;
-    padding: 5rem 2rem;
+    padding: 4rem 2rem;
     text-align: center;
     border-radius: 8px;
     margin-bottom: 3rem;
@@ -42,14 +42,14 @@ body {
 }
 
 .brand-logo {
-    height: 80px;
-    margin-bottom: 1.5rem;
+    height: 70px;
+    margin-bottom: 1.2rem;
 }
 
 .hero-section h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 700;
-    margin: 0 0 1rem;
+    margin: 0 0 0.8rem;
     color: var(--text-primary);
 }
 
@@ -59,22 +59,23 @@ body {
 }
 
 .hero-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: var(--text-secondary);
     max-width: 700px;
     margin: 0 auto;
     font-weight: 500;
+    line-height: 1.5;
 }
 
 /* About Section */
 .about-section {
-    margin-bottom: 4rem;
+    margin-bottom: 3.5rem;
 }
 
 .about-content {
     display: flex;
     align-items: center;
-    gap: 3rem;
+    gap: 2.5rem;
 }
 
 .about-text {
@@ -82,8 +83,8 @@ body {
 }
 
 .about-text h2 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
     color: var(--text-primary);
     position: relative;
     padding-bottom: 0.5rem;
@@ -101,16 +102,16 @@ body {
 
 .about-text p {
     color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
 }
 
 .about-image {
     flex: 1;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
 }
 
 .about-image img {
@@ -126,13 +127,13 @@ body {
 
 /* Values Section */
 .values-section {
-    margin-bottom: 4rem;
+    margin-bottom: 3.5rem;
 }
 
 .section-title {
     text-align: center;
-    font-size: 2rem;
-    margin-bottom: 3rem;
+    font-size: 1.8rem;
+    margin-bottom: 2.5rem;
     color: var(--text-primary);
     position: relative;
 }
@@ -151,13 +152,13 @@ body {
 .values-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    gap: 1.8rem;
 }
 
 .value-card {
     background: var(--bg-secondary);
     border-radius: 8px;
-    padding: 2rem;
+    padding: 1.8rem;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -185,10 +186,10 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 60px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     background-color: rgba(212, 175, 55, 0.1);
     transition: all 0.3s ease;
 }
@@ -198,39 +199,39 @@ body {
 }
 
 .card-icon {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     color: var(--accent-gold);
     stroke-width: 1.75;
 }
 
 .value-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
     color: var(--text-primary);
 }
 
 .value-card p {
     color: var(--text-secondary);
     line-height: 1.6;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
 }
 
 /* Team Section */
 .team-section {
-    margin-bottom: 4rem;
+    margin-bottom: 3.5rem;
 }
 
 .team-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 3rem;
+    gap: 2.5rem;
     margin-top: 2rem;
 }
 
 .team-member {
     background: var(--bg-secondary);
-    padding: 2rem;
+    padding: 1.8rem;
     border-radius: 8px;
     text-align: center;
     border: 1px solid rgba(212, 175, 55, 0.3);
@@ -243,16 +244,16 @@ body {
 }
 
 .member-photo {
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     border: 3px solid var(--accent-gold);
 }
 
 .team-member h3 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
@@ -260,20 +261,20 @@ body {
 .position {
     color: var(--accent-gold);
     font-weight: 600;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .bio {
     color: var(--text-secondary);
     line-height: 1.6;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
 }
 
 /* CTA Section */
 .cta-section {
     background-color: var(--accent-dark);
-    padding: 4rem 2rem;
+    padding: 3.5rem 2rem;
     border-radius: 8px;
     text-align: center;
     margin-bottom: 3rem;
@@ -281,31 +282,32 @@ body {
 }
 
 .cta-section h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
 }
 
 .cta-section p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     max-width: 600px;
-    margin: 0 auto 2rem;
+    margin: 0 auto 1.8rem;
     color: rgba(255,255,255,0.9);
+    line-height: 1.5;
 }
 
 .cta-buttons {
     display: flex;
     justify-content: center;
-    gap: 1.5rem;
+    gap: 1.2rem;
 }
 
 .cta-btn {
     background: var(--accent-gold);
     color: var(--text-primary);
     border: none;
-    padding: 0.8rem 2rem;
+    padding: 0.7rem 1.5rem;
     border-radius: 8px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
@@ -368,56 +370,333 @@ body {
 }
 
 /* Responsive Styles */
-@media (max-width: 1024px) {
-    .about-content {
-        flex-direction: column;
+@media (max-width: 1200px) {
+    .container {
+        padding: 20px 15px;
+        padding-top: 50px;
     }
     
-    .values-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .hero-section {
+        padding: 3.5rem 1.5rem;
     }
-}
-
-@media (max-width: 768px) {
+    
     .hero-section h1 {
         font-size: 2rem;
     }
     
     .hero-subtitle {
-        font-size: 1rem;
+        font-size: 1.05rem;
     }
     
-    .values-grid,
+    .about-content {
+        gap: 2rem;
+    }
+    
+    .values-grid {
+        gap: 1.5rem;
+    }
+    
+    .value-card {
+        padding: 1.5rem;
+    }
+    
+    .team-grid {
+        gap: 2rem;
+    }
+    
+    .team-member {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .about-content {
+        flex-direction: column;
+    }
+    
+    .about-text, .about-image {
+        flex: none;
+        width: 100%;
+    }
+    
+    .about-image {
+        margin-top: 1.5rem;
+        order: 2;
+    }
+    
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.8rem;
+    }
+    
+    .cta-section {
+        padding: 3rem 1.5rem;
+    }
+    
+    .cta-section h2 {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 70px;
+    }
+    
+    .container {
+        padding: 15px 12px;
+        padding-top: 40px;
+    }
+    
+    .hero-section {
+        padding: 2.5rem 1rem;
+        margin-bottom: 2.5rem;
+    }
+    
+    .brand-logo {
+        height: 60px;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-section h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.7rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+    
+    .about-section {
+        margin-bottom: 2.5rem;
+    }
+    
+    .about-text h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+    }
+    
+    .about-text p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.6rem;
+        margin-bottom: 2rem;
+    }
+    
+    .values-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .value-card {
+        padding: 1.5rem;
+    }
+    
+    .icon-container {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 1rem;
+    }
+    
+    .card-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .value-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .value-card p {
+        font-size: 0.9rem;
+    }
+    
+    .team-section {
+        margin-bottom: 2.5rem;
+    }
+    
     .team-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .team-member {
+        padding: 1.5rem;
+    }
+    
+    .member-photo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 1rem;
+    }
+    
+    .team-member h3 {
+        font-size: 1.1rem;
+    }
+    
+    .position {
+        font-size: 0.8rem;
+        margin-bottom: 0.7rem;
+    }
+    
+    .bio {
+        font-size: 0.9rem;
+    }
+    
+    .cta-section {
+        padding: 2.5rem 1rem;
+        margin-bottom: 2.5rem;
+    }
+    
+    .cta-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.7rem;
+    }
+    
+    .cta-section p {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
     }
     
     .cta-buttons {
         flex-direction: column;
         align-items: center;
+        gap: 1rem;
     }
     
     .cta-btn {
         width: 100%;
-        max-width: 300px;
+        max-width: 250px;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
     }
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 12px 10px;
+        padding-top: 35px;
+    }
+    
     .hero-section {
-        padding: 3rem 1rem;
+        padding: 2rem 0.8rem;
+        margin-bottom: 2rem;
+    }
+    
+    .brand-logo {
+        height: 50px;
+        margin-bottom: 0.8rem;
     }
     
     .hero-section h1 {
-        font-size: 1.8rem;
-    }
-    
-    .section-title {
         font-size: 1.6rem;
     }
     
-    .about-text h2,
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .about-section {
+        margin-bottom: 2rem;
+    }
+    
+    .about-text h2 {
+        font-size: 1.4rem;
+    }
+    
+    .about-text p {
+        font-size: 0.9rem;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .value-card {
+        padding: 1.2rem;
+    }
+    
+    .value-card h3 {
+        font-size: 1.05rem;
+    }
+    
+    .value-card p {
+        font-size: 0.85rem;
+    }
+    
+    .team-member {
+        padding: 1.2rem;
+    }
+    
+    .member-photo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .team-member h3 {
+        font-size: 1.05rem;
+    }
+    
+    .bio {
+        font-size: 0.85rem;
+    }
+    
+    .cta-section {
+        padding: 2rem 0.8rem;
+    }
+    
     .cta-section h2 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+    }
+    
+    .cta-section p {
+        font-size: 0.9rem;
+    }
+    
+    .cta-btn {
+        max-width: 220px;
+        padding: 0.5rem 1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .hero-section h1 {
+        font-size: 1.4rem;
+    }
+    
+    .about-text h2,
+    .section-title,
+    .cta-section h2 {
+        font-size: 1.3rem;
+    }
+    
+    .value-card,
+    .team-member {
+        padding: 1rem;
+    }
+    
+    .icon-container {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .card-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .cta-btn {
+        font-size: 0.8rem;
     }
 }

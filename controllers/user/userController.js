@@ -50,7 +50,6 @@ const loadHomepage = async (req, res, next) => {
             return res.render('home', { products: productData });
         }
     } catch (error) {
-        console.log("Home page not found", error);
         next(error);
     }
 };
@@ -63,7 +62,6 @@ const loadSignup = async (req, res, next) => {
         }
         return res.render('signup')
     } catch (error) {
-        console.log("Signup page not loading", error)
         const err = new Error('Failed to load signup page')
         next(err)
     }
@@ -160,8 +158,6 @@ const signup = async (req, res, next) => {
         res.render('otp-verification');
         console.log('OTP Sent', otp)
     } catch (error) {
-        console.error('Signup error', error);
-
         error.message = error.message || 'Signup process failed';
         error.statusCode = error.statusCode || 500;
 
@@ -190,9 +186,6 @@ const otpVerification = async (req, res, next) => {
 
         const { otp } = req.body;
         const userOtp = req.session.userOtp;
-        // console.log(otp);
-
-        // console.log(`session otp ${userOtp}`)
 
 
         if (otp === userOtp) {
@@ -279,8 +272,6 @@ const loadSignin = async (req, res, next) => {
             res.redirect('/');
         }
     } catch (error) {
-
-        console.log("Signin page not loading", error);
         error.statusCode = error.statusCode || 500;
         error.message = error.message || 'Failed to load signin page';
         next(error);
@@ -330,7 +321,6 @@ const logout = async (req, res, next) => {
 
         req.session.destroy((err) => {
             if (err) {
-                console.log("Session destruction error", err.message);
                 const error = new Error("Failed to log out user");
                 error.statusCode = 500;
                 return next(error);
@@ -339,7 +329,6 @@ const logout = async (req, res, next) => {
         })
 
     } catch (error) {
-        console.log('Logout error', error);
         error.statusCode = 500;
         error.message = 'Unexpected error during logout';
         next(error);
@@ -434,21 +423,6 @@ const loadShoppingPage = async (req, res, next) => {
         const selectedPriceFilters = priceFilter ? [priceFilter] : [];
 
 
-        //         const cart = await Cart.find({userId:user});
-        //         console.log(cart)
-
-        //         let totalItems = 0
-        //         if(cart && cart.items.length > 1){
-
-
-        //           for(let item of cart.items){
-        //             totalItems += item.quantity
-        //           }
-
-
-        //         }
-        //  console.log(totalItems)
-
         res.render('shop', {
             user: userData,
             products,
@@ -464,7 +438,6 @@ const loadShoppingPage = async (req, res, next) => {
 
         });
     } catch (error) {
-        console.log('Error while rendering shop', error);
         error.statusCode = error.statusCode || 500;
         error.message = error.message || 'Failed to load shopping page';
         next(error);
@@ -516,7 +489,6 @@ const aboutPage = async (req, res, next) => {
     try {
         return res.render('about');
     } catch (error) {
-        console.log('Error in loading about page : ', error);
         error.statusCode = 500;
         error.message = 'Failed to load About page';
         next(error);
@@ -527,7 +499,6 @@ const contactPage = async (req, res, next) => {
     try {
         return res.render('contact');
     } catch (error) {
-        console.log('Error in loading contact page : ', error);
         error.statusCode = 500;
         error.message = 'Failed to load Contact page';
         next(error);

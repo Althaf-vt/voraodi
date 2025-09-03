@@ -5,34 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OTP Verification</title>
   <link rel="stylesheet" href="/user/otpStyle.css">
-  <link rel="stylesheet" href="/user/footerStyle.css" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Add SweetAlert2 CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
   <%- include('../../views/partials/user/header') %>
-  <section class="auth-section">
-    <div class="auth-container">
+  
+  <section class="otp-section">
+    <div class="otp-card card-security">
+      <div class="icon-container">
+        <i class="card-icon" data-lucide="shield"></i>
+      </div>
       <h2>Verify OTP</h2>
-      <p class="otp-instruction">Enter the 6-digit OTP sent to your email.</p>
-      <form action="/otp-verification" method="POST" onsubmit="return validateOTPForm()">
+      <p>Enter the 6-digit OTP sent to your email</p>
+      
+      <form class="otp-form" method="POST" onsubmit="return validateOTPForm()">
         <input type="hidden" name="email" value="email">
-        <label for="otp">OTP</label>
-        <input type="text" id="otp" name="otp" class="otp-input" maxlength="6" pattern="\d{6}">
-        <button type="submit">Verify OTP</button>
+        
+        <div class="form-group">
+          <label for="otp">OTP Code</label>
+          <input type="text" id="otp" name="otp" placeholder="Enter 6-digit OTP" maxlength="6" pattern="\d{6}" required>
+        </div>
+        
+        <div class="otp-timer">Resend available in <span id="timer">60</span> seconds</div>
+        
+        <div class="form-actions">
+          <button type="submit" class="action-button verify">Verify OTP</button>
+        </div>
+        
+        <div class="resend-otp">
+          <a href="#" id="resend-link" class="disabled" onclick="resendOTP()">Resend OTP</a>
+        </div>
       </form>
-      <div class="otp-timer">Resend available in <span id="timer">60</span> seconds</div>
-      <p class="resend-otp">
-        <a href="#" id="resend-link" class="disabled" onclick="resendOTP()">Resend OTP</a>
-      </p>
     </div>
   </section>
+  
   <%- include('../../views/partials/user/footer') %>
 
   <script>
+    lucide.createIcons();
+    
     // Define timerInterval globally
     let timerInterval;
 
@@ -68,7 +82,7 @@
 
       $.ajax({
         type: 'POST',
-        url: '/otp-verification', // Ensure the URL matches your backend route
+        url: '/otp-verification',
         data: { otp: otpInput },
         success: function (response) {
           if (response.success) {
@@ -115,7 +129,6 @@
         url: '/resend-otp',
         data: { email },
         success: function (response) {
-          console.log('Resend OTP Response:', response); // Debug
           if (response.success) {
             // Reset timer and OTP input on success
             clearInterval(timerInterval);
@@ -142,7 +155,7 @@
           }
         },
         error: function (xhr, status, error) {
-          console.error('Resend OTP Error:', xhr.status, error, xhr.responseText); // Debug
+          console.error('Resend OTP Error:', xhr.status, error, xhr.responseText);
           Swal.fire({
             icon: 'error',
             title: 'Error',

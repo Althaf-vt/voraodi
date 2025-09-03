@@ -156,12 +156,10 @@
 
         const allVariants = document.querySelectorAll('.variant-option:not(.out-of-stock)');
         if (selectedVariantId === variantId) {
-            console.log('Deselecting variant:', variantId);
             variantOption.classList.remove('selected');
             selectedVariantId = null;
             document.getElementById('selectedVariant').value = '';
         } else {
-            console.log('Selecting variant:', variantId);
             allVariants.forEach(variant => {
                 variant.classList.remove('selected');
             });

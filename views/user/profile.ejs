@@ -206,7 +206,14 @@ function openModal(type, currentValue) {
 }
 
 function closeModal() {
-  document.getElementById('editModal').style.display = 'none';
+  const modal = document.getElementById('editModal');
+  const messageDiv = document.getElementById('validationMessage');
+  
+  // Clear any previous validation message
+  messageDiv.textContent = '';
+  messageDiv.classList.remove('show');
+  
+  modal.style.display = 'none';
 }
 
 
@@ -370,18 +377,20 @@ function openCropModal(file) {
 function setupCropHandlers() {
   const cropCircle = document.getElementById('cropCircle');
   const handles = document.querySelectorAll('.crop-handle');
-  
-  // Circle drag functionality
+
+  // Existing mouse handlers
   cropCircle.addEventListener('mousedown', startDrag);
-  
-  // Handle resize functionality
-  handles.forEach(handle => {
-    handle.addEventListener('mousedown', startResize);
-  });
-  
+  handles.forEach(handle => handle.addEventListener('mousedown', startResize));
   document.addEventListener('mousemove', handleMouseMove);
   document.addEventListener('mouseup', stopDragResize);
+
+  // NEW: Touch handlers for mobile/small screens
+  cropCircle.addEventListener('touchstart', startDragTouch, { passive: false });
+  handles.forEach(handle => handle.addEventListener('touchstart', startResizeTouch, { passive: false }));
+  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+  document.addEventListener('touchend', stopDragResize);
 }
+
 
 function startDrag(e) {
   if (e.target.classList.contains('crop-handle')) return;
@@ -436,6 +445,42 @@ function handleMouseMove(e) {
     updatePreview();
   }
 }
+
+
+function startDragTouch(e) {
+  // prevent page scroll while starting drag
+  e.preventDefault();
+  const t = e.touches[0];
+  // Call existing startDrag with a mouse-like object
+  startDrag({
+    clientX: t.clientX,
+    clientY: t.clientY,
+    target: e.target,
+    preventDefault: () => {}
+  });
+}
+
+function startResizeTouch(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  startResize({
+    clientX: t.clientX,
+    clientY: t.clientY,
+    target: e.target,
+    preventDefault: () => {}
+  });
+}
+
+function handleTouchMove(e) {
+  // Only intercept if we are actually dragging or resizing
+  if (!isDragging && !isResizing) return;
+  const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]);
+  if (!t) return;
+  e.preventDefault(); // stop page from scrolling while moving
+  // Reuse existing mouse move logic with synthetic coordinates
+  handleMouseMove({ clientX: t.clientX, clientY: t.clientY });
+}
+
 
 function stopDragResize() {
   isDragging = false;
@@ -530,6 +575,10 @@ function closeCropModal() {
   // Remove event listeners
   document.removeEventListener('mousemove', handleMouseMove);
   document.removeEventListener('mouseup', stopDragResize);
+
+  document.removeEventListener('touchmove', handleTouchMove);
+  document.removeEventListener('touchend', stopDragResize);
+
 }
 
 // Close modal when clicking outside

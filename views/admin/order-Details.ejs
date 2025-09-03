@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOGUE - Order Details</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@400&display=swap"
+    rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -12,8 +15,9 @@
   <script src="/re-use/toast.js"></script>
   <link rel="stylesheet" href="/admin/orderDetail.css">
 </head>
+
 <body>
-  
+
   <!-- Order Detail Header -->
   <div class="order-detail-header">
     <div class="text-container">
@@ -25,302 +29,300 @@
   </div>
 
   <!-- Main Content -->
-  <div class="main-content">
-    <!-- Order Summary Card -->
-    <div class="order-summary-card">
-      <div class="card-header">
-        <h2>Order Summary</h2>
-        <div class="order-id">OrderId : <%= order.orderId %></div>
-      </div>
-      <div class="card-content">
-        <div class="summary-grid">
-          <div class="summary-item">
-            <span class="label">Order Date:</span>
-            <span class="value"><%= new Date(order.invoiceDate).toLocaleDateString() %></span>
-          </div>
-          <div class="summary-item">
-            <span class="label">Status:</span>
-            <span class="status-badge <%= order.status.toLowerCase().replace(/\s/g, '-') %>">
-              <% if(order.returnStatus === 'Rejected') {%>
-                <%= order.returnStatus %>
-                <% }else{%>
-              <%= order.status %></span>
-              <% } %>
-          </div>
-          <div class="summary-item">
-            <span class="label">Total Amount:</span>
-            <% if(order.status) {%>
-              <span class="value total-amount">₹<%= order.totalPrice.toFixed(2) %></span>
-              <% }else{%>
-            <span class="value total-amount">₹<%= order.finalAmount.toFixed(2) %></span>
-            <% } %>
-          </div>
-          <div class="summary-item">
-            <span class="label">Payment Method:</span>
-            <span class="value"><%= order.paymentMethod %></span>
-          </div>
+<!-- Main Content -->
+<div class="main-content">
+  <!-- Order Summary Card -->
+  <div class="order-summary-grid">
+  <div class="order-summary-card">
+    <div class="card-header">
+      <h2>Order Summary</h2>
+      <div class="order-id">OrderId : <%= order.orderId %></div>
+    </div>
+    <div class="card-content">
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="label">Order Date:</span>
+          <span class="value"><%= new Date(order.invoiceDate).toLocaleDateString() %></span>
         </div>
+        <div class="summary-item">
+          <span class="label">Status:</span>
+          <span class="status-badge <%= order.status.toLowerCase().replace(/\s/g, '-') %>">
+            <% if(order.returnStatus === 'Rejected') {%>
+              <%= order.returnStatus %>
+            <% }else{%>
+              <%= order.status %>
+            <% } %>
+          </span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Total Amount:</span>
+          <% if(order.status) {%>
+            <span class="value total-amount">₹<%= order.totalPrice.toFixed(2) %></span>
+          <% }else{%>
+            <span class="value total-amount">₹<%= order.finalAmount.toFixed(2) %></span>
+          <% } %>
+        </div>
+        <div class="summary-item">
+          <span class="label">Payment Method:</span>
+          <span class="value"><%= order.paymentMethod %></span>
+        </div>
+      </div>
 
-        <div class="return-action-area">
-        
-
+      <div class="return-action-area">
         <% if (order.status === 'Return Request' && order.returnStatus !== 'Rejected') { %>
-
-          
-          
+          <% if (order.returnReason) { %>
+            <div class="return-reason">
+              <span class="label">Return Reason:</span>
+              <span class="value"><%= order.returnReason %></span>
+            </div>
+          <% } %>
           <div class="return-buttons">
-            <% if (order.returnReason) { %>
-          <div class="return-reason">
-            <span class="label">Return Reason:</span>
-            <span class="value"><%= order.returnReason %></span>
-          </div>
-        <% } %>
             <button class="return-btn approve-btn" onclick="approveReturn('<%=order.orderId%>')">Approve</button>
             <button class="return-btn reject-btn" onclick="rejectReturn('<%=order.orderId%>')">Reject</button>
           </div>
-      <% } %>
-        </div>
+        <% } %>
       </div>
     </div>
+  </div>
 
-    <!-- Shipping Address Card -->
-    <div class="shipping-address-card">
-      <div class="card-header">
-        <h2>Shipping Address</h2>
-      </div>
-      <div class="card-content">
-        <div class="address-details">
-          <p><strong><%= address.name %></strong></p>
-          <p><%= address.street %></p>
-          <p><%= address.city %>, <%= address.state %></p>
-          <p><%= address.country %> - <%= address.pincode %></p>
-          <p>Phone: <%= address.phone %></p>
-        </div>
+  <!-- Shipping Address Card -->
+  <div class="shipping-address-card">
+    <div class="card-header">
+      <h2>Shipping Address</h2>
+    </div>
+    <div class="card-content">
+      <div class="address-details">
+        <p><strong><%= address.name %></strong></p>
+        <p><%= address.street %></p>
+        <p><%= address.city %>, <%= address.state %></p>
+        <p><%= address.country %> - <%= address.pincode %></p>
+        <p>Phone: <%= address.phone %></p>
       </div>
     </div>
+  </div>
 
-    <!-- Order Items Section -->
-    <div class="order-items-section">
-      <div class="card-header">
-        <h2>Order Items</h2>
-      </div>
-      <div class="items-grid">
-        <% products.forEach(product => { %>
-          <div class="item-card">
-            <div class="item-content">
-              <div class="product-info">
-                <div class="product-image">
-                  <img src="<%= product.image[0] %>" alt="Product">
-                </div>
-                <div class="product-details">
-                  <div class="product-name"><%= product.name %></div>
-                  <div class="product-size">Size: <%= product.size || '-' %></div>
-                  <div class="product-quantity">Quantity: <%= product.quantity %></div>
-                  <div class="product-quantity">Status: <span class="product-status-badge <%= product.status.toLowerCase().replace(/\s/g, '-') %>">
-                    <% if(order.returnStatus === 'Rejected'){%>
-                      <%= product.returnStatus %>
-                      <% }else{%>
+  <!-- Order Items Section -->
+  <div class="order-items-section">
+    <div class="card-header">
+      <h2>Order Items</h2>
+    </div>
+    <div class="items-grid">
+      <% products.forEach(product => { %>
+        <div class="item-card">
+          <div class="item-content">
+            <div class="product-info">
+              <div class="product-image">
+                <img src="<%= product.image[0] %>" alt="Product">
+              </div>
+              <div class="product-details">
+                <div class="product-name"><%= product.name %></div>
+                <div class="product-size">Size: <%= product.size || '-' %></div>
+                <div class="product-quantity">Quantity: <%= product.quantity %></div>
+                <div class="product-quantity">Status: <span class="product-status-badge <%= product.status.toLowerCase().replace(/\s/g, '-') %>">
+                  <% if(order.returnStatus === 'Rejected'){%>
+                    <%= product.returnStatus %>
+                  <% }else{%>
                     <%= product.status %>
-                    <% } %>
-                  </span></div>
-                  <div class="product-price">Price: ₹<%= (product.price / product.quantity).toFixed(2)  %></div>
-                  <div class="product-total">Total: ₹<%= (product.price).toFixed(2) %></div>
-                </div>
-                <% if (product?.Reason) { %>
-                  <div class="return-reason">
-                    <span class="label">Return Reason:</span>
-                    <span class="value"><%= product.Reason %></span>
-                    <% console.log(product.Reason) %>
-                  </div>
-                <% } %>
-                <% if (product.status === 'Return Request' && order.status !== 'Return Request') { %>
-                  
-                  <div class="product-return-buttons">
-                    <button class="product-return-btn approve-btn" onclick="approveReturnItem('<%= order.orderId %>','<%= product.sku%>')">Approve</button>
-                    <button class="product-return-btn reject-btn" onclick="rejectReturnItem('<%= order.orderId %>','<%= product.sku%>')">Reject</button>
-                  </div>
-              <% } %>
+                  <% } %>
+                </span></div>
+                <div class="product-price">Price: ₹<%= (product.price / product.quantity).toFixed(2)  %></div>
+                <div class="product-total">Total: ₹<%= (product.price).toFixed(2) %></div>
               </div>
             </div>
+            <% if (product?.Reason) { %>
+              <div class="return-reason">
+                <span class="label">Return Reason:</span>
+                <span class="value"><%= product.Reason %></span>
+              </div>
+            <% } %>
+            <% if (product.status === 'Return Request' && order.status !== 'Return Request') { %>
+              <div class="product-return-buttons">
+                <button class="product-return-btn approve-btn" onclick="approveReturnItem('<%= order.orderId %>','<%= product.sku%>')">Approve</button>
+                <button class="product-return-btn reject-btn" onclick="rejectReturnItem('<%= order.orderId %>','<%= product.sku%>')">Reject</button>
+              </div>
+            <% } %>
           </div>
-        <% }) %>
-      </div>
+        </div>
+      <% }) %>
     </div>
+  </div>
+  </div>
+</div>
 
+  <script>
+    function goBack() {
+      window.history.back();
+    }
 
-    <script>
-      function goBack() {
-        window.history.back();
-      }
+    function printOrder() {
+      window.print();
+    }
 
-      function printOrder() {
-        window.print();
-      }
+    async function approveReturn(orderId) {
+      const confirmResult = await Swal.fire({
+        toast: true,
+        title: 'Are you sure?',
+        text: "You are about to approve the return request.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, approve it!'
+      });
 
-      async function approveReturn(orderId){
-        const confirmResult = await Swal.fire({
-          toast:true,
-          title: 'Are you sure?',
-          text: "You are about to approve the return request.",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#28a745',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, approve it!'
-        });
-
-        if(confirmResult.isConfirmed){
-          fetch('/admin/approveReturnOrder',{
-            method:'POST',
-            headers:{
-              'Content-Type':'application/json',
-            },
-            body: JSON.stringify({orderId})
-          })
+      if (confirmResult.isConfirmed) {
+        fetch('/admin/approveReturnOrder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orderId })
+        })
           .then(res => res.json())
           .then(data => {
-            if(data.success){
-              toast(data,'success');
-            }else{
-              toast(data,'error')
+            if (data.success) {
+              toast(data, 'success');
+            } else {
+              toast(data, 'error')
             }
           })
           .catch(error => {
             Swal.fire({
-                toast: true,
-                icon: '',
-                title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
-                text: 'Something went wrong , Please try again later.'
+              toast: true,
+              icon: '',
+              title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
+              text: 'Something went wrong , Please try again later.'
             });
           })
-          
-        }
 
       }
 
-      // reject Order return 
-      async function rejectReturn(orderId) {
-        const confirmResult = await Swal.fire({
-          toast:true,
-          title: 'Are you sure?',
-          text: "You are about to reject the return request.",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#28a745',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, reject it!'
-        });
+    }
 
-        if(confirmResult.isConfirmed){
-          fetch('/admin/rejectReturnOrder',{
-            method: 'POST',
-            headers:{
-              'Content-Type':'application/json',
-            },
-            body: JSON.stringify({orderId})
-          })
+    // reject Order return 
+    async function rejectReturn(orderId) {
+      const confirmResult = await Swal.fire({
+        toast: true,
+        title: 'Are you sure?',
+        text: "You are about to reject the return request.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, reject it!'
+      });
+
+      if (confirmResult.isConfirmed) {
+        fetch('/admin/rejectReturnOrder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orderId })
+        })
           .then(res => res.json())
           .then(data => {
-            if(data.success){
+            if (data.success) {
               toast(data)
-            }else{
-              toast(data,'error')
+            } else {
+              toast(data, 'error')
             }
           })
-          .catch(error =>{
+          .catch(error => {
             Swal.fire({
+              toast: true,
+              icon: '',
+              title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
+              text: 'Something went wrong , Please try again later.'
+            });
+          })
+      }
+    }
+
+
+    async function approveReturnItem(orderId, sku) {
+      const confirmResult = await Swal.fire({
+        toast: true,
+        title: 'Are you sure?',
+        text: "You are about to approve the return request.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, approve it!'
+      });
+
+      try {
+        if (confirmResult.isConfirmed) {
+          fetch('/admin/approve-return-item', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId, sku })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                toast(data);
+              } else {
+                toast(data, 'Error');
+              }
+            })
+            .catch(error => {
+              Swal.fire({
                 toast: true,
                 icon: '',
                 title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
                 text: 'Something went wrong , Please try again later.'
-            });
+              });
+            })
+        }
+      } catch (error) {
+        console.log("Error : ", error);
+      }
+    }
+
+
+    async function rejectReturnItem(orderId, sku) {
+      const confirmResult = await Swal.fire({
+        toast: true,
+        title: 'Are you sure?',
+        text: "You are about to approve the return request.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, approve it!'
+      });
+
+      try {
+        if (confirmResult.isConfirmed) {
+          fetch('/admin/reject-return-item', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId, sku })
           })
-        }
-      }
-
-
-      async function approveReturnItem(orderId,sku) {
-        const confirmResult = await Swal.fire({
-          toast:true,
-          title: 'Are you sure?',
-          text: "You are about to approve the return request.",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#28a745',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, approve it!'
-        });
-
-        try {
-          if(confirmResult.isConfirmed){
-            fetch('/admin/approve-return-item',{
-              method:'PATCH',
-              headers: {'Content-Type': 'application/json'},
-              body: JSON.stringify({orderId,sku})
-            })
             .then(res => res.json())
             .then(data => {
-              if(data.success){
+              if (data.success) {
                 toast(data);
-              }else{
-                toast(data,'Error');
+              } else {
+                toast(data, 'Error');
               }
             })
-            .catch(error =>{
+            .catch(error => {
               Swal.fire({
-                  toast: true,
-                  icon: '',
-                  title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
-                  text:'Something went wrong , Please try again later.'
+                toast: true,
+                icon: '',
+                title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
+                text: data.message || 'Something went wrong , Please try again later.'
               });
             })
-          }
-        } catch (error) {
-          console.log("Error : ",error);
         }
+      } catch (error) {
+        console.log('Error : ', error)
       }
-
-
-      async function rejectReturnItem(orderId,sku){
-        const confirmResult = await Swal.fire({
-          toast:true,
-          title: 'Are you sure?',
-          text: "You are about to approve the return request.",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#28a745',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, approve it!'
-        });
-
-        try {
-          if(confirmResult.isConfirmed){
-            fetch('/admin/reject-return-item',{
-              method:'PATCH',
-              headers: {'Content-Type': 'application/json'},
-              body: JSON.stringify({orderId,sku})
-            })
-            .then(res => res.json())
-            .then(data => {
-              if(data.success){
-                toast(data);
-              }else{
-                toast(data,'Error');
-              }
-            })
-            .catch(error =>{
-              Swal.fire({
-                  toast: true,
-                  icon: '',
-                  title: '<svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#EA3323"><path d="M624-528.67q23.33 0 39.67-16.33Q680-561.33 680-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q568-608 568-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33Zm-288 0q23.33 0 39.67-16.33Q392-561.33 392-584.67q0-23.33-16.33-39.66-16.34-16.34-39.67-16.34-23.33 0-39.67 16.34Q280-608 280-584.67q0 23.34 16.33 39.67 16.34 16.33 39.67 16.33ZM480.12-418q-67.45 0-122.29 37.83Q303-342.33 277.33-280h57.34q22-40.33 60.95-62.83 38.94-22.5 84.83-22.5 45.88 0 84.38 22.83 38.5 22.83 61.17 62.5h56.67q-25-63-80.05-100.5T480.12-418ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 333.33q139.58 0 236.46-96.87 96.87-96.88 96.87-236.46t-96.87-236.46Q619.58-813.33 480-813.33t-236.46 96.87Q146.67-619.58 146.67-480t96.87 236.46q96.88 96.87 236.46 96.87Z"/></svg>',
-                  text: data.message||'Something went wrong , Please try again later.'
-              });
-            })
-          }
-        } catch (error) {
-          console.log('Error : ',error)
-        }
-      }
-    </script>
+    }
+  </script>
 </body>
+
 </html>

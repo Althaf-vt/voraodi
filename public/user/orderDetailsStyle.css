@@ -13,6 +13,7 @@
 
 *{
     font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
 }
 
 /* Base styles */
@@ -22,28 +23,29 @@ body {
     color: var(--text-primary);
     margin: 0;
     padding: 0;
+    font-size: 14px;
 }
 
 .order-details-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 30px 20px;
+    padding: 20px 15px;
 }
 
 /* Header section */
 .order-header {
-    margin-bottom: 30px;
-    position: relative;
+    margin-bottom: 20px;
 }
 
 .back-button {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     color: var(--accent-dark);
     text-decoration: none;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    font-size: 13px;
     transition: color 0.3s ease;
 }
 
@@ -54,22 +56,23 @@ body {
 .profile-section {
     display: flex;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
 .profile-image {
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     border: 2px solid var(--accent-gold);
     object-fit: cover;
 }
 
 .profile-text h1 {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
     margin: 0;
+    line-height: 1.2;
 }
 
 .profile-text h1 span {
@@ -78,18 +81,18 @@ body {
 }
 
 .profile-text p {
-    margin: 5px 0 0;
+    margin: 4px 0 0;
     color: var(--text-tertiary);
-    font-size: 14px;
+    font-size: 12px;
 }
 
 /* Order status card */
 .order-status-card {
     background: var(--bg-secondary);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     border: 1px solid rgba(212, 175, 55, 0.2);
 }
 
@@ -97,18 +100,18 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .status-header h2 {
-    font-size: 18px;
+    font-size: 15px;
     margin: 0;
 }
 
 .status-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
 }
@@ -128,17 +131,32 @@ body {
     color: var(--accent-red);
 }
 
-/* Tracking progress */
+.status-badge.ordered {
+    background: #e6f0ff;
+    color: #2563eb;
+}
+
+.status-badge.confirmed {
+    background: #f0f9ff;
+    color: #0369a1;
+}
+
+.status-badge.shipped {
+    background: #fdf2f8;
+    color: #db2777;
+}
+
+/* Tracking progress - Compact version */
 .tracking-progress {
-    margin-top: 25px;
+    margin-top: 15px;
 }
 
 .progress-bar {
-    height: 4px;
+    height: 3px;
     background: #e0e0e0;
     border-radius: 2px;
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .progress-bar::before {
@@ -157,6 +175,7 @@ body {
     display: flex;
     justify-content: space-between;
     position: relative;
+    gap: 5px;
 }
 
 .step {
@@ -166,20 +185,21 @@ body {
     position: relative;
     z-index: 2;
     flex: 1;
+    min-width: 0;
 }
 
 .step-icon {
-    width: 30px;
-    height: 30px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: #e0e0e0;
     color: #999;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     border: 2px solid var(--bg-secondary);
 }
 
@@ -190,10 +210,11 @@ body {
 }
 
 .step span {
-    font-size: 12px;
+    font-size: 9px;
     text-align: center;
     color: var(--text-tertiary);
     font-weight: 500;
+    line-height: 1.2;
 }
 
 .step.completed span,
@@ -204,43 +225,44 @@ body {
 
 /* Order summary grid */
 .order-summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
 .summary-card {
     background: var(--bg-secondary);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     border: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 .summary-card h3 {
-    font-size: 16px;
-    margin: 0 0 20px 0;
+    font-size: 14px;
+    margin: 0 0 12px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     color: var(--accent-dark);
 }
 
 .summary-card h3 i {
     color: var(--accent-gold);
+    font-size: 13px;
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
-    font-size: 14px;
+    margin-bottom: 8px;
+    font-size: 12px;
 }
 
 .detail-row.total {
-    margin-top: 15px;
-    padding-top: 15px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid rgba(0,0,0,0.1);
     font-weight: 700;
 }
@@ -251,56 +273,58 @@ body {
 }
 
 .address-details {
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .address-details p {
-    margin: 0 0 8px 0;
+    margin: 0 0 5px 0;
 }
 
 /* Ordered items card */
 .ordered-items-card {
     background: var(--bg-secondary);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     border: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 .ordered-items-card h3 {
-    font-size: 16px;
-    margin: 0 0 20px 0;
+    font-size: 14px;
+    margin: 0 0 15px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     color: var(--accent-dark);
 }
 
 .ordered-items-card h3 i {
     color: var(--accent-gold);
+    font-size: 13px;
 }
 
 .items-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
 }
 
 .item-row {
     display: flex;
-    gap: 15px;
-    padding: 15px;
-    border-radius: 8px;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 6px;
     background: white;
     border: 1px solid rgba(0,0,0,0.05);
+    align-items: flex-start;
 }
 
 .item-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 6px;
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
     overflow: hidden;
     flex-shrink: 0;
 }
@@ -313,16 +337,18 @@ body {
 
 .item-details {
     flex: 1;
+    min-width: 0;
 }
 
 .item-details h4 {
-    margin: 0 0 5px 0;
-    font-size: 14px;
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    line-height: 1.2;
 }
 
 .item-details p {
-    margin: 0 0 3px 0;
-    font-size: 13px;
+    margin: 0 0 2px 0;
+    font-size: 11px;
     color: var(--text-tertiary);
 }
 
@@ -331,20 +357,22 @@ body {
     flex-direction: column;
     align-items: flex-end;
     justify-content: space-between;
-    min-width: 80px;
+    min-width: 60px;
+    gap: 5px;
 }
 
 .item-total p {
     margin: 0;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .item-status {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 12px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    text-align: center;
 }
 
 .item-status.delivered {
@@ -362,19 +390,28 @@ body {
     color: #b78103;
 }
 
+.item-status.return-request,
+.item-status.returned,
+.item-status.rejected {
+    background: #e6f0ff;
+    color: #2563eb;
+}
+
 .item-actions {
     display: flex;
     align-items: center;
+    margin-top: 5px;
 }
 
 .action-button {
-    padding: 6px 12px;
+    padding: 4px 8px;
     border: none;
-    border-radius: 6px;
-    font-size: 12px;
+    border-radius: 4px;
+    font-size: 10px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .action-button.cancel {
@@ -388,29 +425,30 @@ body {
 }
 
 .action-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Action buttons */
 .action-buttons {
     display: flex;
-    gap: 15px;
+    flex-direction: column;
+    gap: 10px;
     justify-content: center;
-    flex-wrap: wrap;
 }
 
 .btn {
-    padding: 12px 24px;
+    padding: 10px 16px;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
-    min-width: 200px;
     text-align: center;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn.primary {
@@ -420,7 +458,7 @@ body {
 
 .btn.primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
 }
 
 .btn.secondary {
@@ -430,7 +468,7 @@ body {
 
 .btn.secondary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(47, 58, 68, 0.4);
+    box-shadow: 0 4px 12px rgba(47, 58, 68, 0.3);
     background: #1a2026;
 }
 
@@ -449,6 +487,7 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
+    padding: 15px;
 }
 
 .modal-overlay.active {
@@ -458,13 +497,15 @@ body {
 
 .return-modal {
     background: var(--bg-secondary);
-    border-radius: 10px;
-    padding: 25px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     transform: scale(0.9);
     transition: transform 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-overlay.active .return-modal {
@@ -475,11 +516,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .modal-title {
-    font-size: 18px;
+    font-size: 16px;
     margin: 0;
     color: var(--accent-dark);
 }
@@ -487,7 +528,7 @@ body {
 .modal-close {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 20px;
     color: var(--text-tertiary);
     cursor: pointer;
     padding: 0;
@@ -498,35 +539,43 @@ body {
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .form-label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
+    margin-bottom: 6px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--accent-dark);
 }
 
 .form-select, .form-input {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 4px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .form-input {
-    min-height: 100px;
+    min-height: 80px;
     resize: vertical;
 }
 
 .modal-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.modal-actions .btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    min-width: auto;
+    flex: 1;
 }
 
 .hidden {
@@ -536,20 +585,20 @@ body {
 /* Message notification styles */
 .message-container {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 15px;
     z-index: 9999;
-    max-width: 350px;
+    max-width: 300px;
 }
 
 .message-notification {
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    padding: 16px 20px;
-    margin-bottom: 10px;
-    border-left: 4px solid;
-    transform: translateX(400px);
+    border-radius: 6px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-left: 3px solid;
+    transform: translateX(300px);
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -569,49 +618,349 @@ body {
     background: linear-gradient(135deg, #fff 0%, #f2fdf5 100%);
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
-    .order-summary-grid {
-        grid-template-columns: 1fr;
+/* Responsive styles for very small screens */
+@media (max-width: 430px) {
+    .order-details-container {
+        padding: 15px 12px;
     }
     
-    .item-row {
-        flex-wrap: wrap;
-    }
-    
-    .item-total {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        margin-top: 10px;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
     .profile-section {
         flex-direction: column;
         text-align: center;
+        gap: 10px;
+    }
+    
+    .profile-text h1 {
+        font-size: 16px;
+    }
+    
+    .status-header h2 {
+        font-size: 14px;
     }
     
     .tracking-steps {
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 8px;
     }
     
     .step {
-        flex: 0 0 calc(50% - 15px);
+        flex: 0 0 calc(33.333% - 8px);
+        min-width: 0;
     }
     
-    .progress-bar {
+    .step span {
+        font-size: 8px;
+    }
+    
+    .item-row {
+        flex-wrap: wrap;
+        position: relative;
+        padding: 10px;
+    }
+    
+    .item-image {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .item-total {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        align-items: flex-end;
+        gap: 3px;
+    }
+    
+    .item-details {
+        margin-left: 55px;
+        margin-right: 60px;
+    }
+    
+    .item-actions {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    
+    .action-button {
+        flex: 1;
+        text-align: center;
+        max-width: 120px;
+    }
+    
+    .btn {
+        padding: 9px 14px;
+        font-size: 11px;
+    }
+}
+
+/* Ultra compact for very small heights */
+@media (max-height: 700px) {
+    .order-details-container {
+        padding: 12px 10px;
+    }
+    
+    .order-status-card,
+    .summary-card,
+    .ordered-items-card {
+        padding: 12px;
+    }
+    
+    .item-row {
+        padding: 8px;
+    }
+    
+    .tracking-steps {
+        gap: 5px;
+    }
+    
+    .step {
+        flex: 0 0 calc(25% - 5px);
+    }
+    
+    .step-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 9px;
+    }
+    
+    .step span {
+        font-size: 7px;
+    }
+}
+
+/* Landscape orientation for small screens */
+@media (max-width: 932px) and (orientation: landscape) {
+    .order-summary-grid {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .summary-card {
+        flex: 1;
+        min-width: calc(50% - 6px);
+    }
+    
+    .tracking-steps {
+        flex-wrap: nowrap;
+    }
+    
+    .step {
+        flex: 1;
+    }
+    
+    .action-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        flex: 1;
+        min-width: 140px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .order-details-container {
+        padding: 0;
+    }
+    
+    .order-status-card,
+    .summary-card,
+    .ordered-items-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .action-buttons,
+    .item-actions {
         display: none;
     }
+}
+
+/* Add these media queries at the end of your existing CSS file */
+
+/* For screens wider than 820px */
+@media (min-width: 821px) {
+  .order-details-container {
+    padding: 30px 20px;
+  }
+  
+  .order-header {
+    margin-bottom: 30px;
+  }
+  
+  /* Create a grid layout for the cards */
+  .order-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+  }
+  
+  .summary-card {
+    margin-bottom: 0;
+    height: auto;
+  }
+  
+  /* Fix tracking steps alignment */
+  .tracking-steps {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  
+  .step {
+    flex: 1;
+  }
+  
+  .step span {
+    font-size: 10px;
+  }
+  
+  /* Ensure ordered items card spans full width */
+  .ordered-items-card {
+    grid-column: 1 / -1;
+  }
+  
+  /* Adjust item row layout for larger screens */
+  .item-row {
+    align-items: center;
+  }
+  
+  .item-details {
+    flex: 2;
+  }
+  
+  .item-total {
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    min-width: auto;
+  }
+  
+  .item-actions {
+    margin-top: 0;
+    justify-content: flex-end;
+  }
+  
+  /* Action buttons layout */
+  .action-buttons {
+    flex-direction: row;
+    gap: 15px;
+  }
+  
+  .btn {
+    flex: 1;
+    max-width: 200px;
+  }
+}
+
+/* For very large screens (above 1180px) */
+@media (min-width: 1181px) {
+  .order-details-container {
+    max-width: 1400px;
+    padding: 40px 30px;
+  }
+  
+  .profile-section {
+    gap: 20px;
+  }
+  
+  .profile-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .profile-text h1 {
+    font-size: 20px;
+  }
+  
+  .profile-text p {
+    font-size: 14px;
+  }
+  
+  .status-header h2 {
+    font-size: 16px;
+  }
+  
+  .status-badge {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+  
+  /* Adjust tracking steps for very large screens */
+  .step-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+  
+  .step span {
+    font-size: 11px;
+  }
+  
+  /* Summary card content adjustments */
+  .summary-card h3 {
+    font-size: 15px;
+  }
+  
+  .detail-row {
+    font-size: 13px;
+  }
+  
+  /* Ordered items adjustments */
+  .ordered-items-card h3 {
+    font-size: 15px;
+  }
+  
+  .item-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .item-details h4 {
+    font-size: 13px;
+  }
+  
+  .item-details p {
+    font-size: 12px;
+  }
+  
+  .item-total p {
+    font-size: 13px;
+  }
+  
+  .item-status {
+    font-size: 11px;
+  }
+  
+  .action-button {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+}
+
+/* Fix for tracking steps overflow */
+@media (min-width: 821px) and (max-width: 1180px) {
+  .tracking-steps {
+    gap: 5px;
+  }
+  
+  .step span {
+    font-size: 9px;
+  }
+}
+
+/* Ensure the layout stays consistent in print mode */
+@media print and (min-width: 821px) {
+  .order-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  
+  .ordered-items-card {
+    grid-column: 1 / -1;
+  }
 }

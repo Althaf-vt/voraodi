@@ -45,9 +45,9 @@ async (req, accessToken, refreshToken, profile, done) => {
             return done(null, user);
         } else {
             // If state is "signin", but user not found → failure
-            if (req.query.state === 'signin') {//use of passReq
-                return done(null, false, { message: 'User not found. Please sign up first.' });
-             }
+            // if (req.query.state === 'signin') {//use of passReq
+            //     return done(null, false, { message: 'User not found. Please sign up first.' });
+            //  }
 
 
             // Else it's signup

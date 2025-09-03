@@ -65,17 +65,17 @@
                     </span>
                   </td>
                   <td>
-                    <% if (data[i].isBlocked === false) { %>
-                      <!-- <button class="action-btn view-btn" aria-label="View Customer">View</button> -->
-                      <button class="action-btn block-btn" aria-label="Block Customer" onclick="confirmBlock('<%=data[i]._id%>')">
-                        <a href="#">Block</a>
-                      </button>
-                    <% } else { %>
-                      <!-- <button class="action-btn view-btn" aria-label="View Customer">View</button> -->
-                      <button class="action-btn unblock-btn" aria-label="Unblock Customer" onclick="confirmUnblock('<%=data[i]._id%>')">
-                        <a href="#">Unblock</a>
-                      </button>
-                    <% } %>
+                    <div class="button-container">
+                      <% if (data[i].isBlocked === false) { %>
+                        <button class="icon-btn block-btn" data-tooltip="Block Customer" onclick="confirmBlock('<%=data[i]._id%>')">
+                          <i class="fas fa-ban"></i>
+                        </button>
+                      <% } else { %>
+                        <button class="icon-btn unblock-btn" data-tooltip="Unblock Customer" onclick="confirmUnblock('<%=data[i]._id%>')">
+                          <i class="fas fa-check-circle"></i>
+                        </button>
+                      <% } %>
+                    </div>
                   </td>
                 </tr>
               <% } %>

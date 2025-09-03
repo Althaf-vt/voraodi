@@ -31,7 +31,6 @@ const userAuth = async (req, res, next) => {
         }
 
     } catch (error) {
-        console.log('Error in user auth middleware:', error);
          if (req.headers.accept.includes('application/json')) {
             res.status(500).json({ success: false, message: 'Internal Server Error' });
         } else {
@@ -39,27 +38,6 @@ const userAuth = async (req, res, next) => {
         }
     }
 };
-
-
-
-// const adminAuth = (req,res,next) =>{
-//     if(req.session.admin){
-
-//     }
-//     User.findOne({isAdmin:true})
-//     .then(data =>{
-//         if(data){
-//             next()
-//         }else{
-//             res.redirect('/admin/signin')
-         
-//         }
-//     })
-//     .catch(error =>{
-//         console.log('Error in AdminAuth middleware',error);
-//         res.status(500).send("Inter Server Error");
-//     })
-// }
 
 const adminAuth = (req,res,next) =>{
     if(req.session.admin){
@@ -73,7 +51,6 @@ const adminAuth = (req,res,next) =>{
 
         })
         .catch(err=>{
-        console.log('Error in AdminAuth middleware',err);
         res.status(500).send("Inter Server Error");
         })
     }else{

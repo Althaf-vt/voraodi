@@ -23,7 +23,6 @@ const loadWishlist = async(req,res,next)=>{
         })
 
     } catch (error) {
-        console.log('Error while loading wishlist',error);
         next(error);
     }
 }
@@ -120,7 +119,6 @@ const addToCart = async(req,res)=>{
         return res.status(200).json({success:true,message:"Product added to cart"})
   
     } catch (error) {
-        console.log('Error in Add to cart from wishlist',error);
         return res.status(500).json({success:false,message:'Internal Server Error'});
     }
 }
@@ -143,7 +141,6 @@ const removeItem = async(req,res)=>{
 
         return res.status(200).json({success:true,message:'Product removed from wishlist'});
     } catch (error) {
-        console.log("Error while removing product from wishlist : ", error);
         return res.status(500).json({success:false,message:'Internal Server Error'});
         
     }

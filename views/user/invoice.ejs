@@ -102,6 +102,45 @@
             </table>
         </div>
 
+        <!-- Mobile Cards Layout for Small Screens -->
+        <div class="items-cards">
+            <% order.orderedItems.forEach(item => { %>
+                <div class="item-card">
+                    <div class="item-card-header">
+                        <% if (item.product && item.product.productImage && item.product.productImage.length > 0) { %>
+                            <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>" class="product-image">
+                        <% } %>
+                        <div class="item-card-details">
+                            <div class="product-name"><%= item.product ? item.product.productName : 'Product Name' %></div>
+                            <div class="product-sku">SKU: <%= item.sku %></div>
+                        </div>
+                    </div>
+                    <div class="item-card-body">
+                        <div class="item-detail">
+                            <span class="detail-label">Size</span>
+                            <span class="detail-value"><%= item.size %></span>
+                        </div>
+                        <div class="item-detail">
+                            <span class="detail-label">Quantity</span>
+                            <span class="detail-value"><%= item.quantity %></span>
+                        </div>
+                        <div class="item-detail">
+                            <span class="detail-label">Unit Price</span>
+                            <span class="detail-value">₹<%= (item.price / item.quantity).toFixed(2) %></span>
+                        </div>
+                        <div class="item-detail">
+                            <span class="detail-label">Total</span>
+                            <span class="detail-value">₹<%= item.price.toFixed(2) %></span>
+                        </div>
+                        <div class="item-detail item-status">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value status <%= item.status.toLowerCase().replace(/\s+/g, '-') %>"><%= item.status %></span>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+
         <!-- Summary Section -->
         <div class="summary-section">
             <div class="summary-content">

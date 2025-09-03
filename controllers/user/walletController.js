@@ -45,7 +45,6 @@ const loadWallet = async(req,res,next)=>{
         });
 
     } catch (error) {
-        console.log("Error in rendering waller", error);
         next(error);
     }
 }
