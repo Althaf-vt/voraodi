@@ -26,6 +26,7 @@ router.get('/signup',userController.loadSignup);
 router.post('/signup',userController.signup);
 router.post('/otp-verification',userController.otpVerification)
 router.post('/resend-otp',userController.resendOtp);
+router.get('/check-user-blocked',userController.checkUserBlocked);
 
 // Signin
 router.get('/signin',userController.loadSignin);

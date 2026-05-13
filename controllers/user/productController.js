@@ -74,8 +74,8 @@ const addToWishlist = async (req, res) => {
 
         const findProduct = await Product.findOne({ _id: productId, isBlocked: false });
 
-        if(!findProduct){
-            return res.status(400).json({success:false,message:'Product is currently unavailable'});
+        if (!findProduct) {
+            return res.status(400).json({ success: false, message: 'Product is currently unavailable' });
         }
 
         const quantity = findProduct.variants.reduce((qty, variant) => qty + variant.quantity, 0);

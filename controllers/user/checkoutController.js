@@ -326,7 +326,7 @@ const placeOrder = async (req, res) => {
             const couponAmountToEach = discount / order.orderedItems.length;
 
             for (let item of order.orderedItems) {
-                item.price = (item.price * item.quantity) - couponAmountToEach;
+                item.price = (item.price * item.quantity) - couponAmountToEach
 
                 item.status = 'Pending';
             }

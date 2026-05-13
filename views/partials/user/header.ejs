@@ -358,33 +358,33 @@
             </div>
 
             <!-- Hamburger menu button (visible only on mobile) -->
-<div class="hamburger-menu">
-    <div class="icon-link hamburger-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-    </div>
-    
-    <!-- Mobile dropdown panel -->
-    <div class="mobile-dropdown-panel">
-        <a href="/">Home</a>
-        <a href="/shop">Shop</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-        
-        <div class="mobile-user-section">
-            <% if (typeof user !== 'undefined' && user) { %>
-                <a href="/account">Account</a>
-                <a href="/logout">Logout</a>
-            <% } else { %>
-                <a href="/signin">Sign In</a>
-                <a href="/signup">Sign Up</a>
-            <% } %>
+        <div class="hamburger-menu">
+            <div class="icon-link hamburger-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </div>
+            
+            <!-- Mobile dropdown panel -->
+            <div class="mobile-dropdown-panel">
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+                
+                <div class="mobile-user-section">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <a href="/account">Account</a>
+                        <a href="/logout">Logout</a>
+                    <% } else { %>
+                        <a href="/signin">Sign In</a>
+                        <a href="/signup">Sign Up</a>
+                    <% } %>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
         </div>
     </div>
     <script>
@@ -464,5 +464,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+    setInterval(()=>{
+        fetch('/check-user-blocked')
+        .then(res => res.json())
+        .then(data =>{
+            if(data.isBlocked){
+                window.location.href = '/signin';
+            }
+        })
+    })
     </script>
 </header>

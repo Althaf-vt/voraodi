@@ -506,6 +506,26 @@ const contactPage = async (req, res, next) => {
 }
 
 
+const checkUserBlocked = async(req,res)=>{
+    try {
+        if(!req.session.user){
+            return res.json({isBlocked:false});
+        }
+
+        const user = await User.findById(req.session.user);
+
+        if(!user || user.isBlocked){
+            req.session.destroy()
+            return res.json({isBlocked:true});
+        }
+
+        return res.json({isBlocked:false});
+    } catch (error) {
+        return res.status(500).json({error:"Server Error"});
+    }
+}
+
+
 module.exports = {
     loadHomepage,
     pageNotFound,
@@ -521,6 +541,7 @@ module.exports = {
     contactPage,
     cartCount,
     wishlistCount,
+    checkUserBlocked,
     // filterProduct,
     // filterByPrice,
     // searchProducts,
