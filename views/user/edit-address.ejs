@@ -34,6 +34,7 @@
             <h1 class="add-address-title">Edit Address</h1>
             <div class="add-address-card">
                 <form class="add-address-form" method="POST" action="/edit-address?id=<%= address.id %>">
+                    <%- include('../partials/csrf-field') %>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">Name</label>

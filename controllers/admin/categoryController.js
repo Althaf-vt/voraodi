@@ -1,5 +1,6 @@
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
+const { escapeRegex } = require('../../utils/escapeRegex');
 
 const categoryInfo = async (req, res, next) => {
     try {
@@ -244,10 +245,11 @@ const searchCategory = async (req, res, next) => {
         if (search === "") {
             searchResult = await Category.find({});
         } else {
+            const safeSearch = escapeRegex(search);
             searchResult = await Category.find({
                 $or: [
-                    { name: { $regex: ".*" + search + ".*", $options: "i" } },
-                    { email: { $regex: ".*" + search + ".*", $options: "i" } }
+                    { name: { $regex: safeSearch, $options: "i" } },
+                    { email: { $regex: safeSearch, $options: "i" } }
                 ]
             })
         };

@@ -9,17 +9,18 @@ const orderController = require('../controllers/admin/orderController');
 const couponController = require('../controllers/admin/couponController');
 // const dashboardController = require('../controllers/admin/dashboardController');
 const { userAuth, adminAuth } = require('../middlewares/auth');
+const { authLimiter } = require('../middlewares/rateLimit');
 const Product = require('../models/productSchema');
 
 
 
 //Login Managemant
 router.get('/signin', adminController.loadAdminSignin);
-router.post('/signin', adminController.signin);
+router.post('/signin', authLimiter, adminController.signin);
 router.get('/', adminAuth, adminController.loadDashboard);
 router.post('/sales-report', adminAuth, adminController.saleReport);
 router.post('/download-pdf', adminAuth, adminController.downloadPDF);
-router.post('/download-excel', adminController.downloadExcel);
+router.post('/download-excel', adminAuth, adminController.downloadExcel);
 router.get('/logout', adminController.logout);
 
 // Customer Management

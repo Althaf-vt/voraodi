@@ -1,0 +1,4 @@
+<% if (locals.csrfToken) { %>
+<meta name="csrf-token" content="<%= csrfToken %>">
+<script src="/re-use/csrf-client.js"></script>
+<% } %>

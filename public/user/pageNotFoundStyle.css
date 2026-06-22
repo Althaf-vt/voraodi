@@ -1,147 +1,367 @@
-*{
-    font-family: 'Montserrat', sans-serif;
+/* pageNotFoundStyle.css - VOGUE Old Money Menswear Error Page */
+
+/* ============================================
+   CSS VARIABLES (Matching all other styles)
+   ============================================ */
+:root {
+  --primary: #1a1a1a;
+  --secondary: #2d2d2d;
+  --accent: #c9a96e;
+  --accent-light: #d4af37;
+  --white: #ffffff;
+  --off-white: #f8f6f3;
+  --cream: #f5f0e8;
+  --text-dark: #1a1a1a;
+  --text-medium: #4a4a4a;
+  --text-light: #8a8a8a;
+  --border: #e8e3d9;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-elegant: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
 }
 
-/* 404 Page Not Found Section */
-.not-found-section {
+/* ============================================
+   GLOBAL RESETS & BASE STYLES
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--off-white);
+  color: var(--text-dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+}
+
+/* ============================================
+   NOT FOUND SECTION
+   ============================================ */
+.not-found-section {
+  flex: 1;
+  display: flex;
   align-items: center;
-  text-align: center;
-  background: #f5f5e8;
-  padding: 80px 20px;
+  justify-content: center;
+  padding: 60px 20px;
+  min-height: calc(100vh - 200px);
+  animation: sectionFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes sectionFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .not-found-container {
-  position: relative;
-  padding: 40px;
-  background: rgba(255, 255, 245, 0.85);
-  border: 5px solid #d4af37;
-  border-image: linear-gradient(45deg, #d4af37, #b8972e) 1;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  max-width: 500px;
-  width: 100%;
+  text-align: center;
+  max-width: 600px;
+  animation: containerReveal 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.1s both;
 }
 
+@keyframes containerReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   STATUS CODE
+   ============================================ */
 .not-found-container h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 100px;
-  font-weight: 700;
-  color: #2f3a44;
+  font-size: 10rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  letter-spacing: -4px;
   margin-bottom: 10px;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.not-found-container .subtitle {
-  font-family: 'Playfair Display', serif;
-  font-size: 28px;
-  color: #2f3a44;
-  margin-bottom: 20px;
-}
-
-.not-found-container p {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 16px;
-  color: #2f3a44;
-  margin-bottom: 30px;
-  line-height: 1.6;
-}
-
-.not-found-container .cta-button {
-  padding: 12px 30px;
-  background: linear-gradient(135deg, #d4af37, #b8972e);
-  color: #2f3a44;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  animation: numberReveal 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
   position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  text-decoration: none;
   display: inline-block;
 }
 
-.not-found-container .cta-button::before {
+@keyframes numberReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Subtle accent underline */
+.not-found-container h1::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: var(--accent);
+  animation: lineExpand 0.8s ease-out 0.8s both;
 }
 
-.not-found-container .cta-button:hover::before {
-  left: 100%;
+@keyframes lineExpand {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 60%;
+  }
 }
 
-.not-found-container .cta-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.7);
-  background: linear-gradient(135deg, #006400, #228B22);
-  color: #f5f5e8;
+/* ============================================
+   SUBTITLE
+   ============================================ */
+.subtitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  margin-top: 25px;
+  animation: subtitleReveal 0.6s ease-out 0.5s both;
 }
 
-/* Responsive Design */
+@keyframes subtitleReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   MESSAGE
+   ============================================ */
+.not-found-container p {
+  font-size: 1.1rem;
+  color: var(--text-medium);
+  line-height: 1.8;
+  margin-bottom: 40px;
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: messageReveal 0.6s ease-out 0.6s both;
+}
+
+@keyframes messageReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   ERROR STACK (Development)
+   ============================================ */
+.error-stack {
+  text-align: left;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-md);
+  padding: 20px 25px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--danger);
+  max-width: 500px;
+  margin: 0 auto 30px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  box-shadow: var(--shadow-sm);
+  animation: messageReveal 0.6s ease-out 0.65s both;
+}
+
+/* ============================================
+   CTA BUTTON
+   ============================================ */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: var(--primary);
+  color: var(--white);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  animation: buttonReveal 0.6s ease-out 0.7s both;
+}
+
+@keyframes buttonReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cta-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.cta-button:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+
+.cta-button:hover::after {
+  width: 400px;
+  height: 400px;
+}
+
+.cta-button:active {
+  transform: scale(0.97);
+}
+
+/* Optional: Add a subtle arrow to the button */
+.cta-button::before {
+  content: '→';
+  margin-left: 0;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all var(--transition-smooth);
+  order: 1;
+}
+
+.cta-button:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+  margin-left: 8px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 768px) {
-  .not-found-container {
-    padding: 30px;
+  .not-found-section {
+    padding: 50px 20px;
   }
-
+  
   .not-found-container h1 {
-    font-size: 80px;
+    font-size: 7rem;
+    letter-spacing: -3px;
   }
-
-  .not-found-container .subtitle {
-    font-size: 24px;
+  
+  .subtitle {
+    font-size: 1.4rem;
+    letter-spacing: 1.5px;
   }
-
+  
   .not-found-container p {
-    font-size: 14px;
+    font-size: 1rem;
+  }
+  
+  .cta-button {
+    padding: 14px 30px;
+    font-size: 0.9rem;
   }
 }
 
 @media (max-width: 480px) {
-  .not-found-container {
-    padding: 20px;
-    max-width: 280px;
+  .not-found-section {
+    padding: 40px 15px;
   }
-
+  
   .not-found-container h1 {
-    font-size: 60px;
+    font-size: 5rem;
+    letter-spacing: -2px;
   }
-
-  .not-found-container .subtitle {
-    font-size: 20px;
+  
+  .not-found-container h1::after {
+    bottom: -6px;
+    height: 2px;
   }
-
+  
+  .subtitle {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    margin-top: 20px;
+  }
+  
   .not-found-container p {
-    font-size: 12px;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
   }
-
-  .not-found-container .cta-button {
-    padding: 10px 20px;
-    font-size: 12px;
+  
+  .cta-button {
+    padding: 12px 24px;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+  }
+  
+  .error-stack {
+    padding: 15px;
+    font-size: 0.7rem;
   }
 }
-.error-stack {
-    background: #f8f8f8;
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 20px;
-    font-family: monospace;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    color: #d32f2f;
-    font-size: 14px;
-    max-width: 100%;
-    overflow-x: auto;
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

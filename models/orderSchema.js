@@ -113,7 +113,22 @@ const orderSchema = new Schema({
     deliveryCharge: {
         type: Number,
         default: 50,
-    }
+    },
+    razorpayPaymentId: {
+        type: String,
+        default: null,
+        sparse: true,
+        unique: true,
+    },
+    razorpayOrderId: {
+        type: String,
+        default: null,
+        index: true,
+    },
+    paymentCapturedAt: {
+        type: Date,
+        default: null,
+    },
 })
 
 

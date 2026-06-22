@@ -1,5 +1,6 @@
 const User = require('../../models/userSchema');
 const { options } = require('../../server');
+const { escapeRegex } = require('../../utils/escapeRegex');
 
 const customerInfo = async (req, res, next) => {
     try {
@@ -12,11 +13,12 @@ const customerInfo = async (req, res, next) => {
             page = parseInt(req.query.page);
         }
         const limit = 5;
+        const safeSearch = escapeRegex(search);
         const userData = await User.find({
             isAdmin: false,
             $or: [
-                { name: { $regex: ".*" + search + ".*", $options: 'i' } },
-                { email: { $regex: ".*" + search + ".*", $options: 'i' } }
+                { name: { $regex: safeSearch, $options: 'i' } },
+                { email: { $regex: safeSearch, $options: 'i' } }
             ],
         })
             .sort({ createdOn: -1 })
@@ -27,8 +29,8 @@ const customerInfo = async (req, res, next) => {
         const count = await User.find({
             isAdmin: false,
             $or: [
-                { name: { $regex: ".*" + search + ".*", $options: 'i' } },
-                { email: { $regex: ".*" + search + ".*", $options: 'i' } }
+                { name: { $regex: safeSearch, $options: 'i' } },
+                { email: { $regex: safeSearch, $options: 'i' } }
             ],
         }).countDocuments();
 
@@ -78,9 +80,10 @@ const seachCustomer = async (req, res, next) => {
         if (search === "") {
             searchResult = await User.find({ isAdmin: false });
         } else {
+            const safeSearch = escapeRegex(search);
             searchResult = await User.find({
                 isAdmin: false,
-                name: { $regex: ".*" + search + ".*", $options: "i" }
+                name: { $regex: safeSearch, $options: "i" }
                 // $or:[
                 //     {name:{$regex:".*"+search+".*",$options:"i"}},
                 //     {email:{$regex:".*"+search+".*",$options:"i"}}

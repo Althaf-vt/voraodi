@@ -11,6 +11,8 @@ const { search } = require('../../server');
 const { find } = require('../../models/addressSchema');
 const mongoose = require('mongoose');
 const Wishlist = require('../../models/whishlistSchema');
+const { escapeRegex } = require('../../utils/escapeRegex');
+const { isValidEmail, isValidSignupPassword } = require('../../utils/inputValidation');
 
 
 
@@ -130,6 +132,15 @@ async function generateReferralCode(name) {
 const signup = async (req, res, next) => {
     try {
         const { name, phone, email, password, cPassword } = req.body;
+        if (!name?.trim() || !email?.trim() || !password || !phone?.trim()) {
+            return res.render('signup', { message: 'All fields are required' });
+        }
+        if (!isValidEmail(email)) {
+            return res.render('signup', { message: 'Please enter a valid email address' });
+        }
+        if (!isValidSignupPassword(password)) {
+            return res.render('signup', { message: 'Password must be at least 8 characters' });
+        }
         if (password !== cPassword) {
             return res.render('signup', { message: "Password do not match" });
         }
@@ -156,7 +167,6 @@ const signup = async (req, res, next) => {
         req.session.userData = { name, phone, email, password }
 
         res.render('otp-verification');
-        console.log('OTP Sent', otp)
     } catch (error) {
         error.message = error.message || 'Signup process failed';
         error.statusCode = error.statusCode || 500;
@@ -247,7 +257,6 @@ const resendOtp = async (req, res) => {
 
         const emailSend = await sendVerificationEmail(email, otp)
         if (emailSend) {
-            console.log("Resend OTP : ", otp);
             return res.status(200).json({ success: true, message: "OTP Resend Successfully" })
         } else {
             return res.status(500).json({ success: false, message: "Failed to resend OTP. Please try again" });
@@ -380,7 +389,7 @@ const loadShoppingPage = async (req, res, next) => {
         }
 
         if (searchQuery) {
-            filter.productName = { $regex: searchQuery, $options: 'i' };
+            filter.productName = { $regex: escapeRegex(searchQuery), $options: 'i' };
         }
 
         if (priceFilter === 'under500') {

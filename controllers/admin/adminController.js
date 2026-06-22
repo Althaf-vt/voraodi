@@ -112,7 +112,7 @@ const signin = async (req, res, next) => {
         if (admin) {
             const passwordMatch = await bcrypt.compare(password, admin.password);
             if (passwordMatch) {
-                req.session.admin = true;
+                req.session.admin = admin._id;
                 return res.redirect('/admin/')
             } else {
                 res.render('adminSignin', { message: 'password incorrect' })

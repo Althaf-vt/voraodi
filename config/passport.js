@@ -65,7 +65,7 @@ async (req, accessToken, refreshToken, profile, done) => {
                 userId: user._id,
             });
 
-            newWallet.save();
+            await newWallet.save();
             return done(null, user);
         }
     } catch (error) {

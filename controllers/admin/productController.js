@@ -4,6 +4,7 @@ const User = require('../../models/userSchema');
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { escapeRegex } = require('../../utils/escapeRegex');
 // const { enabled } = require('../../server');
 
 const getAddProduct = async (req, res,next) => {
@@ -404,8 +405,9 @@ const searchProduct = async(req,res,next)=>{
         if (search === "") {
             searchResult = await Product.find().populate('category');;
         }else{
+            const safeSearch = escapeRegex(search);
             searchResult = await Product.find({
-            productName:{$regex:".*"+search+".*",$options:"i"}
+            productName:{$regex: safeSearch, $options:"i"}
             // $or:[
             //     {productName:{$regex:".*"+search+".*",$options:"i"}},
             // ]    

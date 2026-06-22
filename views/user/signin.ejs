@@ -22,6 +22,7 @@
       </div>
 
       <form id="signin-form" action="/signin" method="POST">
+        <%- include('../partials/csrf-field') %>
         <div class="form-field">
           <label for="email">
             <i data-lucide="mail" width="14" height="14"></i>

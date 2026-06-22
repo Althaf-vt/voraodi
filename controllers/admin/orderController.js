@@ -1,7 +1,14 @@
 const User = require('../../models/userSchema');
-const Product = require('../../models/productSchema');
 const Order = require('../../models/orderSchema');
-const Wallet = require('../../models/walletSchema');
+const { creditWallet } = require('../../utils/walletOps');
+const { incrementVariantStock } = require('../../utils/stockOps');
+const { withTransaction } = require('../../utils/withTransaction');
+const {
+    getReturnItemRefundAmount,
+    getReturnOrderRefundAmount,
+    getActiveBillableItems,
+    computeOrderFinalAmount,
+} = require('../../utils/orderPricing');
 
 const loadOrders = async (req, res, next) => {
     try {
@@ -121,76 +128,62 @@ const updateOrderStatus = async (req, res) => {
 const approveReturnOrder = async (req, res) => {
     try {
         const { orderId } = req.body;
-        const order = await Order.findOne({ orderId: orderId });
 
-        if (!order) {
-            return res.status(400).json({ success: false, message: 'Order not found' });
-        }
+        await withTransaction(async (session) => {
+            const order = await Order.findOne({ orderId }).session(session);
+            if (!order) {
+                throw Object.assign(new Error('Order not found'), { statusCode: 400 });
+            }
 
-        
+            const activeItems = getActiveBillableItems(order);
+            const refundAmount = getReturnOrderRefundAmount(order);
 
-        order.status = 'Returned';
-        order.returnStatus = 'Returned';
+            for (const item of activeItems) {
+                item.status = 'Returned';
+                item.returnStatus = 'Returned';
+                await incrementVariantStock(
+                    item.product,
+                    item.sku,
+                    item.size,
+                    item.quantity,
+                    session
+                );
+            }
 
+            order.status = 'Returned';
+            order.returnStatus = 'Returned';
 
-        // find active orders
-        const activeItems = order.orderedItems.filter(item => 
-            item.status !== 'Cancelled' && item.status !== 'Returned' && item.returnStatus !== 'Returned'
-        );
-
-        const activeItemsTotal = activeItems.reduce((total,item)=> total + item.price,0);
-        const amountToRefund = activeItemsTotal;
-
-        activeItems.map(item => item.status = 'Returned');
-        activeItems.map(item => item.returnStatus = 'Returned');
-
-
-        // Refund Amount to wallet
-        const refundAmount = amountToRefund;
-
-        await Wallet.updateOne(
-            { userId: order.userId },
-            {
-                $inc: { balance: refundAmount },
-                $push: {
-                    transactions: {
+            if (refundAmount > 0) {
+                const credit = await creditWallet(
+                    order.userId,
+                    refundAmount,
+                    {
                         type: 'credit',
                         amount: refundAmount,
-                        reason: "Order returned",
+                        reason: 'Order returned',
                         orderId: order.orderId,
-                    }
+                    },
+                    session
+                );
+                if (!credit.ok) {
+                    throw Object.assign(new Error(credit.message || 'Refund failed'), {
+                        statusCode: 500,
+                    });
                 }
             }
-        )
 
-
-        await order.save()
-
-        const items = order.orderedItems;
-
-        for (const item of items) {
-            const product = await Product.findById(item.product);
-
-            if (product) {
-                const variant = product.variants.find(v => v.sku === item.sku);
-
-                if (variant) {
-                    variant.quantity += item.quantity;
-
-                    await product.save()
-                } else {
-                    console.log(`Variant with SKU ${item.sku} not found in product ${product._id}`);
-                }
-            } else {
-                console.warn(`Product not found with id ${item.product}`);
-            }
-        }
+            order.finalAmount = computeOrderFinalAmount(order);
+            await order.save({ session });
+        });
 
         return res.status(200).json({ success: true, message: 'Request approved' });
-
     } catch (error) {
         console.log('Error in Approving return order', error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        const status = error.statusCode || 500;
+        return res.status(status).json({
+            success: false,
+            message: error.message || 'Internal Server Error',
+        });
     }
 }
 
@@ -220,84 +213,73 @@ const approveReturnItem = async (req, res) => {
     try {
         const { orderId, sku } = req.body;
 
-        const order = await Order.findOne({ orderId: orderId });
-        const userId = order.userId;
+        await withTransaction(async (session) => {
+            const order = await Order.findOne({ orderId }).session(session);
+            if (!order) {
+                throw Object.assign(new Error('Order not found'), { statusCode: 400 });
+            }
 
-        if (!order) return res.status(400).json({ success: false, message: 'Order not found' });
+            const requestedItem = order.orderedItems.find((item) => item.sku === sku);
+            if (!requestedItem) {
+                throw Object.assign(new Error('Item not found'), { statusCode: 400 });
+            }
 
-        // const orderedItems = order.orderedItems;
+            const refundAmount = getReturnItemRefundAmount(requestedItem, order);
 
-        const requestedItem = order.orderedItems.find(item => item.sku === sku);
+            requestedItem.returnStatus = 'Returned';
+            requestedItem.status = 'Returned';
 
-        if (!requestedItem) return res.status(400).json({ success: false, message: 'Item not found' });
+            const restocked = await incrementVariantStock(
+                requestedItem.product,
+                requestedItem.sku,
+                requestedItem.size,
+                requestedItem.quantity,
+                session
+            );
+            if (!restocked) {
+                throw Object.assign(new Error('Product variant not found'), { statusCode: 500 });
+            }
 
-        requestedItem.returnStatus = 'Returned';
-        requestedItem.status = 'Returned';
-
-        // Calculate refund amount
-        const unitPrice = requestedItem.price / requestedItem.quantity; // Price per item
-        const refundAmount = unitPrice * requestedItem.quantity; // Total price for returned items
-
-
-        await Wallet.updateOne(
-            { userId: userId },
-            {
-                $inc: { balance: refundAmount },
-                $push: {
-                    transactions: {
+            if (refundAmount > 0) {
+                const credit = await creditWallet(
+                    order.userId,
+                    refundAmount,
+                    {
                         type: 'credit',
                         amount: refundAmount,
-                        reason: "Product returned",
-                        orderId: orderId,
-                        quantity: requestedItem.quantity
-                    }
+                        reason: 'Product returned',
+                        orderId,
+                        quantity: requestedItem.quantity,
+                    },
+                    session
+                );
+                if (!credit.ok) {
+                    throw Object.assign(new Error(credit.message || 'Refund failed'), {
+                        statusCode: 500,
+                    });
                 }
             }
-        )
 
-        // Restore product quantity
-        const product = await Product.findById(requestedItem.product);
-
-        if (product) {
-            const variant = product.variants.find(v => v.sku === requestedItem.sku);
-
-            if (variant) {
-                variant.quantity += requestedItem.quantity;
-                await product.save();
-            } else {
-                console.log(`Variant with SKU ${requestedItem.sku} not found in product ${product._id}`);
+            const allItemsReturned = order.orderedItems.every(
+                (item) => item.returnStatus === 'Returned' || item.status === 'Returned'
+            );
+            if (allItemsReturned) {
+                order.status = 'Returned';
+                order.returnStatus = 'Returned';
             }
-        } else {
-            console.warn(`Product not found with id ${requestedItem.product}`);
-        }
 
-        requestedItem.status = 'Returned';
-
-        // Update order totals
-        // const activeItems = order.orderedItems.filter(item => 
-        //     item.status !== 'Cancelled' && item.status !== 'Returned' && item.returnStatus !== 'Returned'
-        // );
-        // const newTotalPrice = activeItems.reduce((sum, item) => sum + (item.price), 0);
-
-        // order.totalPrice = newTotalPrice;
-        // order.finalAmount = newTotalPrice - order.discount + order.deliveryCharge;
-
-        // Check if all items are now returned
-        const allItemsReturned = order.orderedItems.every(item => 
-            item.returnStatus === 'Returned' || item.status === 'Returned'
-        );
-        
-        if (allItemsReturned) {
-            order.status = 'Returned';
-            order.returnStatus = 'Returned';
-        }
-
-        await order.save();
+            order.finalAmount = computeOrderFinalAmount(order);
+            await order.save({ session });
+        });
 
         return res.status(200).json({ success: true, message: 'Return request approved' });
     } catch (error) {
         console.log('Error in approve return item ', error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        const status = error.statusCode || 500;
+        return res.status(status).json({
+            success: false,
+            message: error.message || 'Internal Server Error',
+        });
     }
 }
 

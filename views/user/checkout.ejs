@@ -650,7 +650,7 @@
                     }
 
                     const options = {
-                        key: '<%= process.env.RAZORPAY_KEY_ID %>',
+                        key: '<%= razorpayKeyId %>',
                         amount: order.amount,
                         currency: "INR",
                         name: "VORAODI",
@@ -675,38 +675,10 @@
                             })
                             .then(res => res.json())
                             .then(data => {
-                                if(data.success){
-                                    if (retryOrderId) {
-                                        // Retry payment: order already exists, just redirect
-                                        window.location.href = `/order-success/${retryOrderId}`;
-                                    } else {
-                                        // Normal payment: create order from cart
-                                        fetch('/place-order',{
-                                            method: "POST",
-                                            headers: {
-                                                'Content-Type':'application/json'
-                                            },
-                                            body: JSON.stringify({
-                                                userId,
-                                                addressId,
-                                                paymentMethod,
-                                                couponCode
-                                            })
-                                        })
-                                        .then(result => result.json())
-                                        .then(info => {
-                                            if(info.success){
-                                                const orderId = info.orderId
-                                                window.location.href = `/order-success/${orderId}`;
-                                            }else{
-                                                toastMessage(info,'error')
-                                            }
-                                        })
-                                        .catch(err => {
-                                            let data = {message : 'Something went wrong'}
-                                            toastMessage(data,'error')
-                                        })
-                                    }
+                                if(data.success && data.orderId){
+                                    window.location.href = `/order-success/${data.orderId}`;
+                                } else if(data.success && retryOrderId){
+                                    window.location.href = `/order-success/${retryOrderId}`;
                                 }else{
                                     toastMessage(data,'error')
                                 }

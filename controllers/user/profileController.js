@@ -18,6 +18,7 @@ const mongoose = require("mongoose");
 const Coupon = require('../../models/couponSchema');
 const messages = require('../../public/constants/messages');
 const statusCodes = require('../../public/constants/statusCodes');
+const { isValidEmail } = require('../../utils/inputValidation');
 
 
 // Generate OTP
@@ -89,7 +90,7 @@ const forgotEmailValid = async (req, res, next) => {
     try {
 
         if (req.session.step !== 'forgot-pass') {
-            return redirect('/singin');
+            return res.redirect('/signin');
         }
 
         const { email } = req.body;
@@ -104,7 +105,6 @@ const forgotEmailValid = async (req, res, next) => {
                 req.session.userOtp = otp;
                 req.session.email = email;
                 req.session.step = 'forgot-pass-otp';
-                console.log('F-Pass-OTP : ', otp);
                 return res.redirect('/forgot-pass-otp');
 
             } else {
@@ -152,7 +152,7 @@ const verifyForgotPassOtp = async (req, res) => {
     }
 }
 
-const getResetPassword = async (req, res, error) => {
+const getResetPassword = async (req, res, next) => {
     try {
         if (req.session.user) {
             return res.redirect('/')
@@ -177,7 +177,6 @@ const resendOtp = async (req, res) => {
         const emailSend = await sendVerificationEmail(email, otp);
 
         if (emailSend) {
-            console.log(`Resended OTP : ${otp}`);
 
             return res.status(200).json({ success: true, message: "Resend OTP Successful" });
         }
@@ -344,8 +343,6 @@ const changeEmailValid = async (req, res, next) => {
                 req.session.email = email;
                 req.session.step = 'otp-verify'; // session created 
 
-                console.log('Change Email OTP :', otp);
-
                 return res.redirect('/verify-email-otp');
 
             } else {
@@ -431,7 +428,7 @@ const UpdateEmail = async (req, res, next) => {
             return res.redirect('/userProfile');
         }
 
-        const newEmail = req.body.newEmail;
+        const newEmail = req.body.newEmail?.trim();
         const userId = req.session.user;
         const user = await User.findOne({ _id: userId });
 
@@ -441,9 +438,28 @@ const UpdateEmail = async (req, res, next) => {
             throw err;
         }
 
-        if (user.email === newEmail) {
-            res.render('new-email', { message: 'Please enter an email that different from the old one', userData: user })
+        if (!newEmail || !isValidEmail(newEmail)) {
+            return res.render('new-email', {
+                message: 'Please enter a valid email address',
+                userData: user,
+            });
         }
+
+        if (user.email === newEmail) {
+            return res.render('new-email', {
+                message: 'Please enter an email that different from the old one',
+                userData: user,
+            });
+        }
+
+        const emailTaken = await User.findOne({ email: newEmail, _id: { $ne: userId } });
+        if (emailTaken) {
+            return res.render('new-email', {
+                message: 'This email is already registered',
+                userData: user,
+            });
+        }
+
         await User.findByIdAndUpdate(userId, { email: newEmail });
 
         // remove all created sessions
@@ -502,7 +518,6 @@ const changePasswordValid = async (req, res, next) => {
                 req.session.email = email;
                 req.session.step = 'change-pass-otp';
 
-                console.log("OTP : ", otp);
                 return res.redirect('/verify-change-pass-otp');
             } else {
                 return res.json({

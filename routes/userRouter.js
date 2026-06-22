@@ -10,6 +10,7 @@ const orderController = require('../controllers/user/orderController');
 const wallterController = require('../controllers/user/walletController')
 const multer = require('../middlewares/profileMulter');
 const { userAuth } = require('../middlewares/auth');
+const { authLimiter, otpLimiter, checkoutLimiter } = require('../middlewares/rateLimit');
 
 
 // Home Page & Shopping page
@@ -23,20 +24,20 @@ router.get('/contact',userController.contactPage)
 
 // Signup
 router.get('/signup',userController.loadSignup);
-router.post('/signup',userController.signup);
-router.post('/otp-verification',userController.otpVerification)
-router.post('/resend-otp',userController.resendOtp);
+router.post('/signup', authLimiter, userController.signup);
+router.post('/otp-verification', otpLimiter, userController.otpVerification);
+router.post('/resend-otp', otpLimiter, userController.resendOtp);
 router.get('/check-user-blocked',userController.checkUserBlocked);
 
 // Signin
 router.get('/signin',userController.loadSignin);
-router.post('/signin',userController.signin)
+router.post('/signin', authLimiter, userController.signin);
 
 // For Google Sign In
-router.get('/auth/google/signin',passport.authenticate('google', {scope: ['profile', 'email'],state: 'signin'}));
+router.get('/auth/google/signin', authLimiter, passport.authenticate('google', {scope: ['profile', 'email'],state: 'signin'}));
 
 // For Google Sign Up
-router.get('/auth/google/signup',passport.authenticate('google', {scope: ['profile', 'email'],state: 'signup'}));
+router.get('/auth/google/signup', authLimiter, passport.authenticate('google', {scope: ['profile', 'email'],state: 'signup'}));
 
 // Google OAuth callback handler
 router.get('/auth/google/callback',passport.authenticate('google', {failureRedirect: '/handle-auth-failure',
@@ -68,25 +69,25 @@ router.get('/handle-auth-failure', (req, res) => {
 
 // Profile Management
 router.get('/forgot-password',profileController.getForgotPassword);
-router.post('/forgot-password',profileController.forgotEmailValid);
+router.post('/forgot-password', authLimiter, profileController.forgotEmailValid);
 router.get('/forgot-pass-otp',profileController.forgotPassOtp);
-router.post('/forgot-pass-otp',profileController.verifyForgotPassOtp);
-router.post('/resend-forgot-otp',profileController.resendOtp);
+router.post('/forgot-pass-otp', otpLimiter, profileController.verifyForgotPassOtp);
+router.post('/resend-forgot-otp', otpLimiter, profileController.resendOtp);
 router.get('/reset-password',profileController.getResetPassword);
-router.post('/reset-password',profileController.NewPassword);
+router.post('/reset-password', authLimiter, profileController.NewPassword);
 
 router.get('/userProfile',userAuth,profileController.userProfile);
 router.get('/account',userAuth,profileController.userAccount)
 
 router.get('/change-email',userAuth,profileController.changeEmail);
-router.post('/change-email',userAuth,profileController.changeEmailValid);
+router.post('/change-email', userAuth, authLimiter, profileController.changeEmailValid);
 router.get('/verify-email-otp',userAuth,profileController.emailOtpPage);
-router.post('/verify-email-otp',userAuth,profileController.verifyOtp);
+router.post('/verify-email-otp', userAuth, otpLimiter, profileController.verifyOtp);
 router.post('/update-email',userAuth,profileController.UpdateEmail)
 router.get('/change-password',userAuth,profileController.changePassword)
-router.post('/change-password',userAuth,profileController.changePasswordValid);
+router.post('/change-password', userAuth, authLimiter, profileController.changePasswordValid);
 router.get('/verify-change-pass-otp',userAuth,profileController.passOtpPage);
-router.post('/verify-change-pass-otp',userAuth,profileController.verifyChangePassOtp);
+router.post('/verify-change-pass-otp', userAuth, otpLimiter, profileController.verifyChangePassOtp);
 router.post('/update-password',userAuth,profileController.UpdatePassword);
 router.patch('/edit-profile/name',userAuth,profileController.changeName);
 router.patch('/edit-profile/phone',userAuth,profileController.changePhone);
@@ -126,15 +127,15 @@ router.get('/invoice',userAuth,orderController.invoice);
 
 // Checkout
 router.get('/checkout',userAuth,checkoutController.loadCheckout);
-router.post('/apply-coupon',userAuth,checkoutController.applyCoupon)
-router.post('/cart/check-stock',userAuth,checkoutController.checkStock);
-router.post('/verify-razorpay-payment',userAuth,checkoutController.verifyRazorpayPayment);
-router.post('/place-order',userAuth,checkoutController.placeOrder);
+router.post('/apply-coupon', userAuth, checkoutLimiter, checkoutController.applyCoupon)
+router.post('/cart/check-stock', userAuth, checkoutLimiter, checkoutController.checkStock);
+router.post('/verify-razorpay-payment', userAuth, checkoutLimiter, checkoutController.verifyRazorpayPayment);
+router.post('/place-order', userAuth, checkoutLimiter, checkoutController.placeOrder);
 router.get('/order-success/:id',userAuth,checkoutController.orderSuccess);
-router.post('/payment-failed',userAuth,checkoutController.paymentFailed)
+router.post('/payment-failed', userAuth, checkoutLimiter, checkoutController.paymentFailed)
 router.get('/payment-failed',userAuth,checkoutController.getPaymentFailed)
-router.post('/retry-razorpay-order',userAuth,checkoutController.retryRazorpayOrder);
-router.post('/create-razorpay-order',userAuth,checkoutController.createRazorpayOrder);
+router.post('/retry-razorpay-order', userAuth, checkoutLimiter, checkoutController.retryRazorpayOrder);
+router.post('/create-razorpay-order', userAuth, checkoutLimiter, checkoutController.createRazorpayOrder);
 
 // Wallet & referral code
 router.get('/wallet',userAuth,wallterController.loadWallet);

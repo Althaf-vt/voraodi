@@ -41,15 +41,16 @@
                             <div class="order-card-header">
                                 <div class="order-meta">
                                     <span class="order-id">
-                                        <%= order.orderedItems[0].product.productName %>
-                                        <% if( order.orderedItems[1]?.product?.productName && order.orderedItems[0].product.productName !== order.orderedItems[1].product.productName) {%>
-                                        <% if(order?.orderedItems[1]?.product.productName) {%>,<% } %>
-                                        <%= order?.orderedItems[1]?.product.productName %>
-                                        <% } %>
-                                    <% if(order.orderedItems[1]?.product?.productName && order.orderedItems[0].product.productName !== order.orderedItems[1].product.productName && order.orderedItems.length > 2 ){%>
-                                        ...    
-                                    <% } %>
-                                    </span>
+    <%= order?.orderedItems?.[0]?.product?.productName || 'Product not available' %>
+
+    <% if (
+        order?.orderedItems?.[1]?.product?.productName &&
+        order?.orderedItems?.[0]?.product?.productName !==
+        order?.orderedItems?.[1]?.product?.productName
+    ) { %>
+        , <%= order.orderedItems[1].product.productName %>
+    <% } %>
+</span>
                                     <span class="order-date"><%= new Date(order.invoiceDate).toLocaleDateString() %></span>
                                 </div>
                                 <span class="order-status <%= order.status.toLowerCase().replace(' ', '-') %>">

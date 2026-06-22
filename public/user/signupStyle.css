@@ -1,125 +1,354 @@
+/* signupStyle.css - VOGUE Old Money Menswear Sign Up */
+
+/* ============================================
+   CSS VARIABLES (Matching all other styles)
+   ============================================ */
 :root {
-  --accent-gold: #d4af37;
-  --accent-dark: #2f3a44;
-  --accent-green: #004d00;
-  --accent-red: #c00000;
-  --text-primary: #2f3a44;
-  --text-secondary: #4a4a4a;
-  --text-tertiary: #666666;
-  --bg-primary: #f5f5e8;
-  --bg-secondary: #fffef4;
+  --primary: #1a1a1a;
+  --secondary: #2d2d2d;
+  --accent: #c9a96e;
+  --accent-light: #d4af37;
+  --white: #ffffff;
+  --off-white: #f8f6f3;
+  --cream: #f5f0e8;
+  --text-dark: #1a1a1a;
+  --text-medium: #4a4a4a;
+  --text-light: #8a8a8a;
+  --border: #e8e3d9;
+  --danger: #dc3545;
+  --success: #28a745;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-elegant: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
 }
 
-.auth-container {
-  min-height: calc(100vh - 120px);
+/* ============================================
+   GLOBAL RESETS & BASE STYLES
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--off-white);
+  color: var(--text-dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+}
+
+/* ============================================
+   AUTH CONTAINER
+   ============================================ */
+.auth-container {
+  flex: 1;
+  display: flex;
   align-items: center;
-  padding: 100px 20px;
-  background-color: var(--bg-primary);
+  justify-content: center;
+  padding: 60px 20px;
+  min-height: calc(100vh - 200px);
+  animation: containerFadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
+@keyframes containerFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   AUTH CARD
+   ============================================ */
 .auth-card {
-  background: var(--bg-secondary);
-  border-radius: 10px;
-  padding: 30px;
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  padding: 45px 40px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 5px 20px rgba(47, 58, 68, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  max-width: 500px;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border);
+  animation: cardReveal 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.1s both;
 }
 
+@keyframes cardReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   AUTH HEADER
+   ============================================ */
 .auth-header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
+  animation: headerReveal 0.5s ease-out 0.2s both;
+}
+
+@keyframes headerReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .auth-icon {
-  color: var(--accent-gold);
-  margin-bottom: 12px;
+  width: 48px;
+  height: 48px;
+  color: var(--accent);
+  margin-bottom: 18px;
+  animation: iconBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s both;
+}
+
+@keyframes iconBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .auth-header h1 {
-  font-size: 20px;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 6px;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
 }
 
 .auth-header p {
-  color: var(--text-tertiary);
-  font-size: 13px;
-  margin: 0;
-  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-medium);
 }
 
-#signup-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
+/* ============================================
+   FORM FIELDS
+   ============================================ */
 .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: fieldReveal 0.5s ease-out forwards;
+}
+
+.form-field:nth-child(1) { animation-delay: 0.3s; }
+.form-field:nth-child(2) { animation-delay: 0.33s; }
+.form-field:nth-child(3) { animation-delay: 0.36s; }
+.form-field:nth-child(4) { animation-delay: 0.39s; }
+.form-field:nth-child(5) { animation-delay: 0.42s; }
+
+@keyframes fieldReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .form-field label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-medium);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.form-field label svg {
+  color: var(--accent);
+  width: 14px;
+  height: 14px;
 }
 
 .form-field input {
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 13px;
-  transition: all 0.2s ease;
-  background-color: white;
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--border-radius-sm);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  outline: none;
+  transition: all var(--transition-fast);
+  background: var(--white);
 }
 
 .form-field input:focus {
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
-  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.05);
 }
 
+.form-field input::placeholder {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+/* Input with error state */
+.form-field input.error {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.05);
+}
+
+/* Error Message */
+.error-message {
+  display: none;
+  font-size: 0.78rem;
+  color: var(--danger);
+  margin-top: 6px;
+  min-height: 18px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: all var(--transition-fast);
+}
+
+.error-message:not(:empty) {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   ALERT MESSAGE
+   ============================================ */
+.alert {
+  padding: 14px 18px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 18px;
+  text-align: center;
+  opacity: 0;
+  animation: alertReveal 0.4s ease-out 0.45s both;
+}
+
+@keyframes alertReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-danger {
+  background: rgba(220, 53, 69, 0.08);
+  color: var(--danger);
+  border: 1px solid rgba(220, 53, 69, 0.15);
+}
+
+/* ============================================
+   SUBMIT BUTTON
+   ============================================ */
 .submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(45deg, var(--accent-gold), #b8972e);
-  color: var(--text-primary);
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 6px;
+  gap: 10px;
+  opacity: 0;
+  animation: fieldReveal 0.5s ease-out 0.48s both;
+}
+
+.submit-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
 }
 
 .submit-btn:hover {
-  background: linear-gradient(45deg, #b8972e, var(--accent-gold));
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(212, 175, 55, 0.2);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
+.submit-btn:hover::after {
+  width: 500px;
+  height: 500px;
+}
+
+.submit-btn:hover svg {
+  transform: translateX(3px);
+}
+
+.submit-btn svg {
+  transition: transform var(--transition-fast);
+}
+
+.submit-btn:active {
+  transform: scale(0.97);
+}
+
+/* ============================================
+   AUTH DIVIDER
+   ============================================ */
 .auth-divider {
   display: flex;
   align-items: center;
-  margin: 18px 0;
-  color: var(--text-tertiary);
-  font-size: 12px;
-  font-weight: 500;
+  gap: 15px;
+  margin: 28px 0;
+  opacity: 0;
+  animation: fieldReveal 0.5s ease-out 0.52s both;
 }
 
 .auth-divider::before,
@@ -127,84 +356,167 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: #eee;
-  margin: 0 10px;
+  background: var(--border);
 }
 
+.auth-divider span {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ============================================
+   GOOGLE SIGN IN BUTTON
+   ============================================ */
 .google-signin-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
-  padding: 10px;
-  background: white;
-  color: var(--text-primary);
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 14px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-dark);
   text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all var(--transition-smooth);
+  opacity: 0;
+  animation: fieldReveal 0.5s ease-out 0.55s both;
 }
 
 .google-signin-btn:hover {
-  background: #f9f9f9;
-  border-color: #ccc;
-  transform: translateY(-1px);
+  border-color: var(--text-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.google-signin-btn:active {
+  transform: scale(0.97);
+  background: var(--off-white);
 }
 
 .google-signin-btn img {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
+/* ============================================
+   AUTH FOOTER
+   ============================================ */
 .auth-footer {
   text-align: center;
-  margin-top: 20px;
-  font-size: 13px;
-  color: var(--text-tertiary);
+  margin-top: 28px;
+  font-size: 0.9rem;
+  color: var(--text-medium);
+  opacity: 0;
+  animation: fieldReveal 0.5s ease-out 0.58s both;
 }
 
 .auth-footer a {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--accent-gold);
-  font-weight: 600;
+  color: var(--accent);
   text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  transition: color var(--transition-fast);
+}
+
+.auth-footer a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--accent);
+  transition: width var(--transition-smooth);
 }
 
 .auth-footer a:hover {
-  color: var(--accent-dark);
+  color: var(--accent-light);
 }
 
-.error-message {
-  font-size: 11px;
-  color: var(--accent-red);
-  min-height: 16px;
-  margin-top: 3px;
+.auth-footer a:hover::after {
+  width: 100%;
 }
 
-.alert.alert-danger {
-  border-radius: 6px;
-  padding: 10px;
-  font-size: 13px;
-  margin-bottom: 14px;
-}
-
-@media (max-width: 600px) {
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 40px 20px;
+  }
+  
   .auth-card {
-    padding: 25px 20px;
+    padding: 35px 28px;
   }
   
   .auth-header h1 {
-    font-size: 18px;
+    font-size: 1.5rem;
   }
   
-  .submit-btn, 
+  .auth-header p {
+    font-size: 0.9rem;
+  }
+  
+  .form-field {
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 30px 15px;
+  }
+  
+  .auth-card {
+    padding: 30px 20px;
+    border-radius: var(--border-radius-md);
+  }
+  
+  .auth-header h1 {
+    font-size: 1.4rem;
+  }
+  
+  .auth-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 14px;
+  }
+  
+  .form-field input {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+  
+  .form-field label {
+    font-size: 0.75rem;
+    letter-spacing: 0.8px;
+  }
+  
+  .submit-btn {
+    padding: 13px;
+    font-size: 0.9rem;
+  }
+  
   .google-signin-btn {
-    padding: 10px;
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+  
+  .auth-divider {
+    margin: 24px 0;
+  }
+  
+  .auth-footer {
+    margin-top: 22px;
   }
 }

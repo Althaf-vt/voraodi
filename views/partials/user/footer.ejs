@@ -58,3 +58,20 @@
         </div>
     </div>
 </footer>
+<script>
+// Intersection Observer for footer animations
+const footerObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+        }
+    });
+}, {
+    threshold: 0.1
+});
+
+const footer = document.querySelector('footer');
+if (footer) {
+    footerObserver.observe(footer);
+}
+</script>

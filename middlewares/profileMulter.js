@@ -19,4 +19,10 @@ const fileFilter = (req, file, cb) => {
   cb(ok ? null : new Error('Only images are allowed'), ok);
 };
 
-module.exports = multer({ storage, fileFilter });
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
+
+module.exports = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: MAX_AVATAR_BYTES, files: 1 },
+});

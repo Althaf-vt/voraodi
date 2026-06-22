@@ -428,8 +428,8 @@
                 });
             }
 
-            if (images.files.length < 3 || images.files.length > 4) {
-                displayErrorMessage('images-error', 'Please select 3 to 4 images.');
+            if (images.files.length < 1 || images.files.length > 4) {
+                displayErrorMessage('images-error', 'Please select 1 to 4 images.');
                 isValid = false;
             } else {
                 for (let i = 0; i < images.files.length; i++) {

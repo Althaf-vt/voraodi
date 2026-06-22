@@ -11,16 +11,17 @@ const productDetails = async (req, res, next) => {
         const userData = await User.findOne({ _id: userId });
         const productId = req.params.id;
         const product = await Product.findById(productId).populate('category');
-        const findCategory = product.category;
-        const categoryOffer = findCategory?.categoryOffer || 0;
-        const productOffer = product.productOffer || 0;
-        const totalOffer = categoryOffer + productOffer;
 
         if (!product) {
             const err = new Error("Product not found");
             err.statusCode = 404;
             throw err;
         }
+
+        const findCategory = product.category;
+        const categoryOffer = findCategory?.categoryOffer || 0;
+        const productOffer = product.productOffer || 0;
+        const totalOffer = categoryOffer + productOffer;
 
         const relatedProducts = await Product.find({
             _id: { $ne: productId },
