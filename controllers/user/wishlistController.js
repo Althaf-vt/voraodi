@@ -130,7 +130,7 @@ const removeItem = async(req,res)=>{
 
         const wishlist = await Wishlist.findOne({userId:userId});
 
-        const itemIndex = wishlist.products.findIndex((product => product._id.equals(productId)));
+        const itemIndex = wishlist.products.findIndex((item) => item.productId.equals(productId));
 
         if(itemIndex === -1){
             return res.status(400).json({success:false,message:'Product not found in wishlist'})

@@ -12,7 +12,6 @@ const fs = require('fs/promises');
 const env = require('dotenv').config();
 const session = require('express-session');
 const { generate } = require('mongoose/lib/types/objectid');
-const { response, link } = require('../../server');
 const Product = require('../../models/productSchema');
 const mongoose = require("mongoose");
 const Coupon = require('../../models/couponSchema');
@@ -757,7 +756,7 @@ const getEditAddress = async (req, res) => {
         return res.status(200).json({ success: true, address: doc.address[0] })
 
     } catch (error) {
-        console.error('GET /address error:', err);
+        console.error('GET /address error:', error);
         res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }
@@ -1000,10 +999,11 @@ const updateQty = async (req, res) => {
         } else if (action === 'decrease') {
             item.quantity -= 1;
 
-            //Remove if quantity is 0
-            // if(item.quantity <= 0){
-            //     userCart.items.splice(itemIndex,1);
-            // }
+            if (item.quantity <= 0) {
+                userCart.items.splice(itemIndex, 1);
+                await userCart.save();
+                return res.status(200).json({ success: true, removed: true, message: 'Item removed from cart' });
+            }
         }
 
         if (item.quantity > 3) {

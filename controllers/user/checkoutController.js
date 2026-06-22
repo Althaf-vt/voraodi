@@ -4,6 +4,7 @@ const Order = require('../../models/orderSchema');
 const Cart = require('../../models/cartSchema');
 const Coupon = require('../../models/couponSchema');
 const Product = require('../../models/productSchema');
+const Wallet = require('../../models/walletSchema');
 const { assertOrderOwnership } = require('../../utils/orderAuth');
 const { verifyCheckoutSignature } = require('../../utils/razorpayWebhook');
 const { getRazorpayInstance } = require('../../utils/razorpayClient');

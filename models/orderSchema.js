@@ -101,6 +101,10 @@ const orderSchema = new Schema({
         type: Boolean,
         default: false
     },
+    couponCode: {
+        type: String,
+        default: null,
+    },
     paymentMethod: {
         type: String,
         required: true

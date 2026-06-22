@@ -92,7 +92,7 @@ const addProduct = async (req, res) => {
     }
 };
 
-const getAllProducts = async (req, res) => {
+const getAllProducts = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
