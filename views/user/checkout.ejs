@@ -643,11 +643,15 @@
                 })
                 .then(res => res.json())
                 .then(order => {
+                    console.log('Backend response:', order);
                     if(!order || !order.id){
+                        
                         let data = {message : 'Failed to initiate razorpay payment'}
                         toastMessage(data,'error');
                         return;
                     }
+
+                    console.log('razorpay key = ', '<%= razorpayKeyId %>', '---------------------------')
 
                     const options = {
                         key: '<%= razorpayKeyId %>',

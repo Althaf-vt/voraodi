@@ -77,16 +77,19 @@ async function fulfillCapturedPayment({
 
         const resolvedAddressId = addressId || intent?.addressId;
         let clonedAddress;
-        if (resolvedAddressId) {
+        // For retry flow the order already carries the snapshotted shipping address.
+        // resolvedAddressId holds String(order._id) (a non-empty sentinel) — not an
+        // address subdoc ID — so we always use the embedded order.address for retries.
+        if (order.address?.name) {
+            clonedAddress = order.address.toObject
+                ? order.address.toObject()
+                : structuredClone(order.address);
+        } else if (resolvedAddressId) {
             clonedAddress = await resolveAddress(
                 order.userId.toString(),
                 resolvedAddressId,
                 session
             );
-        } else if (order.address?.name) {
-            clonedAddress = order.address.toObject
-                ? order.address.toObject()
-                : structuredClone(order.address);
         } else {
             throw Object.assign(new Error('Order address missing for retry fulfillment'), {
                 statusCode: 400,

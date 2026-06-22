@@ -20,7 +20,8 @@ const getAllCoupons = async (req, res, next) => {
         return res.render('coupon-list', {
             coupons,
             page,
-            totalPages
+            totalPages,
+            currentPage: page
         });
     } catch (error) {
         next(error);

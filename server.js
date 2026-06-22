@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const path = require('path');
 require('dotenv').config();
 const { createSessionMiddleware, isProduction } = require('./config/session');
-const { attachCsrfToken, validateCsrf } = require('./middlewares/csrf');
 const passport = require('./config/passport');
 const connectDB = require('./config/db');
 const methodOverride = require('method-override');
@@ -47,10 +46,6 @@ app.use(createSessionMiddleware());
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(attachCsrfToken);
-
-app.use(validateCsrf);
 
 app.use((req, res, next) => {
     res.set('cache-control', 'no-store');
