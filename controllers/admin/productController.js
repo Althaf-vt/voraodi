@@ -376,9 +376,9 @@ const deleteSingleImage = async(req,res)=>{
             return res.status(500).json({ status: false, error: 'Failed to update product images' });
         }
 
-        const imagePath = path.join(__dirname, '..', 'public', 'uploads', 'product-images', path.basename(imageNameToServer));        
+        const imagePath = path.join(__dirname, '../../public/uploads/product-images', path.basename(imageNameToServer));
         try {
-            await fs.unlink(imagePath);
+            await fs.promises.unlink(imagePath);
         } catch (err) {
             console.warn(`Image ${imageNameToServer} not found on disk:`, err.message);
         }

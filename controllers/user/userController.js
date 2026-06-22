@@ -1,4 +1,3 @@
-const { generate } = require('mongoose/lib/types/objectid');
 const env = require('dotenv').config();
 const User = require('../../models/userSchema');
 const Category = require('../../models/categorySchema');
