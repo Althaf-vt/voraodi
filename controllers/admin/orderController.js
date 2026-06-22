@@ -90,6 +90,12 @@ const orderDetails = async (req, res, next) => {
 const updateOrderStatus = async (req, res) => {
     try {
         const { orderId, status } = req.body;
+
+        const VALID_STATUSES = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned', 'Payment Failed'];
+        if (!VALID_STATUSES.includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status value' });
+        }
+
         const order = await Order.findOne({ orderId });
 
         if (!order) {
@@ -121,7 +127,7 @@ const updateOrderStatus = async (req, res) => {
 
     } catch (error) {
         console.error('Error in update status', error);
-        return res.redirect('/admin/pageError');
+        return res.status(500).json({ success: false, message: 'Failed to update order status' });
     }
 }
 

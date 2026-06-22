@@ -400,7 +400,7 @@ const loadShoppingPage = async (req, res, next) => {
             filter.salePrice = { $gt: 1500 };
         }
 
-        let sortOption = { createOn: -1 };
+        let sortOption = { createdAt: -1 };
         if (sort === 'priceLowHigh') sortOption = { salePrice: 1 };
         else if (sort === 'priceHighLow') sortOption = { salePrice: -1 };
         else if (sort === 'nameAZ') sortOption = { productName: 1 };
