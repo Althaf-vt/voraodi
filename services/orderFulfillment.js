@@ -169,7 +169,7 @@ async function fulfillNewOrderFromCart({
     const finalAmount = recalculatedTotal + deliveryCharge;
     const paymentStatus = paymentMethod === 'cod' ? 'Pending' : 'Completed';
 
-    const newOrder = new Order({
+    const orderData = {
         orderedItems,
         totalPrice,
         discount,
@@ -182,10 +182,15 @@ async function fulfillNewOrderFromCart({
         paymentStatus,
         userId,
         deliveryCharge,
-        razorpayPaymentId: paymentMethod === 'razorpay' ? razorpayPaymentId : null,
-        razorpayOrderId: paymentMethod === 'razorpay' ? razorpayOrderId : null,
-        paymentCapturedAt: paymentMethod === 'razorpay' ? new Date() : null,
-    });
+    };
+
+    if (paymentMethod === 'razorpay') {
+        orderData.razorpayPaymentId = razorpayPaymentId;
+        orderData.razorpayOrderId = razorpayOrderId;
+        orderData.paymentCapturedAt = new Date();
+    }
+
+    const newOrder = new Order(orderData);
     await newOrder.save({ session });
 
     const stockResult = await deductOrderItemsStock(orderedItems, session);

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Razorpay Test</title>
+</head>
+
+<body>
+
+<h1>Razorpay Test</h1>
+
+<button id="pay">Open Razorpay</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+document.getElementById('pay').onclick = function () {
+
+    const options = {
+
+        key: "rzp_test_T4xMgcoJLgxogm",
+
+        amount: 10000,
+
+        currency: "INR",
+
+        name: "Test",
+
+        description: "Test payment",
+
+        prefill: {
+            contact: "+916323334341"
+        },
+
+        config: {
+            display: {
+                blocks: {
+                    upi: {
+                        name: "UPI",
+                        instruments: [{ method: "upi" }]
+                    },
+
+                    netbanking: {
+                        name: "Netbanking",
+                        instruments: [{ method: "netbanking" }]
+                    },
+
+                    card: {
+                        name: "Card",
+                        instruments: [{ method: "card" }]
+                    }
+                },
+
+                sequence: ["upi", "netbanking", "card"],
+
+                preferences: {
+                    show_default_blocks: false
+                }
+            }
+        }
+
+    };
+
+    new Razorpay(options).open();
+
+};
+
+</script>
+
+</body>
+</html>

@@ -32,7 +32,7 @@ const checkStock = async (req, res) => {
             const product = await Product.findById(item.productId).populate('category');
 
             if (!product) {
-                return res.status(400).json({success:false, message:`Product not found for ID : ${item.productId}`});
+                return res.status(400).json({ success: false, message: `Product not found for ID : ${item.productId}` });
             }
             if (product.isBlocked === true) {
                 return res.status(400).json({ success: false, message: `The product"${product.productName}" is currently unavailable. Please update your cart.` });
@@ -44,7 +44,7 @@ const checkStock = async (req, res) => {
             const variant = product.variants.find(v => v.sku === item.sku);
 
             if (!variant) {
-                return res.status(400).json({success:false,message: `Variant not found for product : ${product.productName}`})
+                return res.status(400).json({ success: false, message: `Variant not found for product : ${product.productName}` })
             }
 
             if (item.quantity > variant.quantity) {
@@ -280,7 +280,6 @@ const applyCoupon = async (req, res) => {
             }
         });
     } catch (error) {
-        console.log("Error in apply coupon : ", error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
@@ -470,41 +469,7 @@ const createRazorpayOrder = async (req, res) => {
     }
 }
 
-// const verifyRazorpayPayment = async(req,res)=>{
-//     try {
-//         const {
-//             razorpay_payment_id,
-//             razorpay_order_id,
-//             razorpay_signature,
-//             addressId,
-//             userId,
-//             couponCode
-//         } = req.body;
 
-//         if(!razorpay_payment_id || !razorpay_order_id || !razorpay_signature){
-//             return res.status(400).json({success:false,message:"Missing Razorpay credentials"});
-//         }
-
-//         // 1 generate expected signature
-//         const generated_signature = Crypto
-//             .createHmac('sha256',process.env.RAZORPAY_KEY_SECRET)
-//             .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-//             .digest('hex');
-
-//         // 2 compare signatures
-//         if(generated_signature !== razorpay_signature){
-//             console.log('in gen sign and raz sign comapre')
-//             return res.status(400).json({success:false,message:'Payment verification failed'});
-//         }
-
-
-//         return res.status(200).json({success:true,message:'Payment verified and order palced'});
-//     } catch (error) {
-//         console.error("Payment verification error:", error);
-//         return res.status(500).json({ success: false, message: "Internal server error" })
-//     }
-// }
-// POST /verify-razorpay-payment
 const verifyRazorpayPayment = async (req, res) => {
     try {
         const {
@@ -590,27 +555,6 @@ const orderSuccess = async (req, res, next) => {
     }
 }
 
-// const paymentFailed = async(req,res)=>{
-//     try {
-//         const {userId,addressId,paymentMethod,couponCode} = req.body;
-
-//         if(!userId){
-//             return res.status(400).json({success:false, message: 'Unauthorized user'});
-//         }
-//         const addressDoc = await Address.findOne({userId:userId});
-//         const selectedAddress = await addressDoc.address.id(addressId);
-
-//         if(!selectedAddress){
-//             return res.status(400).json({success:false,message:'Invalid address'});
-//         }
-
-//         const clonedAddress = structuredClone(selectedAddress.toObject())
-//     } catch (error) {
-
-//     }
-// }
-
-// POST /payment-failed
 const paymentFailed = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -739,7 +683,7 @@ const retryRazorpayOrder = async (req, res) => {
             notes: {
                 userId: String(order.userId),
                 orderId: order.orderId,
-                addressId: '',
+                addressId: String(order._id),
                 couponCode: couponCode || order.couponCode || '',
             },
         });
@@ -753,7 +697,7 @@ const retryRazorpayOrder = async (req, res) => {
         await upsertPaymentIntent({
             razorpayOrderId: razorpayOrder.id,
             userId: order.userId,
-            addressId: '',
+            addressId: String(order._id),
             couponCode: couponCode || order.couponCode || '',
             amountPaise: razorpayOrder.amount,
             flow: 'retry',

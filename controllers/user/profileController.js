@@ -11,7 +11,6 @@ const path = require('path');
 const fs = require('fs/promises');
 const env = require('dotenv').config();
 const session = require('express-session');
-const { generate } = require('mongoose/lib/types/objectid');
 const Product = require('../../models/productSchema');
 const mongoose = require("mongoose");
 const Coupon = require('../../models/couponSchema');
@@ -146,7 +145,6 @@ const verifyForgotPassOtp = async (req, res) => {
             return res.json({ success: false, message: 'OTP not matching' });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }

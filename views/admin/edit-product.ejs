@@ -277,12 +277,12 @@
           });
         }
 
-        if (totalImages < 3) {
+        if (totalImages < 1) {
           Swal.fire({
             toast: true,
             icon: 'error',
             title: 'Image Requirement Not Met',
-            text: 'Minimum 3 images required.',
+            text: 'Minimum 1 images required.',
           });
           isValid = false;
         }

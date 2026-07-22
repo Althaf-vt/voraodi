@@ -184,7 +184,6 @@ const approveReturnOrder = async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Request approved' });
     } catch (error) {
-        console.log('Error in Approving return order', error);
         const status = error.statusCode || 500;
         return res.status(status).json({
             success: false,
@@ -210,7 +209,6 @@ const rejectReturnOrder = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Request rejected' });
 
     } catch (error) {
-        console.log('Error in Reject return Order');
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
@@ -280,7 +278,6 @@ const approveReturnItem = async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Return request approved' });
     } catch (error) {
-        console.log('Error in approve return item ', error);
         const status = error.statusCode || 500;
         return res.status(status).json({
             success: false,
@@ -309,7 +306,6 @@ const rejectReturnItem = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Return request rejected' });
 
     } catch (error) {
-        console.log('Error in reject return request');
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }

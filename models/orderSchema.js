@@ -120,13 +120,11 @@ const orderSchema = new Schema({
     },
     razorpayPaymentId: {
         type: String,
-        default: null,
         sparse: true,
         unique: true,
     },
     razorpayOrderId: {
         type: String,
-        default: null,
         index: true,
     },
     paymentCapturedAt: {

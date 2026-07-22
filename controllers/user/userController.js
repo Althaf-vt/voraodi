@@ -1,4 +1,3 @@
-const { generate } = require('mongoose/lib/types/objectid');
 const env = require('dotenv').config();
 const User = require('../../models/userSchema');
 const Category = require('../../models/categorySchema');
@@ -20,6 +19,7 @@ const loadHomepage = async (req, res, next) => {
         // Get the logged-in user ID from session (normal login) or from Passport (Google login)
         const user = req.session.user || (req.user && req.user._id);
         const categories = await Category.find({ isListed: true });
+
 
         if (!categories || categories.length === 0) {
             const err = new Error('No categories found');

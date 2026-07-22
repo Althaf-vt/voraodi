@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="/admin/adminSigninStyle.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <%- include('../partials/csrf-meta') %>
 </head>
 <body>
   <section class="auth-section">
@@ -16,7 +15,6 @@
       <h2 id="typewriter">Admin Command<br>Access</h2>
       <div class="subtitle">Secure Entry to the VOGUE Dominion</div>
       <form id="admin-signin-form" action="/admin/signin" method="POST">
-        <%- include('../partials/csrf-field') %>
         <div class="form-field">
           <label for="email">Admin Email</label>
           <input type="email" id="email" name="email" required>

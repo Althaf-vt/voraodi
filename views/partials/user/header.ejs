@@ -1,5 +1,4 @@
 <head>
-<%- include('./csrf-meta') %>
 
 <!-- Toastify CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -736,15 +735,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-    setInterval(()=>{
-        fetch('/check-user-blocked')
-        .then(res => res.json())
-        .then(data =>{
-            if(data.isBlocked){
-                window.location.href = '/signin';
-            }
-        })
-    })
+    setInterval(async () => {
+    try {
+
+        const response = await fetch('/check-user-blocked');
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+
+        if (data.isBlocked) {
+            window.location.href = '/signin';
+        }
+
+    } catch (error) {
+        console.error('User block check failed:', error);
+    }
+
+}, 30000);
 
     // Header scroll behavior
 let lastScroll = 0;
