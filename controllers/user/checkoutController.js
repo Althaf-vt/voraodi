@@ -32,7 +32,7 @@ const checkStock = async (req, res) => {
             const product = await Product.findById(item.productId).populate('category');
 
             if (!product) {
-                return res.status(400).json({success:false, message:`Product not found for ID : ${item.productId}`});
+                return res.status(400).json({ success: false, message: `Product not found for ID : ${item.productId}` });
             }
             if (product.isBlocked === true) {
                 return res.status(400).json({ success: false, message: `The product"${product.productName}" is currently unavailable. Please update your cart.` });
@@ -44,7 +44,7 @@ const checkStock = async (req, res) => {
             const variant = product.variants.find(v => v.sku === item.sku);
 
             if (!variant) {
-                return res.status(400).json({success:false,message: `Variant not found for product : ${product.productName}`})
+                return res.status(400).json({ success: false, message: `Variant not found for product : ${product.productName}` })
             }
 
             if (item.quantity > variant.quantity) {
@@ -280,7 +280,6 @@ const applyCoupon = async (req, res) => {
             }
         });
     } catch (error) {
-        console.log("Error in apply coupon : ", error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };

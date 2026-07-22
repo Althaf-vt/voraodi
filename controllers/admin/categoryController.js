@@ -102,7 +102,6 @@ const addCategoryOffer = async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Offer added successful' });
     } catch (error) {
-        console.log('Error in add categoty offer : ', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
@@ -214,7 +213,6 @@ const editCategory = async (req, res) => {
             res.status(404).json({ error: 'Category not found' });
         }
     } catch (error) {
-        console.log('Error in edit category', error)
         return res.status(500).json({ error: 'Internal Server Error' })
     }
 }

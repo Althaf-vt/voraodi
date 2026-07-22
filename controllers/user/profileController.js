@@ -145,7 +145,6 @@ const verifyForgotPassOtp = async (req, res) => {
             return res.json({ success: false, message: 'OTP not matching' });
         }
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ success: false, message: messages.SERVER_ERROR });
     }
 }

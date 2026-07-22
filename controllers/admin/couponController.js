@@ -76,7 +76,6 @@ const addCoupon = async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Coupon created successful' });
     } catch (error) {
-        console.log("Error in Adding coupon", error);
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
@@ -94,7 +93,6 @@ const getEditCoupon = async (req, res) => {
         return res.status(200).json({ success: true, coupon: coupon });
 
     } catch (error) {
-        console.log("Error in getting edit coupon", error);
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
@@ -133,7 +131,6 @@ const editCoupon = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Coupon updated successful' });
 
     } catch (error) {
-        console.log("Error in Update coupon", error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
@@ -152,7 +149,6 @@ const deleteCoupon = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Coupon deleted successful' })
 
     } catch (error) {
-        console.log('Error in delete coupon : ', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
@@ -182,7 +178,6 @@ const listUnlist = async (req, res) => {
         return res.status(200).json({ success: true, message: messageData });
 
     } catch (error) {
-        console.log('Error in list unlist coupon : ', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }

@@ -20,6 +20,7 @@ const loadHomepage = async (req, res, next) => {
         const user = req.session.user || (req.user && req.user._id);
         const categories = await Category.find({ isListed: true });
 
+
         if (!categories || categories.length === 0) {
             const err = new Error('No categories found');
             err.statusCode = 404;

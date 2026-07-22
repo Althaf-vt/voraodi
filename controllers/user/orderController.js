@@ -203,7 +203,6 @@ const returnItem = async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Return request submitted' });
     } catch (error) {
-        console.log('Error in Return item', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
@@ -231,7 +230,6 @@ const returnOrder = async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Return request submitted' });
     } catch (error) {
-        console.log('Error in Return order : ', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
