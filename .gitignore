@@ -10,5 +10,11 @@ node_modules/
 # Optional: Ignore system-specific files
 .DS_Store
 Thumbs.db
+
+# IDE / AI tooling
+.vscode/
+.kiro/
+
+# Generated Markdown files
 *.md
 !README.md
