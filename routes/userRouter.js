@@ -129,13 +129,14 @@ router.get('/invoice',userAuth,orderController.invoice);
 router.get('/checkout',userAuth,checkoutController.loadCheckout);
 router.post('/apply-coupon', userAuth, checkoutLimiter, checkoutController.applyCoupon)
 router.post('/cart/check-stock', userAuth, checkoutLimiter, checkoutController.checkStock);
-router.post('/verify-razorpay-payment', userAuth, checkoutLimiter, checkoutController.verifyRazorpayPayment);
 router.post('/place-order', userAuth, checkoutLimiter, checkoutController.placeOrder);
 router.get('/order-success/:id',userAuth,checkoutController.orderSuccess);
 router.post('/payment-failed', userAuth, checkoutLimiter, checkoutController.paymentFailed)
 router.get('/payment-failed',userAuth,checkoutController.getPaymentFailed)
-router.post('/retry-razorpay-order', userAuth, checkoutLimiter, checkoutController.retryRazorpayOrder);
-router.post('/create-razorpay-order', userAuth, checkoutLimiter, checkoutController.createRazorpayOrder);
+// Cashfree payment routes
+router.post('/create-cashfree-order', userAuth, checkoutLimiter, checkoutController.createCashfreeOrder);
+router.get('/verify-cashfree-payment', userAuth, checkoutController.verifyCashfreePayment);
+router.post('/retry-cashfree-order', userAuth, checkoutLimiter, checkoutController.retryCashfreeOrder);
 
 // Wallet & referral code
 router.get('/wallet',userAuth,wallterController.loadWallet);

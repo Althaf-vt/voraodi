@@ -11,7 +11,7 @@ const {
 } = require('../utils/orderPricing');
 const {
     assertValidPaymentMethod,
-    assertRazorpayCredentials,
+    assertCashfreeCredentials,
 } = require('../utils/paymentValidation');
 
 async function validateAndApplyCoupon(couponCode, userId, subtotal, session) {
@@ -52,7 +52,6 @@ async function fulfillRetryOrder({
     session,
 }) {
     assertValidPaymentMethod(paymentMethod);
-    assertRazorpayCredentials(paymentMethod, order.razorpayPaymentId, order.razorpayOrderId);
 
     if (order.paymentStatus === 'Completed') {
         throw Object.assign(new Error('Order already paid'), { statusCode: 400 });
@@ -119,15 +118,16 @@ async function fulfillNewOrderFromCart({
     paymentMethod,
     couponCode,
     clonedAddress,
-    razorpayPaymentId,
-    razorpayOrderId,
+    cashfreePaymentId,
+    cashfreeOrderId,
     session,
 }) {
     assertValidPaymentMethod(paymentMethod);
-    assertRazorpayCredentials(paymentMethod, razorpayPaymentId, razorpayOrderId);
+    assertCashfreeCredentials(paymentMethod, cashfreePaymentId, cashfreeOrderId);
 
-    if (paymentMethod === 'razorpay' && razorpayPaymentId) {
-        const existing = await Order.findOne({ razorpayPaymentId }).session(session);
+    // Idempotency guard for Cashfree
+    if (paymentMethod === 'cashfree' && cashfreePaymentId) {
+        const existing = await Order.findOne({ cashfreePaymentId }).session(session);
         if (existing?.paymentStatus === 'Completed') {
             return existing.orderId;
         }
@@ -184,9 +184,10 @@ async function fulfillNewOrderFromCart({
         deliveryCharge,
     };
 
-    if (paymentMethod === 'razorpay') {
-        orderData.razorpayPaymentId = razorpayPaymentId;
-        orderData.razorpayOrderId = razorpayOrderId;
+    // Gateway-specific payment ID fields
+    if (paymentMethod === 'cashfree') {
+        orderData.cashfreePaymentId = cashfreePaymentId;
+        orderData.cashfreeOrderId = cashfreeOrderId;
         orderData.paymentCapturedAt = new Date();
     }
 
@@ -221,22 +222,25 @@ async function fulfillNewOrderFromCart({
     return newOrder.orderId;
 }
 
-async function fulfillRazorpayRetryOrder({
+/**
+ * Fulfill a Cashfree retry payment on an existing Payment Failed order.
+ */
+async function fulfillCashfreeRetryOrder({
     order,
     couponCode,
     clonedAddress,
-    razorpayPaymentId,
-    razorpayOrderId,
+    cashfreePaymentId,
+    cashfreeOrderId,
     session,
 }) {
     if (order.paymentStatus === 'Completed') {
-        if (order.razorpayPaymentId === razorpayPaymentId) {
+        if (order.cashfreePaymentId === cashfreePaymentId) {
             return;
         }
         throw Object.assign(new Error('Order already paid'), { statusCode: 400 });
     }
 
-    const paymentTaken = await Order.findOne({ razorpayPaymentId }).session(session);
+    const paymentTaken = await Order.findOne({ cashfreePaymentId }).session(session);
     if (paymentTaken && paymentTaken.orderId !== order.orderId) {
         throw Object.assign(new Error('Payment already used for another order'), { statusCode: 409 });
     }
@@ -269,9 +273,9 @@ async function fulfillRazorpayRetryOrder({
     order.couponApplied = couponApplied;
     order.paymentStatus = 'Completed';
     order.status = 'Pending';
-    order.paymentMethod = 'razorpay';
-    order.razorpayPaymentId = razorpayPaymentId;
-    order.razorpayOrderId = razorpayOrderId || order.razorpayOrderId;
+    order.paymentMethod = 'cashfree';
+    order.cashfreePaymentId = cashfreePaymentId;
+    order.cashfreeOrderId = cashfreeOrderId || order.cashfreeOrderId;
     order.paymentCapturedAt = new Date();
 
     const stockResult = await deductOrderItemsStock(order.orderedItems, session);
@@ -285,6 +289,6 @@ async function fulfillRazorpayRetryOrder({
 module.exports = {
     fulfillRetryOrder,
     fulfillNewOrderFromCart,
-    fulfillRazorpayRetryOrder,
+    fulfillCashfreeRetryOrder,
     validateAndApplyCoupon,
 };

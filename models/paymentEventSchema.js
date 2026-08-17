@@ -11,12 +11,12 @@ const paymentEventSchema = new Schema({
         type: String,
         required: true,
     },
-    razorpayPaymentId: {
+    cashfreePaymentId: {
         type: String,
         default: null,
         index: true,
     },
-    razorpayOrderId: {
+    cashfreeOrderId: {
         type: String,
         default: null,
         index: true,

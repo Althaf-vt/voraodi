@@ -6,20 +6,18 @@ const Coupon = require('../../models/couponSchema');
 const Product = require('../../models/productSchema');
 const Wallet = require('../../models/walletSchema');
 const { assertOrderOwnership } = require('../../utils/orderAuth');
-const { verifyCheckoutSignature } = require('../../utils/razorpayWebhook');
-const { getRazorpayInstance } = require('../../utils/razorpayClient');
+const { getCashfreeInstance } = require('../../utils/cashfreeClient');
 const { withTransaction } = require('../../utils/withTransaction');
 const {
     fulfillRetryOrder,
     fulfillNewOrderFromCart,
 } = require('../../services/orderFulfillment');
 const {
-    fulfillCapturedPayment,
-    upsertPaymentIntent,
-} = require('../../services/razorpayFulfillment');
+    fulfillCapturedPayment: fulfillCashfreeCapturedPayment,
+    upsertCashfreePaymentIntent,
+} = require('../../services/cashfreeFulfillment');
 const {
     assertValidPaymentMethod,
-    assertRazorpayCredentials,
 } = require('../../utils/paymentValidation');
 
 
@@ -203,7 +201,6 @@ const loadCheckout = async (req, res, next) => {
             deliveryCharge,
             wallet,
             retryOrderId: req.query.orderId || null,
-            razorpayKeyId: process.env.RAZORPAY_KEY_ID,
         });
 
     } catch (error) {
@@ -292,8 +289,6 @@ const placeOrder = async (req, res) => {
             paymentMethod,
             couponCode,
             orderId,
-            razorpay_payment_id: razorpayPaymentId,
-            razorpay_order_id: razorpayOrderId,
         } = req.body;
 
         if (!userId) {
@@ -308,11 +303,18 @@ const placeOrder = async (req, res) => {
 
         try {
             assertValidPaymentMethod(paymentMethod);
-            assertRazorpayCredentials(paymentMethod, razorpayPaymentId, razorpayOrderId);
         } catch (validationError) {
             return res.status(validationError.statusCode || 400).json({
                 success: false,
                 message: validationError.message,
+            });
+        }
+
+        // Cashfree payments must go through /verify-cashfree-payment, not placeOrder
+        if (paymentMethod === 'cashfree') {
+            return res.status(400).json({
+                success: false,
+                message: 'Cashfree payments must be verified via /verify-cashfree-payment',
             });
         }
 
@@ -328,26 +330,6 @@ const placeOrder = async (req, res) => {
 
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-
-        if (paymentMethod === 'razorpay' && razorpayPaymentId && razorpayOrderId) {
-            const result = await withTransaction((session) =>
-                fulfillCapturedPayment({
-                    razorpayPaymentId,
-                    razorpayOrderId,
-                    userId,
-                    addressId,
-                    couponCode,
-                    appOrderId: orderId || null,
-                    session,
-                })
-            );
-            req.session.orderSuccess = true;
-            return res.status(200).json({
-                success: true,
-                orderId: result.orderId,
-                alreadyFulfilled: result.alreadyFulfilled,
-            });
-        }
 
         let completedOrderId;
 
@@ -389,11 +371,18 @@ const placeOrder = async (req, res) => {
     }
 }
 
-const createRazorpayOrder = async (req, res) => {
+
+/**
+ * POST /create-cashfree-order
+ *
+ * Creates a Cashfree order and returns the payment_session_id to the frontend.
+ * The frontend uses this (no public key needed) to redirect to Cashfree checkout.
+ */
+const createCashfreeOrder = async (req, res) => {
     try {
         const userId = req.session.user;
         if (!userId) {
-            return res.status(400).json({ success: false, message: 'Unauthorized user' });
+            return res.status(401).json({ success: false, message: 'Unauthorized user' });
         }
 
         const { addressId, couponCode } = req.body;
@@ -401,126 +390,186 @@ const createRazorpayOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Please select a shipping address' });
         }
 
-        //Get selected address
         const userAddressDoc = await Address.findOne({ userId });
-        const selectedAddress = userAddressDoc.address.id(addressId);
-
+        const selectedAddress = userAddressDoc?.address?.id(addressId);
         if (!selectedAddress) {
-            return res.status(400).json({ success: false, message: 'invalid address' });
+            return res.status(400).json({ success: false, message: 'Invalid address' });
         }
 
         const cart = await Cart.findOne({ userId }).populate('items.productId');
-
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ success: false, message: 'Your cart is empty' });
         }
 
-        const subtotal = cart.items.reduce((acc, item) => {
-            if (item.productId) {
-                return acc + item.productId.salePrice * item.quantity
-            }
-            return acc;
-        }, 0);
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const subtotal = cart.items.reduce((acc, item) =>
+            item.productId ? acc + item.productId.salePrice * item.quantity : acc, 0);
 
         let discount = 0;
         if (couponCode) {
             const coupon = await Coupon.findOne({ code: couponCode, isListed: true });
-            if (coupon) {
-                discount = coupon.amount;
-            }
+            if (coupon) discount = coupon.amount;
         }
-        // const finalAmount = subtotal - discount + deliveryCharge;
 
-        let deliveryCharge = subtotal >= 3000 ? 0 : 50;
-
+        const deliveryCharge = subtotal >= 3000 ? 0 : 50;
         const finalAmount = subtotal - discount + deliveryCharge;
 
-        const razorpay = getRazorpayInstance();
+        // Use a unique order ID for Cashfree (their order_id must be unique per account)
+        const cfOrderId = `app_${Date.now()}_${String(userId).slice(-6)}`;
 
-        const order = await razorpay.orders.create({
-            amount: Math.round(finalAmount * 100),
-            currency: 'INR',
-            receipt: `order_rcpt_${Date.now()}`,
-            notes: {
-                userId: String(userId),
-                addressId: String(addressId),
+        // Build the return URL — Cashfree GETs this after payment (success or failure)
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const returnUrl = `${protocol}://${host}/verify-cashfree-payment?order_id=${cfOrderId}`;
+
+        const cashfree = getCashfreeInstance();
+        const cfResponse = await cashfree.PGCreateOrder({
+            order_id: cfOrderId,
+            order_amount: parseFloat(finalAmount.toFixed(2)),
+            order_currency: 'INR',
+            customer_details: {
+                customer_id: String(userId),
+                customer_phone: user.phone || '9999999999',
+                customer_name: user.name || '',
+                customer_email: user.email || '',
+            },
+            order_meta: {
+                return_url: returnUrl,
+            },
+            // order_tags are sent back in webhooks so we can fulfill without session
+            order_tags: {
+                userId:     String(userId),
+                addressId:  String(addressId),
                 couponCode: couponCode || '',
             },
         });
 
-        await upsertPaymentIntent({
-            razorpayOrderId: order.id,
+        const sessionId = cfResponse?.data?.payment_session_id;
+        if (!sessionId) {
+            console.error('Cashfree PGCreateOrder response missing payment_session_id:', cfResponse?.data);
+            return res.status(500).json({ success: false, message: 'Failed to create Cashfree order' });
+        }
+
+        await upsertCashfreePaymentIntent({
+            cashfreeOrderId: cfOrderId,
             userId,
             addressId,
             couponCode,
-            amountPaise: order.amount,
+            amountPaise: Math.round(finalAmount * 100),
             flow: 'new_cart',
         });
 
         return res.json({
-            id: order.id,
-            amount: order.amount,
-            currency: order.currency
+            success: true,
+            cashfreeOrderId: cfOrderId,
+            paymentSessionId: sessionId,
         });
 
     } catch (error) {
-        console.error('Error creating Razorpay order:', error);
+        console.error('Error creating Cashfree order:', error?.response?.data || error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
-}
+};
 
 
-const verifyRazorpayPayment = async (req, res) => {
+/**
+ * GET /verify-cashfree-payment?order_id=<cfOrderId>
+ *
+ * Cashfree redirects the browser here after payment (success or failure).
+ * We server-poll PGFetchOrder to confirm the real status — never trust
+ * client-side redirect params alone.
+ *
+ * Flow:
+ *  PAID        → run fulfillCapturedPayment → redirect to /order-success/:id
+ *  ACTIVE/etc  → payment failed → create failed order → redirect to /payment-failed
+ */
+const verifyCashfreePayment = async (req, res, next) => {
     try {
-        const {
-            razorpay_payment_id,
-            razorpay_order_id,
-            razorpay_signature,
-            orderId, // may be undefined for normal payment
-            couponCode,
-            addressId,
-        } = req.body;
-
-
-
-        if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
-            return res.status(400).json({ success: false, message: "Missing Razorpay credentials" });
-        }
-
-        if (!verifyCheckoutSignature(razorpay_order_id, razorpay_payment_id, razorpay_signature)) {
-            return res.status(400).json({ success: false, message: 'Payment verification failed' });
-        }
-
+        const { order_id: cashfreeOrderId } = req.query;
         const sessionUserId = req.session.user;
+
+        const PaymentIntent = require('../../models/paymentIntentSchema');
+        const intent = await PaymentIntent.findOne({ cashfreeOrderId });
+
         if (!sessionUserId) {
-            return res.status(401).json({ success: false, message: 'Unauthorized' });
+            return res.redirect('/signin');
+        }
+        if (!cashfreeOrderId) {
+            return res.redirect('/checkout');
         }
 
-        const result = await withTransaction((session) =>
-            fulfillCapturedPayment({
-                razorpayPaymentId: razorpay_payment_id,
-                razorpayOrderId: razorpay_order_id,
-                userId: sessionUserId,
-                addressId,
-                couponCode,
-                appOrderId: orderId || null,
-                session,
-            })
-        );
+        // Server-side status poll — the authoritative source of truth
+        const cashfree = getCashfreeInstance();
+        let cfOrder;
+        try {
+            const response = await cashfree.PGFetchOrder(cashfreeOrderId);
+            cfOrder = response?.data;
+        } catch (fetchErr) {
+            console.error('PGFetchOrder error:', fetchErr?.response?.data || fetchErr);
+            return res.redirect(`/checkout?error=payment_verify_failed`);
+        }
 
-        req.session.orderSuccess = true;
-        return res.status(200).json({
-            success: true,
-            message: 'Payment verified and order placed',
-            orderId: result.orderId,
-            alreadyFulfilled: result.alreadyFulfilled,
-        });
+        if (!cfOrder) {
+            return res.redirect('/checkout?error=order_not_found');
+        }
+
+        const orderStatus = cfOrder.order_status; // 'PAID' | 'ACTIVE' | 'EXPIRED' | etc.
+
+        if (orderStatus === 'PAID') {
+            // Retrieve the payment ID from the payments list on the order
+            const cfPaymentId = cfOrder.cf_order_id
+                ? String(cfOrder.cf_order_id)
+                : cashfreeOrderId; // fallback — use order ID as payment ID sentinel
+
+            const result = await withTransaction((session) =>
+                fulfillCashfreeCapturedPayment({
+                    cashfreePaymentId: cfPaymentId,
+                    cashfreeOrderId,
+                    userId: sessionUserId,
+                    // Pass fields from the intent directly if found (though the service
+                    // now correctly falls back to its own intent lookup too)
+                    addressId:  intent?.addressId  || null,
+                    couponCode: intent?.couponCode || '',
+                    appOrderId: intent?.appOrderId || null,
+                    session,
+                })
+            );
+
+            req.session.orderSuccess = true;
+            return res.redirect(`/order-success/${result.orderId}`);
+        }
+
+        // Payment did not succeed — create a failed order record so the user can retry
+        const addressId  = intent?.addressId  || null;
+        const couponCode = intent?.couponCode || '';
+
+        // Reuse the existing paymentFailed logic by calling it programmatically
+        const fakedReq = {
+            session: req.session,
+            body: { addressId, paymentMethod: 'cashfree', couponCode },
+        };
+        let failedOrderId = null;
+        const fakedRes = {
+            status: () => ({
+                json: (data) => { failedOrderId = data?.orderId; }
+            }),
+        };
+
+        // Call the paymentFailed handler inline to create the failed order record
+        await paymentFailed(fakedReq, fakedRes);
+
+        if (failedOrderId) {
+            return res.redirect(`/payment-failed?orderId=${failedOrderId}`);
+        }
+        return res.redirect('/payment-failed');
+
     } catch (error) {
-        console.error("Payment verification error:", error);
-        if (error.statusCode) {
-            return res.status(error.statusCode).json({ success: false, message: error.message });
-        }
-        return res.status(500).json({ success: false, message: "Internal server error" });
+        console.error('verifyCashfreePayment error:', error);
+        next(error);
     }
 };
 
@@ -637,8 +686,12 @@ const paymentFailed = async (req, res) => {
 };
 
 
-// POST /retry-razorpay-order
-const retryRazorpayOrder = async (req, res) => {
+/**
+ * POST /retry-cashfree-order
+ *
+ * Creates a new Cashfree order for a Payment Failed order so the user can retry.
+ */
+const retryCashfreeOrder = async (req, res) => {
     try {
         const userId = req.session.user;
         const { orderId, couponCode } = req.body;
@@ -661,57 +714,79 @@ const retryRazorpayOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Order not eligible for retry' });
         }
 
-        // If couponCode is sent, validate and apply it
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
         let discount = 0;
         if (couponCode) {
             const coupon = await Coupon.findOne({ code: couponCode, isListed: true });
-            if (coupon) {
-                discount = coupon.amount;
-            }
+            if (coupon) discount = coupon.amount;
         }
-        // Use the order's subtotal, not finalAmount, to recalculate
+
         const subtotal = order.totalPrice;
         const deliveryCharge = order.deliveryCharge || (subtotal >= 3000 ? 0 : 50);
         const finalAmount = subtotal - discount + deliveryCharge;
 
-        const razorpay = getRazorpayInstance();
+        const cfOrderId = `retry_${Date.now()}_${String(order.orderId).slice(-6)}`;
 
-        const razorpayOrder = await razorpay.orders.create({
-            amount: Math.round(finalAmount * 100),
-            currency: 'INR',
-            receipt: `retry_order_rcpt_${Date.now()}`,
-            notes: {
-                userId: String(order.userId),
-                orderId: order.orderId,
-                addressId: String(order._id),
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const returnUrl = `${protocol}://${host}/verify-cashfree-payment?order_id=${cfOrderId}`;
+
+        const cashfree = getCashfreeInstance();
+        const cfResponse = await cashfree.PGCreateOrder({
+            order_id: cfOrderId,
+            order_amount: parseFloat(finalAmount.toFixed(2)),
+            order_currency: 'INR',
+            customer_details: {
+                customer_id: String(userId),
+                customer_phone: user.phone || '9999999999',
+                customer_name:  user.name  || '',
+                customer_email: user.email || '',
+            },
+            order_meta: {
+                return_url: returnUrl,
+            },
+            order_tags: {
+                userId:     String(order.userId),
+                orderId:    order.orderId,          // marks this as a retry
+                addressId:  String(order._id),
                 couponCode: couponCode || order.couponCode || '',
             },
         });
 
-        order.razorpayOrderId = razorpayOrder.id;
+        const sessionId = cfResponse?.data?.payment_session_id;
+        if (!sessionId) {
+            console.error('retryCashfreeOrder: missing payment_session_id', cfResponse?.data);
+            return res.status(500).json({ success: false, message: 'Failed to create Cashfree retry order' });
+        }
+
+        // Store the new Cashfree order ID on the failed order record
+        order.cashfreeOrderId = cfOrderId;
         order.discount = discount;
         order.finalAmount = finalAmount;
         order.couponCode = couponCode || order.couponCode || '';
         await order.save();
 
-        await upsertPaymentIntent({
-            razorpayOrderId: razorpayOrder.id,
+        await upsertCashfreePaymentIntent({
+            cashfreeOrderId: cfOrderId,
             userId: order.userId,
             addressId: String(order._id),
             couponCode: couponCode || order.couponCode || '',
-            amountPaise: razorpayOrder.amount,
+            amountPaise: Math.round(finalAmount * 100),
             flow: 'retry',
             appOrderId: order.orderId,
         });
 
         return res.json({
             success: true,
-            id: razorpayOrder.id,
-            amount: razorpayOrder.amount,
-            currency: razorpayOrder.currency,
+            cashfreeOrderId: cfOrderId,
+            paymentSessionId: sessionId,
         });
     } catch (error) {
-        console.error('Retry Razorpay order error:', error);
+        console.error('Retry Cashfree order error:', error?.response?.data || error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
@@ -751,11 +826,10 @@ module.exports = {
     loadCheckout,
     placeOrder,
     applyCoupon,
-    createRazorpayOrder,
-    verifyRazorpayPayment,
+    createCashfreeOrder,
+    verifyCashfreePayment,
+    retryCashfreeOrder,
     orderSuccess,
     paymentFailed,
     getPaymentFailed,
-    retryRazorpayOrder
-
 }

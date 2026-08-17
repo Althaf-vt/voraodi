@@ -118,12 +118,12 @@ const orderSchema = new Schema({
         type: Number,
         default: 50,
     },
-    razorpayPaymentId: {
+    cashfreePaymentId: {
         type: String,
         sparse: true,
         unique: true,
     },
-    razorpayOrderId: {
+    cashfreeOrderId: {
         type: String,
         index: true,
     },

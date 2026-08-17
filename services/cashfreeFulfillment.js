@@ -3,9 +3,13 @@ const PaymentIntent = require('../models/paymentIntentSchema');
 const Address = require('../models/addressSchema');
 const {
     fulfillNewOrderFromCart,
-    fulfillRazorpayRetryOrder,
+    fulfillCashfreeRetryOrder,
 } = require('./orderFulfillment');
 
+/**
+ * Look up a specific address subdocument from a user's Address record.
+ * Shared by new-cart and retry fulfillment flows.
+ */
 async function resolveAddress(userId, addressId, session) {
     const addressDoc = await Address.findOne({ userId }).session(session);
     if (!addressDoc) {
@@ -19,23 +23,33 @@ async function resolveAddress(userId, addressId, session) {
 }
 
 /**
- * Idempotent fulfillment after Razorpay capture.
- * Safe to call from checkout verify, place-order, and webhooks.
+ * Idempotent fulfillment after a Cashfree payment is confirmed PAID.
+ * Safe to call from the return-URL verify endpoint AND from webhooks.
+ *
+ * @param {object} opts
+ * @param {string} opts.cashfreePaymentId - cf_payment_id from Cashfree
+ * @param {string} opts.cashfreeOrderId   - cf_order_id from Cashfree
+ * @param {string} opts.userId            - App user ID (from order_tags or session)
+ * @param {string} opts.addressId         - Address subdoc ID (from order_tags or session)
+ * @param {string} opts.couponCode        - Coupon code (from order_tags, may be '')
+ * @param {string|null} opts.appOrderId   - App orderId for retry flow, null for new cart
+ * @param {object} opts.session           - Mongoose session (from withTransaction)
  */
 async function fulfillCapturedPayment({
-    razorpayPaymentId,
-    razorpayOrderId,
+    cashfreePaymentId,
+    cashfreeOrderId,
     userId,
     addressId,
     couponCode,
     appOrderId,
     session,
 }) {
-    if (!razorpayPaymentId || !razorpayOrderId) {
-        throw Object.assign(new Error('Missing Razorpay payment identifiers'), { statusCode: 400 });
+    if (!cashfreePaymentId || !cashfreeOrderId) {
+        throw Object.assign(new Error('Missing Cashfree payment identifiers'), { statusCode: 400 });
     }
 
-    const existingByPayment = await Order.findOne({ razorpayPaymentId }).session(session);
+    // Guard 1: payment already fulfilled by this exact payment ID
+    const existingByPayment = await Order.findOne({ cashfreePaymentId }).session(session);
     if (existingByPayment?.paymentStatus === 'Completed') {
         return {
             ok: true,
@@ -44,27 +58,31 @@ async function fulfillCapturedPayment({
         };
     }
 
-    const existingByRpOrder = await Order.findOne({
-        razorpayOrderId,
+    // Guard 2: a completed order already exists for this Cashfree order ID
+    // (payment captured by webhook before return-URL hit, or vice-versa)
+    const existingByCfOrder = await Order.findOne({
+        cashfreeOrderId,
         paymentStatus: 'Completed',
     }).session(session);
 
-    if (existingByRpOrder) {
-        if (!existingByRpOrder.razorpayPaymentId) {
-            existingByRpOrder.razorpayPaymentId = razorpayPaymentId;
-            existingByRpOrder.paymentCapturedAt = existingByRpOrder.paymentCapturedAt || new Date();
-            await existingByRpOrder.save({ session });
+    if (existingByCfOrder) {
+        if (!existingByCfOrder.cashfreePaymentId) {
+            existingByCfOrder.cashfreePaymentId = cashfreePaymentId;
+            existingByCfOrder.paymentCapturedAt = existingByCfOrder.paymentCapturedAt || new Date();
+            await existingByCfOrder.save({ session });
         }
         return {
             ok: true,
-            orderId: existingByRpOrder.orderId,
+            orderId: existingByCfOrder.orderId,
             alreadyFulfilled: true,
         };
     }
 
-    const intent = await PaymentIntent.findOne({ razorpayOrderId }).session(session);
+    // Resolve the PaymentIntent for this Cashfree order
+    const intent = await PaymentIntent.findOne({ cashfreeOrderId }).session(session);
     const retryOrderId = appOrderId || intent?.appOrderId;
 
+    // --- Retry flow (payment was for an existing failed order) ---
     if (retryOrderId) {
         const orderQuery = { orderId: retryOrderId };
         if (userId) {
@@ -77,9 +95,9 @@ async function fulfillCapturedPayment({
 
         const resolvedAddressId = addressId || intent?.addressId;
         let clonedAddress;
-        // For retry flow the order already carries the snapshotted shipping address.
-        // resolvedAddressId holds String(order._id) (a non-empty sentinel) — not an
-        // address subdoc ID — so we always use the embedded order.address for retries.
+
+        // For retry, the order already has the snapshotted shipping address embedded.
+        // resolvedAddressId is String(order._id) (a sentinel), not an address subdoc ID.
         if (order.address?.name) {
             clonedAddress = order.address.toObject
                 ? order.address.toObject()
@@ -96,18 +114,18 @@ async function fulfillCapturedPayment({
             });
         }
 
-        await fulfillRazorpayRetryOrder({
+        await fulfillCashfreeRetryOrder({
             order,
             couponCode: couponCode || intent?.couponCode || '',
             clonedAddress,
-            razorpayPaymentId,
-            razorpayOrderId,
+            cashfreePaymentId,
+            cashfreeOrderId,
             session,
         });
 
         if (intent) {
             intent.status = 'fulfilled';
-            intent.razorpayPaymentId = razorpayPaymentId;
+            intent.cashfreePaymentId = cashfreePaymentId;
             intent.fulfilledOrderId = order.orderId;
             await intent.save({ session });
         }
@@ -115,7 +133,12 @@ async function fulfillCapturedPayment({
         return { ok: true, orderId: order.orderId, alreadyFulfilled: false };
     }
 
-    if (!userId || !addressId) {
+    // --- New cart flow ---
+    const resolvedUserId = userId || intent?.userId;
+    const resolvedAddressId = addressId || intent?.addressId;
+
+    if (!resolvedUserId || !resolvedAddressId) {
+        // If we have no context but intent says already fulfilled, return that
         if (intent?.status === 'fulfilled' && intent.fulfilledOrderId) {
             return {
                 ok: true,
@@ -129,23 +152,21 @@ async function fulfillCapturedPayment({
         );
     }
 
-    const resolvedUserId = userId || intent.userId;
-    const resolvedAddressId = addressId || intent.addressId;
     const clonedAddress = await resolveAddress(resolvedUserId, resolvedAddressId, session);
 
     const orderId = await fulfillNewOrderFromCart({
         userId: resolvedUserId,
-        paymentMethod: 'razorpay',
+        paymentMethod: 'cashfree',
         couponCode: couponCode || intent?.couponCode || '',
         clonedAddress,
-        razorpayPaymentId,
-        razorpayOrderId,
+        cashfreePaymentId,
+        cashfreeOrderId,
         session,
     });
 
     if (intent) {
         intent.status = 'fulfilled';
-        intent.razorpayPaymentId = razorpayPaymentId;
+        intent.cashfreePaymentId = cashfreePaymentId;
         intent.fulfilledOrderId = orderId;
         await intent.save({ session });
     }
@@ -153,8 +174,12 @@ async function fulfillCapturedPayment({
     return { ok: true, orderId, alreadyFulfilled: false };
 }
 
-async function upsertPaymentIntent({
-    razorpayOrderId,
+/**
+ * Upsert a PaymentIntent record keyed on cashfreeOrderId.
+ * Called when creating a new Cashfree order (new cart or retry).
+ */
+async function upsertCashfreePaymentIntent({
+    cashfreeOrderId,
     userId,
     addressId,
     couponCode,
@@ -163,9 +188,9 @@ async function upsertPaymentIntent({
     appOrderId,
 }) {
     return PaymentIntent.findOneAndUpdate(
-        { razorpayOrderId },
+        { cashfreeOrderId },
         {
-            razorpayOrderId,
+            cashfreeOrderId,
             userId,
             addressId,
             couponCode: couponCode || '',
@@ -180,6 +205,5 @@ async function upsertPaymentIntent({
 
 module.exports = {
     fulfillCapturedPayment,
-    upsertPaymentIntent,
-    resolveAddress,
+    upsertCashfreePaymentIntent,
 };
