@@ -54,3 +54,18 @@ DATABASE_URL="postgresql://postgres:password@localhost:5432/mentorq_dev"
 REDIS_URL="redis://localhost:6379"
 JWT_SECRET="your-development-secret-key"
 ```
+
+## Quickstart & Installation
+
+1. Install project dependencies:
+   ```bash
+   npm install
+   ```
+2. Run database migrations:
+   ```bash
+   npx prisma migrate dev
+   ```
+3. Seed initial development fixtures:
+   ```bash
+   npm run db:seed
+   ```
