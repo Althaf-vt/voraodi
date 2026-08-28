@@ -37,3 +37,20 @@ Ensure the following runtimes and services are available locally:
 - npm `>= 10.x` or pnpm `>= 9.x`
 - PostgreSQL `>= 15`
 - Redis `>= 7.x`
+
+## Environment Configuration
+
+Create a local environment configuration file:
+
+```bash
+cp .env.example .env
+```
+
+Configure required keys:
+
+```env
+PORT=5000
+DATABASE_URL="postgresql://postgres:password@localhost:5432/mentorq_dev"
+REDIS_URL="redis://localhost:6379"
+JWT_SECRET="your-development-secret-key"
+```
