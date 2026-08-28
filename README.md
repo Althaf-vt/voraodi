@@ -69,3 +69,15 @@ JWT_SECRET="your-development-secret-key"
    ```bash
    npm run db:seed
    ```
+
+## Starting Services
+
+Run the development servers across micro-workspaces:
+
+```bash
+# Start backend service
+npm run dev:server
+
+# Start frontend client
+npm run dev:client
+```
