@@ -28,3 +28,12 @@ MentorQ bridges real-time matching between mentees and experienced industry ment
                 |                |
          [PostgreSQL]        [Redis]
 ```
+
+## Local Development Prerequisites
+
+Ensure the following runtimes and services are available locally:
+
+- Node.js `>= 20.x`
+- npm `>= 10.x` or pnpm `>= 9.x`
+- PostgreSQL `>= 15`
+- Redis `>= 7.x`
