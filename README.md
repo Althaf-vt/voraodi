@@ -81,3 +81,9 @@ npm run dev:server
 # Start frontend client
 npm run dev:client
 ```
+
+## Database & Schema Management
+
+- Generate Prisma Client: `npx prisma generate`
+- Deploy migrations: `npx prisma migrate deploy`
+- Launch visual database inspector: `npx prisma studio`
