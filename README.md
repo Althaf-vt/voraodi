@@ -14,3 +14,17 @@ MentorQ bridges real-time matching between mentees and experienced industry ment
 - **Automated Queue Routing**: Dynamic matching based on domain expertise and availability.
 - **Real-Time Collaboration**: Interactive code scratchpad and WebRTC video integration.
 - **Role-Based Access Control**: Discrete scopes for Mentees, Mentors, and Administrators.
+
+## System Architecture Overview
+
+```text
+[Client Browser] <---> [Next.js Web UI]
+                          |
+                 (REST / WebSockets)
+                          v
+                   [API Gateway]
+                    /         \
+         [Auth Service]   [Queue Engine]
+                |                |
+         [PostgreSQL]        [Redis]
+```
