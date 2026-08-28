@@ -87,3 +87,15 @@ npm run dev:client
 - Generate Prisma Client: `npx prisma generate`
 - Deploy migrations: `npx prisma migrate deploy`
 - Launch visual database inspector: `npx prisma studio`
+
+## Test Suite & Verification
+
+Run automated unit and integration tests:
+
+```bash
+# Execute unit tests
+npm run test
+
+# Execute end-to-end integration tests
+npm run test:e2e
+```
