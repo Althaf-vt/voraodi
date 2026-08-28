@@ -99,3 +99,9 @@ npm run test
 # Execute end-to-end integration tests
 npm run test:e2e
 ```
+
+## Contributing Workflow
+
+1. Branch off `main` following conventions: `feat/<scope>` or `fix/<scope>`.
+2. Write concise, atomic commits using Conventional Commits.
+3. Ensure all test suites pass prior to opening a Pull Request.
