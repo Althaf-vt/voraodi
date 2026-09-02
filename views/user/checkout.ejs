@@ -232,11 +232,11 @@
                                     </div>
                                     <div class="payment-options">
                                         <div class="payment-option">
-                                            <input type="radio" id="razorpay" name="paymentMethod" value="razorpay"
+                                            <input type="radio" id="cashfree" name="paymentMethod" value="cashfree"
                                                 checked required>
-                                            <label for="razorpay">
-                                                <i data-lucide="smartphone"></i>
-                                                <span>Razorpay (Cards/UPI/NetBanking)</span>
+                                            <label for="cashfree">
+                                                <i data-lucide="credit-card"></i>
+                                                <span>Cashfree (Cards/UPI/NetBanking)</span>
                                             </label>
                                         </div>
                                         <div class="payment-option <%= total > 2000 ? 'disabled' : '' %> ">
@@ -360,7 +360,7 @@
             </div>
 
             <script src="https://unpkg.com/lucide@latest"></script>
-            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+            <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
             <script>
                 lucide.createIcons();
 
@@ -648,116 +648,52 @@
                         return;
                     }
 
-                    if (paymentMethod === 'razorpay') {
-                        // If retrying payment, send orderId
-                        let body = {
-                            userId,
-                            addressId,
-                            couponCode
-                        };
+                    if (paymentMethod === 'cashfree') {
+                        // Cashfree uses a redirect model — no in-page modal.
+                        // Step 1: Create the Cashfree order server-side to get payment_session_id.
+                        // Step 2: SDK redirects user to Cashfree-hosted payment page.
+                        // Step 3: Cashfree redirects back to /verify-cashfree-payment?order_id=...
+                        //         which server-polls PGFetchOrder to confirm PAID status.
 
-                        let endpoint = '/create-razorpay-order';
+                        let body = { addressId, couponCode };
+                        let endpoint = '/create-cashfree-order';
 
                         if (retryOrderId) {
                             body = { orderId: retryOrderId, couponCode };
-                            endpoint = '/retry-razorpay-order';
+                            endpoint = '/retry-cashfree-order';
                         }
 
-                        // Call backend to create Razorpay order
+                        const btn = document.querySelector('.place-order-button');
+                        if (btn) { btn.disabled = true; btn.textContent = 'Redirecting…'; }
+
                         fetch(endpoint, {
-                            method: "POST",
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(body)
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(body),
                         })
                             .then(res => res.json())
-                            .then(order => {
-                                if (!order || !order.id) {
-
-                                    let data = { message: 'Failed to initiate razorpay payment' }
-                                    toastMessage(data, 'error');
+                            .then(data => {
+                                if (!data.success || !data.paymentSessionId) {
+                                    if (btn) { btn.disabled = false; btn.textContent = 'Place Order'; }
+                                    toastMessage({ message: data.message || 'Failed to create payment order' }, 'error');
                                     return;
                                 }
 
+                                // Initialize the Cashfree SDK (sandbox mode)
+                                const cashfree = Cashfree({ mode: 'sandbox' });
 
-                                const options = {
-                                    key: '<%= razorpayKeyId %>',
-                                    amount: order.amount,
-                                    currency: "INR",
-                                    name: "VORAODI",
-                                    description: 'Order Payment',
-                                    // image: '/images/voraodi.png',
-                                    order_id: order.id,
-                                    handler: async function (response) {
 
-                                        console.log('res 1========= : ',response)
-                                        fetch('/verify-razorpay-payment', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({
-                                                razorpay_payment_id: response.razorpay_payment_id,
-                                                razorpay_order_id: response.razorpay_order_id,
-                                                razorpay_signature: response.razorpay_signature,
-                                                orderId: retryOrderId, // will be undefined for normal payment
-                                                addressId,
-                                                userId,
-                                                couponCode,
-                                            })
-                                        })
-                                            .then(res => {
-                                                console.log('res 2 ========= : ',res)
-                                                res.json()
-                                            })
-                                            .then(data => {
-                                                if (data.success && data.orderId) {
-                                                    window.location.href = `/order-success/${data.orderId}`;
-                                                } else if (data.success && retryOrderId) {
-                                                    window.location.href = `/order-success/${retryOrderId}`;
-                                                } else {
-                                                    toastMessage(data, 'error')
-                                                }
-                                            });
-                                    },
-                                    prefill: {
-                                        name: "<%= user.name%>",
-                                        email: "<%= user.email%>",
-                                        contact: "<%= user.phone%>",
-                                    },
-                                    theme: {
-                                        color: "#cca935"
-                                    }
-                                }
-                                const rzp = new Razorpay(options);
-                                rzp.on('payment.failed', function (response) {
-                                    console.log('res  3 ========= : ',response)
-                                    fetch('/payment-failed', {
-                                        method: "POST",
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            userId,
-                                            addressId,
-                                            paymentMethod,
-                                            couponCode,
-                                        })
-                                    })
-                                        .then(res => res.json())
-                                        .then(data => {
-                                            console.log('res 4 ========= : ',data)
-                                            if (data.success) {
-                                                window.location.href = `/payment-failed?orderId=${data.orderId}`;
-                                            } else {
-                                                toastMessage(data, 'error')
-                                            }
-                                        });
+                                cashfree.checkout({
+                                    paymentSessionId: data.paymentSessionId,
+                                    redirectTarget: '_self', // full-page redirect
                                 });
-                                rzp.open()
+                                // After this call, the browser will navigate to the Cashfree
+                                // payment page.  The user returns to /verify-cashfree-payment
+                                // where the server confirms the real order_status.
                             })
                             .catch(err => {
-                                let data = { message: 'Error initiating Razorpay' }
-                                toastMessage(data, 'error')
+                                if (btn) { btn.disabled = false; btn.textContent = 'Place Order'; }
+                                toastMessage({ message: 'Error initiating Cashfree payment' }, 'error');
                             });
 
                     } else {
@@ -788,13 +724,6 @@
                                 let data = { message: 'Something went wrong. Please try again later' }
                                 toastMessage(data, 'error')
                             })
-                        // Set hidden form values
-                        // document.getElementById('hidden-address-id').value = addressId;
-                        // document.getElementById('hidden-payment-method').value = paymentMethod;
-                        // document.getElementById('hidden-coupon-code').value = couponCode;
-
-                        // // Submit the hidden form
-                        // document.getElementById('hidden-order-form').submit();
                     }
                 }
 

@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { handleRazorpayWebhook } = require('../controllers/razorpayWebhookController');
+const { handleCashfreeWebhook } = require('../controllers/cashfreeWebhookController');
 
-router.post('/razorpay', handleRazorpayWebhook);
+// Cashfree webhook — server.js already applies express.raw() to this router
+router.post('/cashfree', handleCashfreeWebhook);
 
 module.exports = router;

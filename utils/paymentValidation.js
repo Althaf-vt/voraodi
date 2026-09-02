@@ -1,4 +1,4 @@
-const ALLOWED_PAYMENT_METHODS = new Set(['cod', 'wallet', 'razorpay']);
+const ALLOWED_PAYMENT_METHODS = new Set(['cod', 'wallet', 'cashfree']);
 
 function assertValidPaymentMethod(paymentMethod) {
     if (!paymentMethod || !ALLOWED_PAYMENT_METHODS.has(paymentMethod)) {
@@ -6,9 +6,9 @@ function assertValidPaymentMethod(paymentMethod) {
     }
 }
 
-function assertRazorpayCredentials(paymentMethod, razorpayPaymentId, razorpayOrderId) {
-    if (paymentMethod === 'razorpay' && (!razorpayPaymentId || !razorpayOrderId)) {
-        throw Object.assign(new Error('Razorpay payment verification required'), {
+function assertCashfreeCredentials(paymentMethod, cashfreePaymentId, cashfreeOrderId) {
+    if (paymentMethod === 'cashfree' && (!cashfreePaymentId || !cashfreeOrderId)) {
+        throw Object.assign(new Error('Cashfree payment verification required'), {
             statusCode: 400,
         });
     }
@@ -17,5 +17,5 @@ function assertRazorpayCredentials(paymentMethod, razorpayPaymentId, razorpayOrd
 module.exports = {
     ALLOWED_PAYMENT_METHODS,
     assertValidPaymentMethod,
-    assertRazorpayCredentials,
+    assertCashfreeCredentials,
 };
