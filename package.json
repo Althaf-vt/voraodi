@@ -9,6 +9,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cashfree-pg": "^6.0.4",
     "chart.js": "^4.5.0",
     "connect-mongo": "^6.0.0",
     "cors": "^2.8.5",

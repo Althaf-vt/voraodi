@@ -687,9 +687,11 @@
                                     currency: "INR",
                                     name: "VORAODI",
                                     description: 'Order Payment',
-                                    image: '/images/voraodi.png',
+                                    // image: '/images/voraodi.png',
                                     order_id: order.id,
                                     handler: async function (response) {
+
+                                        console.log('res 1========= : ',response)
                                         fetch('/verify-razorpay-payment', {
                                             method: 'POST',
                                             headers: {
@@ -705,7 +707,10 @@
                                                 couponCode,
                                             })
                                         })
-                                            .then(res => res.json())
+                                            .then(res => {
+                                                console.log('res 2 ========= : ',res)
+                                                res.json()
+                                            })
                                             .then(data => {
                                                 if (data.success && data.orderId) {
                                                     window.location.href = `/order-success/${data.orderId}`;
@@ -727,6 +732,7 @@
                                 }
                                 const rzp = new Razorpay(options);
                                 rzp.on('payment.failed', function (response) {
+                                    console.log('res  3 ========= : ',response)
                                     fetch('/payment-failed', {
                                         method: "POST",
                                         headers: { 'Content-Type': 'application/json' },
@@ -739,6 +745,7 @@
                                     })
                                         .then(res => res.json())
                                         .then(data => {
+                                            console.log('res 4 ========= : ',data)
                                             if (data.success) {
                                                 window.location.href = `/payment-failed?orderId=${data.orderId}`;
                                             } else {
