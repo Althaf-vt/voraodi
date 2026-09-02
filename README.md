@@ -9,3 +9,22 @@ Voraodi is a full-stack e-commerce web application utilizing Node.js, Express, a
 - **Frontend Views:** EJS templating engine, Chart.js
 - **Payments:** Cashfree Payment Gateway (with Razorpay support integrations)
 - **Utilities:** Multer (file uploads), Sharp (image processing), Nodemailer (emails), PDFKit & ExcelJS (reporting)
+
+## Prerequisites & Local Installation
+
+Ensure you have the following installed locally:
+- **Node.js** (v18.x or higher recommended)
+- **npm** (v9.x or higher)
+- **MongoDB** (Local instance or Atlas connection string)
+
+### Installation Steps
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Althaf-vt/voraodi.git
+   cd voraodi
+   ```
+2. Install all dependencies:
+   ```bash
+   npm install
+   ```
