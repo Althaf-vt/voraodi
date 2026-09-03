@@ -72,3 +72,14 @@ For manual verification:
 3. Navigate to `http://localhost:3000`.
 4. Verify user registration, Google OAuth login flow, and a sandbox checkout.
 5. Check backend logs for any unhandled rejections or connection warnings regarding MongoDB.
+
+## Contribution Guidelines & License
+
+### Branching Convention
+- `feat/<feature-name>`: For new features
+- `fix/<bug-name>`: For bug fixes
+- Ensure your changes are thoroughly tested locally before opening a Pull Request against `main`.
+
+### License
+This project is open-sourced under the **ISC License**. See `package.json` for repository details and issue tracking:
+- [Issue Tracker](https://github.com/Althaf-vt/voraodi/issues)
