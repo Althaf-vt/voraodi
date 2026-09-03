@@ -61,3 +61,14 @@ The following scripts are available via `package.json` to manage the application
 - **Authentication:** Uses Express sessions and Passport.js for session persistence.
 - **File Uploads:** Handled via Multer and optimized using Sharp before being stored in the `public` directory.
 - **Reporting:** Admin dashboards utilize Chart.js for visualization, and server-side PDFKit/ExcelJS exports for downloadable reports.
+
+## Testing & Verification
+
+*Note: Automated testing suites are currently being integrated.*
+
+For manual verification:
+1. Ensure your local `.env` contains valid Sandbox credentials for Cashfree.
+2. Start the application (`npm start`).
+3. Navigate to `http://localhost:3000`.
+4. Verify user registration, Google OAuth login flow, and a sandbox checkout.
+5. Check backend logs for any unhandled rejections or connection warnings regarding MongoDB.
