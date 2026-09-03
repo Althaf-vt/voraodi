@@ -28,3 +28,21 @@ Ensure you have the following installed locally:
    ```bash
    npm install
    ```
+
+## Environment & Configuration
+
+Create a `.env` file in the root directory and configure the necessary variables for your local development setup.
+
+Example `.env` configuration:
+```env
+PORT=3000
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.../voraodi-Cloud
+SESSION_SECRET=your-super-long-random-secret-key
+NODEMAILER_EMAIL=your-email@gmail.com
+NODEMAILER_PASSWORD=your-app-specific-password
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=your-google-oauth-client-secret
+CASHFREE_CLIENT_ID=your-cashfree-client-id
+CASHFREE_CLIENT_SECRET=your-cashfree-client-secret
+CASHFREE_ENV=SANDBOX
+```
