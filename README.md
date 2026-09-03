@@ -46,3 +46,18 @@ CASHFREE_CLIENT_ID=your-cashfree-client-id
 CASHFREE_CLIENT_SECRET=your-cashfree-client-secret
 CASHFREE_ENV=SANDBOX
 ```
+
+## Application Scripts & Workflows
+
+The following scripts are available via `package.json` to manage the application lifecycle:
+
+- **Start Development Server**:
+  ```bash
+  npm start
+  ```
+  This will execute `nodemon server` and watch for local file changes.
+
+### Core Data Flows
+- **Authentication:** Uses Express sessions and Passport.js for session persistence.
+- **File Uploads:** Handled via Multer and optimized using Sharp before being stored in the `public` directory.
+- **Reporting:** Admin dashboards utilize Chart.js for visualization, and server-side PDFKit/ExcelJS exports for downloadable reports.
